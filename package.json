@@ -36,7 +36,7 @@
     "docs:clean": "rm -Rf html/docs",
     "docs:update": "git add docs/html && git commit docs/html -m 'Update docs'",
     "docs:release": "npm run docs:clean && npm run docs:generate && npm run docs:update",
-    "lint": "jshint src/",
+    "lint": "eslint src/ tests/",
     "precommit": "./scripts/precommit",
     "prerelease": "mversion prerelease && npm run build:release",
     "pretest": "npm run lint",
