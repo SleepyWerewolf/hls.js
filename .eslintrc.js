@@ -20,13 +20,10 @@ module.exports = {
       "__USE_ALT_AUDIO__": true,
       "__USE_EME_DRM__": true
   },
-  /*
   "extends": "node-style-guide",
-  */
   "parserOptions": {
       "sourceType": "module"
   },
-  "plugins": ["prettier"],
   "rules": {
 
 
