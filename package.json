@@ -67,7 +67,6 @@
     "esdoc-standard-plugin": "^1.0.0",
     "eslint": "^4.13.1",
     "eslint-config-node-style-guide": "^3.0.0",
-    "eslint-plugin-prettier": "^2.4.0",
     "htmlhint": "^0.9.13",
     "http-server": "^0.11.0",
     "husky": "^0.14.3",
