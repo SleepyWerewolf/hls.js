@@ -3,10 +3,10 @@
  *  - provides MP4 Boxes back to main thread using [transferable objects](https://developers.google.com/web/updates/2011/12/Transferable-Objects-Lightning-Fast) in order to minimize message passing overhead.
  */
 
- import DemuxerInline from '../demux/demuxer-inline';
- import Event from '../events';
- import {enableLogs} from '../utils/logger';
- import EventEmitter from 'events';
+import DemuxerInline from '../demux/demuxer-inline';
+import Event from '../events';
+import {enableLogs} from '../utils/logger';
+import EventEmitter from 'events';
 
 var DemuxerWorker = function (self) {
   // observer setup
@@ -20,29 +20,29 @@ var DemuxerWorker = function (self) {
   };
 
   var forwardMessage = function(ev,data) {
-    self.postMessage({event: ev, data:data });
+    self.postMessage({event: ev, data:data});
   };
 
   self.addEventListener('message', function (ev) {
     var data = ev.data;
     //console.log('demuxer cmd:' + data.cmd);
     switch (data.cmd) {
-      case 'init':
-        let config = JSON.parse(data.config);
-        self.demuxer = new DemuxerInline(observer, data.typeSupported, config, data.vendor);
-        try {
-          enableLogs(config.debug === true);
-        } catch(err) {
-          console.warn('demuxerWorker: unable to enable logs');
-        }
-        // signal end of worker init
-        forwardMessage('init',null);
-        break;
-      case 'demux':
-        self.demuxer.push(data.data, data.decryptdata, data.initSegment, data.audioCodec, data.videoCodec, data.timeOffset,data.discontinuity, data.trackSwitch,data.contiguous,data.duration,data.accurateTimeOffset,data.defaultInitPTS);
-        break;
-      default:
-        break;
+    case 'init':
+      let config = JSON.parse(data.config);
+      self.demuxer = new DemuxerInline(observer, data.typeSupported, config, data.vendor);
+      try {
+        enableLogs(config.debug === true);
+      } catch(err) {
+        console.warn('demuxerWorker: unable to enable logs');
+      }
+      // signal end of worker init
+      forwardMessage('init',null);
+      break;
+    case 'demux':
+      self.demuxer.push(data.data, data.decryptdata, data.initSegment, data.audioCodec, data.videoCodec, data.timeOffset,data.discontinuity, data.trackSwitch,data.contiguous,data.duration,data.accurateTimeOffset,data.defaultInitPTS);
+      break;
+    default:
+      break;
     }
   });
 

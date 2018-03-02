@@ -29,11 +29,11 @@ class FragmentLoader extends EventHandler {
 
   onFragLoading(data) {
     const frag = data.frag,
-          type = frag.type,
-          loaders = this.loaders,
-          config = this.hls.config,
-          FragmentILoader = config.fLoader,
-          DefaultILoader = config.loader;
+      type = frag.type,
+      loaders = this.loaders,
+      config = this.hls.config,
+      FragmentILoader = config.fLoader,
+      DefaultILoader = config.loader;
 
     // reset fragment state
     frag.loaded = 0;
@@ -45,14 +45,14 @@ class FragmentLoader extends EventHandler {
     }
 
     loader = loaders[type] = frag.loader =
-      !!config.fLoader ? new FragmentILoader(config) : new DefaultILoader(config);
+      config.fLoader ? new FragmentILoader(config) : new DefaultILoader(config);
 
     let loaderContext, loaderConfig, loaderCallbacks;
 
-    loaderContext = { url : frag.url, frag : frag, responseType : 'arraybuffer', progressData : false};
+    loaderContext = {url : frag.url, frag : frag, responseType : 'arraybuffer', progressData : false};
 
     let start = frag.byteRangeStartOffset,
-        end = frag.byteRangeEndOffset;
+      end = frag.byteRangeEndOffset;
 
     if (!isNaN(start) && !isNaN(end)) {
       loaderContext.rangeStart = start;

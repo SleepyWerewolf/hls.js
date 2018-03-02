@@ -10,9 +10,9 @@ class ID3TrackController extends EventHandler {
 
   constructor(hls) {
     super(hls,
-               Event.MEDIA_ATTACHED,
-               Event.MEDIA_DETACHING,
-               Event.FRAG_PARSING_METADATA);
+      Event.MEDIA_ATTACHED,
+      Event.MEDIA_DETACHING,
+      Event.FRAG_PARSING_METADATA);
     this.id3Track = undefined;
     this.media = undefined;
   }

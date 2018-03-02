@@ -6,14 +6,14 @@ import Event from '../events';
 import EventHandler from '../event-handler';
 
 class CapLevelController extends EventHandler {
-	constructor(hls) {
+  constructor(hls) {
     super(hls,
       Event.FPS_DROP_LEVEL_CAPPING,
       Event.MEDIA_ATTACHING,
       Event.MANIFEST_PARSED);
-	}
+  }
 
-	destroy() {
+  destroy() {
     if (this.hls.config.capLevelToPlayerSize) {
       this.media = this.restrictedLevels = null;
       this.autoLevelCapping = Number.POSITIVE_INFINITY;
@@ -30,7 +30,7 @@ class CapLevelController extends EventHandler {
     }
   }
 
-	onMediaAttaching(data) {
+  onMediaAttaching(data) {
     this.media = data.media instanceof HTMLVideoElement ? data.media : null;
   }
 

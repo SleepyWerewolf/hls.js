@@ -25,10 +25,10 @@ class FetchLoader {
     let request;
 
     const initParams = {
-          method: 'GET',
-          mode: 'cors',
-          credentials: 'same-origin'
-        };
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'same-origin'
+    };
 
     const headersObj = {};
 
@@ -75,7 +75,7 @@ class FetchLoader {
           len = responseData.byteLength;
         }
         stats.loaded = stats.total = len;
-        let response = { url : targetURL, data : responseData};
+        let response = {url : targetURL, data : responseData};
         callbacks.onSuccess(response,stats,context);
       }
     });

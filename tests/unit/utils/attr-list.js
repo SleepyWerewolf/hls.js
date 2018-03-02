@@ -11,7 +11,7 @@ describe('AttrList', () => {
     assert.deepEqual(new AttrList(undefined), {});
   });
   it('constructor() supports object argument', () => {
-    const obj = { VALUE: "42" };
+    const obj = {VALUE: '42'};
     const list = new AttrList(obj);
     assert.strictEqual(list.decimalInteger('VALUE'), 42);
     assert.strictEqual(Object.keys(list).length, 1);
@@ -69,9 +69,9 @@ describe('AttrList', () => {
     assert.strictEqual(list.enumeratedString('ENUM2'), '42');
   });
   it('parses valid decimalResolution attribute', () => {
-    assert(deepStrictEqual(new AttrList('RES=400x200').decimalResolution('RES'), { width:400, height:200 }));
-    assert(deepStrictEqual(new AttrList('RES=0x0').decimalResolution('RES'), { width:0, height:0 }));
-    assert(deepStrictEqual(new AttrList('RES="400x200"').decimalResolution('RES'), { width:400, height:200 }));
+    assert(deepStrictEqual(new AttrList('RES=400x200').decimalResolution('RES'), {width:400, height:200}));
+    assert(deepStrictEqual(new AttrList('RES=0x0').decimalResolution('RES'), {width:0, height:0}));
+    assert(deepStrictEqual(new AttrList('RES="400x200"').decimalResolution('RES'), {width:400, height:200}));
   });
   it('handles invalid decimalResolution attribute', () => {
     assert(deepStrictEqual(new AttrList('RES=400x-200').decimalResolution('RES'), undefined));
@@ -90,7 +90,7 @@ describe('AttrList', () => {
     assert.strictEqual(list.decimalFloatingPoint('FLOAT'), 0.42);
     assert.strictEqual(list.STRING, 'hi');
     assert.strictEqual(list.enumeratedString('ENUM'), 'OK');
-    assert(deepStrictEqual(list.decimalResolution('RES'), { width:4, height:2 }));
+    assert(deepStrictEqual(list.decimalResolution('RES'), {width:4, height:2}));
     assert.strictEqual(Object.keys(list).length, 6);
   });
 

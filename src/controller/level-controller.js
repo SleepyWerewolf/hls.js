@@ -253,22 +253,22 @@ export default class LevelController extends EventHandler {
 
     // try to recover not fatal errors
     switch (data.details) {
-      case ErrorDetails.FRAG_LOAD_ERROR:
-      case ErrorDetails.FRAG_LOAD_TIMEOUT:
-      case ErrorDetails.KEY_LOAD_ERROR:
-      case ErrorDetails.KEY_LOAD_TIMEOUT:
-        levelIndex = data.frag.level;
-        fragmentError = true;
-        break;
-      case ErrorDetails.LEVEL_LOAD_ERROR:
-      case ErrorDetails.LEVEL_LOAD_TIMEOUT:
-        levelIndex = data.context.level;
-        levelError = true;
-        break;
-      case ErrorDetails.REMUX_ALLOC_ERROR:
-        levelIndex = data.level;
-        levelError = true;
-        break;
+    case ErrorDetails.FRAG_LOAD_ERROR:
+    case ErrorDetails.FRAG_LOAD_TIMEOUT:
+    case ErrorDetails.KEY_LOAD_ERROR:
+    case ErrorDetails.KEY_LOAD_TIMEOUT:
+      levelIndex = data.frag.level;
+      fragmentError = true;
+      break;
+    case ErrorDetails.LEVEL_LOAD_ERROR:
+    case ErrorDetails.LEVEL_LOAD_TIMEOUT:
+      levelIndex = data.context.level;
+      levelError = true;
+      break;
+    case ErrorDetails.REMUX_ALLOC_ERROR:
+      levelIndex = data.level;
+      levelError = true;
+      break;
     }
 
     if (levelIndex !== undefined) {
@@ -368,13 +368,13 @@ export default class LevelController extends EventHandler {
       // if current playlist is a live playlist, arm a timer to reload it
       if (newDetails.live) {
         let reloadInterval = 1000 * ( newDetails.averagetargetduration ? newDetails.averagetargetduration : newDetails.targetduration),
-            curDetails     = curLevel.details;
+          curDetails     = curLevel.details;
         if (curDetails && newDetails.endSN === curDetails.endSN) {
           // follow HLS Spec, If the client reloads a Playlist file and finds that it has not
           // changed then it MUST wait for a period of one-half the target
           // duration before retrying.
           reloadInterval /= 2;
-          logger.log(`same live playlist, reload twice faster`);
+          logger.log('same live playlist, reload twice faster');
         }
         // decrement reloadInterval with level loading delay
         reloadInterval -= performance.now() - data.stats.trequest;

@@ -2,7 +2,7 @@
  * AAC demuxer
  */
 import * as ADTS from './adts';
-import { logger } from '../utils/logger';
+import {logger} from '../utils/logger';
 import ID3 from '../demux/id3';
 
 class AACDemuxer {
@@ -14,7 +14,7 @@ class AACDemuxer {
   }
 
   resetInitSegment(initSegment, audioCodec, videoCodec, duration) {
-    this._audioTrack = { container: 'audio/adts', type: 'audio', id: 0, sequenceNumber: 0, isAAC: true, samples: [], len: 0, manifestCodec: audioCodec, duration: duration, inputTimeScale: 90000 };
+    this._audioTrack = {container: 'audio/adts', type: 'audio', id: 0, sequenceNumber: 0, isAAC: true, samples: [], len: 0, manifestCodec: audioCodec, duration: duration, inputTimeScale: 90000};
   }
 
   resetTimeStamp() {
@@ -51,7 +51,7 @@ class AACDemuxer {
     let length = data.length;
     let offset = id3Data.length;
 
-    let id3Samples = [{ pts: stamp, dts: stamp, data: id3Data }];
+    let id3Samples = [{pts: stamp, dts: stamp, data: id3Data}];
 
     while (offset < length - 1) {
       if (ADTS.isHeader(data, offset) && (offset + 5) < length) {
@@ -67,7 +67,7 @@ class AACDemuxer {
         }
       } else if (ID3.isHeader(data, offset)) {
         id3Data = ID3.getID3Data(data, offset);
-        id3Samples.push({ pts: stamp, dts: stamp, data: id3Data });
+        id3Samples.push({pts: stamp, dts: stamp, data: id3Data});
         offset += id3Data.length;
       } else {
         //nothing found, keep looking
@@ -76,9 +76,9 @@ class AACDemuxer {
     }
 
     this.remuxer.remux(track,
-      { samples: [] },
-      { samples: id3Samples, inputTimeScale: 90000 },
-      { samples: [] },
+      {samples: []},
+      {samples: id3Samples, inputTimeScale: 90000},
+      {samples: []},
       timeOffset,
       contiguous,
       accurateTimeOffset);

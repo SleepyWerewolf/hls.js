@@ -143,12 +143,12 @@ class MP4 {
   }
 
   static box(type) {
-  var
-    payload = Array.prototype.slice.call(arguments, 1),
-    size = 8,
-    i = payload.length,
-    len = i,
-    result;
+    var
+      payload = Array.prototype.slice.call(arguments, 1),
+      size = 8,
+      i = payload.length,
+      len = i,
+      result;
     // calculate the total size we need to allocate
     while (i--) {
       size += payload[i].byteLength;
@@ -228,7 +228,7 @@ class MP4 {
   static moof(sn, baseMediaDecodeTime, track) {
     return MP4.box(MP4.types.moof, MP4.mfhd(sn), MP4.traf(track,baseMediaDecodeTime));
   }
-/**
+  /**
  * @param tracks... (optional) {array} the tracks associated with this movie
  */
   static moov(tracks) {
@@ -345,63 +345,63 @@ class MP4 {
     }
 
     var avcc = MP4.box(MP4.types.avcC, new Uint8Array([
-            0x01,   // version
-            sps[3], // profile
-            sps[4], // profile compat
-            sps[5], // level
-            0xfc | 3, // lengthSizeMinusOne, hard-coded to 4 bytes
-            0xE0 | track.sps.length // 3bit reserved (111) + numOfSequenceParameterSets
-          ].concat(sps).concat([
-            track.pps.length // numOfPictureParameterSets
-          ]).concat(pps))), // "PPS"
-        width = track.width,
-        height = track.height,
-        hSpacing = track.pixelRatio[0],
-        vSpacing = track.pixelRatio[1];
+        0x01,   // version
+        sps[3], // profile
+        sps[4], // profile compat
+        sps[5], // level
+        0xfc | 3, // lengthSizeMinusOne, hard-coded to 4 bytes
+        0xE0 | track.sps.length // 3bit reserved (111) + numOfSequenceParameterSets
+      ].concat(sps).concat([
+        track.pps.length // numOfPictureParameterSets
+      ]).concat(pps))), // "PPS"
+      width = track.width,
+      height = track.height,
+      hSpacing = track.pixelRatio[0],
+      vSpacing = track.pixelRatio[1];
 
     return MP4.box(MP4.types.avc1, new Uint8Array([
-        0x00, 0x00, 0x00, // reserved
-        0x00, 0x00, 0x00, // reserved
-        0x00, 0x01, // data_reference_index
-        0x00, 0x00, // pre_defined
-        0x00, 0x00, // reserved
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, // pre_defined
-        (width >> 8) & 0xFF,
-        width & 0xff, // width
-        (height >> 8) & 0xFF,
-        height & 0xff, // height
-        0x00, 0x48, 0x00, 0x00, // horizresolution
-        0x00, 0x48, 0x00, 0x00, // vertresolution
-        0x00, 0x00, 0x00, 0x00, // reserved
-        0x00, 0x01, // frame_count
-        0x12,
-        0x64, 0x61, 0x69, 0x6C, //dailymotion/hls.js
-        0x79, 0x6D, 0x6F, 0x74,
-        0x69, 0x6F, 0x6E, 0x2F,
-        0x68, 0x6C, 0x73, 0x2E,
-        0x6A, 0x73, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, // compressorname
-        0x00, 0x18,   // depth = 24
-        0x11, 0x11]), // pre_defined = -1
-          avcc,
-          MP4.box(MP4.types.btrt, new Uint8Array([
-            0x00, 0x1c, 0x9c, 0x80, // bufferSizeDB
-            0x00, 0x2d, 0xc6, 0xc0, // maxBitrate
-            0x00, 0x2d, 0xc6, 0xc0])), // avgBitrate
-          MP4.box(MP4.types.pasp, new Uint8Array([
-            (hSpacing >> 24),         // hSpacing
-            (hSpacing >> 16) & 0xFF,
-            (hSpacing >>  8) & 0xFF,
-            hSpacing & 0xFF,
-            (vSpacing >> 24),         // vSpacing
-            (vSpacing >> 16) & 0xFF,
-            (vSpacing >>  8) & 0xFF,
-            vSpacing & 0xFF]))
-          );
+      0x00, 0x00, 0x00, // reserved
+      0x00, 0x00, 0x00, // reserved
+      0x00, 0x01, // data_reference_index
+      0x00, 0x00, // pre_defined
+      0x00, 0x00, // reserved
+      0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, // pre_defined
+      (width >> 8) & 0xFF,
+      width & 0xff, // width
+      (height >> 8) & 0xFF,
+      height & 0xff, // height
+      0x00, 0x48, 0x00, 0x00, // horizresolution
+      0x00, 0x48, 0x00, 0x00, // vertresolution
+      0x00, 0x00, 0x00, 0x00, // reserved
+      0x00, 0x01, // frame_count
+      0x12,
+      0x64, 0x61, 0x69, 0x6C, //dailymotion/hls.js
+      0x79, 0x6D, 0x6F, 0x74,
+      0x69, 0x6F, 0x6E, 0x2F,
+      0x68, 0x6C, 0x73, 0x2E,
+      0x6A, 0x73, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, // compressorname
+      0x00, 0x18,   // depth = 24
+      0x11, 0x11]), // pre_defined = -1
+    avcc,
+    MP4.box(MP4.types.btrt, new Uint8Array([
+      0x00, 0x1c, 0x9c, 0x80, // bufferSizeDB
+      0x00, 0x2d, 0xc6, 0xc0, // maxBitrate
+      0x00, 0x2d, 0xc6, 0xc0])), // avgBitrate
+    MP4.box(MP4.types.pasp, new Uint8Array([
+      (hSpacing >> 24),         // hSpacing
+      (hSpacing >> 16) & 0xFF,
+      (hSpacing >>  8) & 0xFF,
+      hSpacing & 0xFF,
+      (vSpacing >> 24),         // vSpacing
+      (vSpacing >> 16) & 0xFF,
+      (vSpacing >>  8) & 0xFF,
+      vSpacing & 0xFF]))
+    );
   }
 
   static esds(track) {
@@ -424,12 +424,12 @@ class MP4 {
       0x00, 0x00, 0x00, 0x00, // avgBitrate
 
       0x05 // descriptor_type
-      ].concat([configlen]).concat(track.config).concat([0x06, 0x01, 0x02])); // GASpecificConfig)); // length + audio config descriptor
+    ].concat([configlen]).concat(track.config).concat([0x06, 0x01, 0x02])); // GASpecificConfig)); // length + audio config descriptor
   }
 
   static mp4a(track) {
     var samplerate = track.samplerate;
-      return MP4.box(MP4.types.mp4a, new Uint8Array([
+    return MP4.box(MP4.types.mp4a, new Uint8Array([
       0x00, 0x00, 0x00, // reserved
       0x00, 0x00, 0x00, // reserved
       0x00, 0x01, // data_reference_index
@@ -441,12 +441,12 @@ class MP4 {
       (samplerate >> 8) & 0xFF,
       samplerate & 0xff, //
       0x00, 0x00]),
-      MP4.box(MP4.types.esds, MP4.esds(track)));
+    MP4.box(MP4.types.esds, MP4.esds(track)));
   }
 
   static mp3(track) {
     var samplerate = track.samplerate;
-      return MP4.box(MP4.types['.mp3'], new Uint8Array([
+    return MP4.box(MP4.types['.mp3'], new Uint8Array([
       0x00, 0x00, 0x00, // reserved
       0x00, 0x00, 0x00, // reserved
       0x00, 0x01, // data_reference_index
@@ -473,11 +473,11 @@ class MP4 {
 
   static tkhd(track) {
     var id = track.id,
-        duration = track.duration*track.timescale,
-        width = track.width,
-        height = track.height,
-        upperWordDuration = Math.floor(duration / (UINT32_MAX + 1)),
-        lowerWordDuration = Math.floor(duration % (UINT32_MAX + 1));
+      duration = track.duration*track.timescale,
+      width = track.width,
+      height = track.height,
+      upperWordDuration = Math.floor(duration / (UINT32_MAX + 1)),
+      lowerWordDuration = Math.floor(duration % (UINT32_MAX + 1));
     return MP4.box(MP4.types.tkhd, new Uint8Array([
       0x01, // version 1
       0x00, 0x00, 0x07, // flags
@@ -522,39 +522,39 @@ class MP4 {
 
   static traf(track,baseMediaDecodeTime) {
     var sampleDependencyTable = MP4.sdtp(track),
-        id = track.id,
-        upperWordBaseMediaDecodeTime = Math.floor(baseMediaDecodeTime / (UINT32_MAX + 1)),
-        lowerWordBaseMediaDecodeTime = Math.floor(baseMediaDecodeTime % (UINT32_MAX + 1));
+      id = track.id,
+      upperWordBaseMediaDecodeTime = Math.floor(baseMediaDecodeTime / (UINT32_MAX + 1)),
+      lowerWordBaseMediaDecodeTime = Math.floor(baseMediaDecodeTime % (UINT32_MAX + 1));
     return MP4.box(MP4.types.traf,
-               MP4.box(MP4.types.tfhd, new Uint8Array([
-                 0x00, // version 0
-                 0x00, 0x00, 0x00, // flags
-                 (id >> 24),
-                 (id >> 16) & 0XFF,
-                 (id >> 8) & 0XFF,
-                 (id & 0xFF) // track_ID
-               ])),
-               MP4.box(MP4.types.tfdt, new Uint8Array([
-                 0x01, // version 1
-                 0x00, 0x00, 0x00, // flags
-                 (upperWordBaseMediaDecodeTime >>24),
-                 (upperWordBaseMediaDecodeTime >> 16) & 0XFF,
-                 (upperWordBaseMediaDecodeTime >> 8) & 0XFF,
-                 (upperWordBaseMediaDecodeTime & 0xFF),
-                 (lowerWordBaseMediaDecodeTime >>24),
-                 (lowerWordBaseMediaDecodeTime >> 16) & 0XFF,
-                 (lowerWordBaseMediaDecodeTime >> 8) & 0XFF,
-                 (lowerWordBaseMediaDecodeTime & 0xFF)
-               ])),
-               MP4.trun(track,
-                    sampleDependencyTable.length +
+      MP4.box(MP4.types.tfhd, new Uint8Array([
+        0x00, // version 0
+        0x00, 0x00, 0x00, // flags
+        (id >> 24),
+        (id >> 16) & 0XFF,
+        (id >> 8) & 0XFF,
+        (id & 0xFF) // track_ID
+      ])),
+      MP4.box(MP4.types.tfdt, new Uint8Array([
+        0x01, // version 1
+        0x00, 0x00, 0x00, // flags
+        (upperWordBaseMediaDecodeTime >>24),
+        (upperWordBaseMediaDecodeTime >> 16) & 0XFF,
+        (upperWordBaseMediaDecodeTime >> 8) & 0XFF,
+        (upperWordBaseMediaDecodeTime & 0xFF),
+        (lowerWordBaseMediaDecodeTime >>24),
+        (lowerWordBaseMediaDecodeTime >> 16) & 0XFF,
+        (lowerWordBaseMediaDecodeTime >> 8) & 0XFF,
+        (lowerWordBaseMediaDecodeTime & 0xFF)
+      ])),
+      MP4.trun(track,
+        sampleDependencyTable.length +
                     16 + // tfhd
                     20 + // tfdt
                     8 +  // traf header
                     16 + // mfhd
                     8 +  // moof header
                     8),  // mdat header
-               sampleDependencyTable);
+      sampleDependencyTable);
   }
 
   /**
@@ -572,10 +572,10 @@ class MP4 {
     return MP4.box(MP4.types.trex, new Uint8Array([
       0x00, // version 0
       0x00, 0x00, 0x00, // flags
-     (id >> 24),
-     (id >> 16) & 0XFF,
-     (id >> 8) & 0XFF,
-     (id & 0xFF), // track_ID
+      (id >> 24),
+      (id >> 16) & 0XFF,
+      (id >> 8) & 0XFF,
+      (id & 0xFF), // track_ID
       0x00, 0x00, 0x00, 0x01, // default_sample_description_index
       0x00, 0x00, 0x00, 0x00, // default_sample_duration
       0x00, 0x00, 0x00, 0x00, // default_sample_size
@@ -585,10 +585,10 @@ class MP4 {
 
   static trun(track, offset) {
     var samples= track.samples || [],
-        len = samples.length,
-        arraylen = 12 + (16 * len),
-        array = new Uint8Array(arraylen),
-        i,sample,duration,size,flags,cts;
+      len = samples.length,
+      arraylen = 12 + (16 * len),
+      array = new Uint8Array(arraylen),
+      i,sample,duration,size,flags,cts;
     offset += 8 + arraylen;
     array.set([
       0x00, // version 0

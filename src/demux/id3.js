@@ -1,7 +1,7 @@
 /**
  * ID3 parser
  */
- class ID3 {
+class ID3 {
   /**
    * Returns true if an ID3 header can be found at offset in data
    * @param {Uint8Array} data - The data to search in
@@ -142,7 +142,7 @@
     //skip frame id, size, and flags
     let offset = 10;
 
-    return { type, size, data: data.subarray(offset, offset + size) };
+    return {type, size, data: data.subarray(offset, offset + size)};
   }
 
   /**
@@ -223,7 +223,7 @@
     const owner = ID3._utf8ArrayToStr(frame.data, true);
     const privateData = new Uint8Array(frame.data.subarray(owner.length + 1));
 
-    return { key: frame.type, info: owner, data: privateData.buffer };
+    return {key: frame.type, info: owner, data: privateData.buffer};
   }
 
   static _decodeTextFrame(frame) {
@@ -243,7 +243,7 @@
       index += description.length + 1;
       const value = ID3._utf8ArrayToStr(frame.data.subarray(index));
 
-      return { key: frame.type, info: description, data: value };
+      return {key: frame.type, info: description, data: value};
     } else {
       /*
       Format:
@@ -251,7 +251,7 @@
       [1-?] = {Value}
       */
       const text = ID3._utf8ArrayToStr(frame.data.subarray(1));
-      return { key: frame.type, data: text };
+      return {key: frame.type, data: text};
     }
   }
 
@@ -272,14 +272,14 @@
       index += description.length + 1;
       const value = ID3._utf8ArrayToStr(frame.data.subarray(index));
 
-      return { key: frame.type, info: description, data: value };
+      return {key: frame.type, info: description, data: value};
     } else {
       /*
       Format:
       [0-?] = {URL}
       */
       const url = ID3._utf8ArrayToStr(frame.data);
-      return { key: frame.type, data: url };
+      return {key: frame.type, data: url};
     }
   }
 
@@ -301,33 +301,33 @@
     let out = '';
     let i = 0;
     while (i < len) {
-        c = array[i++];
-        if (c === 0x00 && exitOnNull) {
-            return out;
-        } else if (c === 0x00 || c === 0x03) {
-          // If the character is 3 (END_OF_TEXT) or 0 (NULL) then skip it
-            continue;
-        }
-        switch (c >> 4) {
-            case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-            // 0xxxxxxx
-                out += String.fromCharCode(c);
-                break;
-            case 12: case 13:
-            // 110x xxxx   10xx xxxx
-                char2 = array[i++];
-                out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
-                break;
-            case 14:
-                // 1110 xxxx  10xx xxxx  10xx xxxx
-                char2 = array[i++];
-                char3 = array[i++];
-                out += String.fromCharCode(((c & 0x0F) << 12) |
+      c = array[i++];
+      if (c === 0x00 && exitOnNull) {
+        return out;
+      } else if (c === 0x00 || c === 0x03) {
+        // If the character is 3 (END_OF_TEXT) or 0 (NULL) then skip it
+        continue;
+      }
+      switch (c >> 4) {
+      case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+        // 0xxxxxxx
+        out += String.fromCharCode(c);
+        break;
+      case 12: case 13:
+        // 110x xxxx   10xx xxxx
+        char2 = array[i++];
+        out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+        break;
+      case 14:
+        // 1110 xxxx  10xx xxxx  10xx xxxx
+        char2 = array[i++];
+        char3 = array[i++];
+        out += String.fromCharCode(((c & 0x0F) << 12) |
                     ((char2 & 0x3F) << 6) |
                     ((char3 & 0x3F) << 0));
-                break;
-            default:
-        }
+        break;
+      default:
+      }
     }
     return out;
   }
@@ -337,4 +337,4 @@ const utf8ArrayToStr = ID3._utf8ArrayToStr;
 
 export default ID3;
 
-export { utf8ArrayToStr };
+export {utf8ArrayToStr};

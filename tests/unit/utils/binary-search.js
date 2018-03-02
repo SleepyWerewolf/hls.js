@@ -1,4 +1,4 @@
-var assert = require("assert");
+var assert = require('assert');
 import BinarySearch from '../../../src/utils/binary-search';
 
 describe('binary search util', function() {
@@ -8,13 +8,12 @@ describe('binary search util', function() {
       return function(candidate) {
         if (candidate < itemToSearchFor) {
           return 1;
-        }
-        else if (candidate > itemToSearchFor) {
+        } else if (candidate > itemToSearchFor) {
           return -1;
         }
         return 0;
       };
-    }
+    };
 
     beforeEach(function() {
       list = [4, 8, 15, 16, 23, 42];

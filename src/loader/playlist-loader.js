@@ -177,7 +177,7 @@ class PlaylistLoader extends EventHandler {
     if (loader) {
       const loaderContext = loader.context;
       if (loaderContext && loaderContext.url === url) { // same URL can't overlap
-        logger.trace(`playlist request ongoing`);
+        logger.trace('playlist request ongoing');
         return false;
       } else {
         logger.warn(`aborting previous loader for type: ${context.type}`);
@@ -185,9 +185,9 @@ class PlaylistLoader extends EventHandler {
       }
     }
     let maxRetry,
-        timeout,
-        retryDelay,
-        maxRetryDelay;
+      timeout,
+      retryDelay,
+      maxRetryDelay;
 
     // apply different configs for retries depending on
     // context (manifest, level, audio/subs playlist)

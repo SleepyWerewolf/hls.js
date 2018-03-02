@@ -6,7 +6,7 @@
 
 class EWMA {
 
- //  About half of the estimated value will be from the last |halfLife| samples by weight.
+  //  About half of the estimated value will be from the last |halfLife| samples by weight.
   constructor(halfLife) {
     // Larger values of alpha expire historical data more slowly.
     this.alpha_ = halfLife ? Math.exp(Math.log(0.5) / halfLife) : 0;

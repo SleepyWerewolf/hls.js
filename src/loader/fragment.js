@@ -32,7 +32,7 @@ export default class Fragment {
 
   get url() {
     if (!this._url && this.relurl) {
-      this._url = URLToolkit.buildAbsoluteURL(this.baseurl, this.relurl, { alwaysNormalize: true });
+      this._url = URLToolkit.buildAbsoluteURL(this.baseurl, this.relurl, {alwaysNormalize: true});
     }
     return this._url;
   }

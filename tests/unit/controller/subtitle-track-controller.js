@@ -15,7 +15,7 @@ describe('SubtitleTrackController', () => {
     subtitleTrackController = new SubtitleTrackController(hls);
 
     subtitleTrackController.media = videoElement;
-    subtitleTrackController.tracks = [{ id: 0 }, { id: 1 }];
+    subtitleTrackController.tracks = [{id: 0}, {id: 1}];
 
     const textTrack1 = videoElement.addTextTrack('subtitles', 'English', 'en');
     const textTrack2 = videoElement.addTextTrack('subtitles', 'Swedish', 'se');

@@ -97,8 +97,10 @@ export default class Hls {
     }
 
     for (var prop in defaultConfig) {
-        if (prop in config) { continue; }
-        config[prop] = defaultConfig[prop];
+      if (prop in config) {
+        continue;
+      }
+      config[prop] = defaultConfig[prop];
     }
 
     if (config.liveMaxLatencyDurationCount !== undefined && config.liveMaxLatencyDurationCount <= config.liveSyncDurationCount) {
@@ -240,7 +242,9 @@ export default class Hls {
     logger.log('destroy');
     this.trigger(HlsEvents.DESTROYING);
     this.detachMedia();
-    this.coreComponents.concat(this.networkControllers).forEach(component => {component.destroy();});
+    this.coreComponents.concat(this.networkControllers).forEach(component => {
+      component.destroy();
+    });
     this.url = null;
     this.observer.removeAllListeners();
     this._autoLevelCapping = -1;
@@ -270,7 +274,7 @@ export default class Hls {
    * @param {string} url
    */
   loadSource(url) {
-    url = URLToolkit.buildAbsoluteURL(window.location.href, url, { alwaysNormalize: true });
+    url = URLToolkit.buildAbsoluteURL(window.location.href, url, {alwaysNormalize: true});
     logger.log(`loadSource:${url}`);
     this.url = url;
     // when attaching to a source URL, trigger a playlist load
@@ -286,7 +290,9 @@ export default class Hls {
    */
   startLoad(startPosition = -1) {
     logger.log(`startLoad(${startPosition})`);
-    this.networkControllers.forEach(controller => {controller.startLoad(startPosition);});
+    this.networkControllers.forEach(controller => {
+      controller.startLoad(startPosition);
+    });
   }
 
   /**
@@ -294,7 +300,9 @@ export default class Hls {
    */
   stopLoad() {
     logger.log('stopLoad');
-    this.networkControllers.forEach(controller => {controller.stopLoad();});
+    this.networkControllers.forEach(controller => {
+      controller.stopLoad();
+    });
   }
 
   /**

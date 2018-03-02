@@ -84,8 +84,8 @@ class BufferController extends EventHandler {
 
   onManifestParsed(data) {
     let audioExpected = data.audio,
-        videoExpected = data.video || (data.levels.length && data.audio),
-        sourceBufferNb = 0;
+      videoExpected = data.video || (data.levels.length && data.audio),
+      sourceBufferNb = 0;
     // in case of alt audio 2 BUFFER_CODECS events will be triggered, one per stream controller
     // sourcebuffers will be created all at once when the expected nb of tracks will be reached
     // in case alt audio is not used, only one BUFFER_CODEC event will be fired from main stream controller
@@ -166,7 +166,7 @@ class BufferController extends EventHandler {
 
   onMediaSourceOpen() {
     logger.log('media source opened');
-    this.hls.trigger(Event.MEDIA_ATTACHED, { media : this.media });
+    this.hls.trigger(Event.MEDIA_ATTACHED, {media : this.media});
     let mediaSource = this.mediaSource;
     if (mediaSource) {
       // once received, don't listen anymore to sourceopen event
@@ -178,10 +178,10 @@ class BufferController extends EventHandler {
   checkPendingTracks() {
     // if any buffer codecs pending, check if we have enough to create sourceBuffers
     let pendingTracks = this.pendingTracks,
-        pendingTracksNb = Object.keys(pendingTracks).length;
+      pendingTracksNb = Object.keys(pendingTracks).length;
     // if any pending tracks and (if nb of pending tracks gt or equal than expected nb or if unknown expected nb)
     if (pendingTracksNb && (
-        this.sourceBufferNb <= pendingTracksNb ||
+      this.sourceBufferNb <= pendingTracksNb ||
         this.sourceBufferNb === 0)) {
       // ok, let's create them now !
       this.createSourceBuffers(pendingTracks);
@@ -228,7 +228,7 @@ class BufferController extends EventHandler {
       timeRanges[streamType] = sourceBuffer[streamType].buffered;
     }
 
-    this.hls.trigger(Event.BUFFER_APPENDED, { parent, pending, timeRanges });
+    this.hls.trigger(Event.BUFFER_APPENDED, {parent, pending, timeRanges});
     // don't append in flushing mode
     if (!this._needsFlush) {
       this.doAppending();
@@ -267,7 +267,9 @@ class BufferController extends EventHandler {
     // if source buffer(s) not created yet, appended buffer tracks in this.pendingTracks
     // if sourcebuffers already created, do nothing ...
     if (Object.keys(this.sourceBuffer).length === 0) {
-      for (var trackName in tracks) { this.pendingTracks[trackName] = tracks[trackName]; }
+      for (var trackName in tracks) {
+        this.pendingTracks[trackName] = tracks[trackName];
+      }
       let mediaSource = this.mediaSource;
       if (mediaSource && mediaSource.readyState === 'open') {
         // try to create sourcebuffers if mediasource opened
@@ -299,13 +301,13 @@ class BufferController extends EventHandler {
         }
       }
     }
-    this.hls.trigger(Event.BUFFER_CREATED, { tracks : tracks } );
+    this.hls.trigger(Event.BUFFER_CREATED, {tracks : tracks} );
   }
 
   onBufferAppending(data) {
     if (!this._needsFlush) {
       if (!this.segments) {
-        this.segments = [ data ];
+        this.segments = [data];
       } else {
         this.segments.push(data);
       }
@@ -336,8 +338,8 @@ class BufferController extends EventHandler {
     this.checkEos();
   }
 
- // if all source buffers are marked as ended, signal endOfStream() to MediaSource.
- checkEos() {
+  // if all source buffers are marked as ended, signal endOfStream() to MediaSource.
+  checkEos() {
     var sb = this.sourceBuffer, mediaSource = this.mediaSource;
     if (!mediaSource || mediaSource.readyState !== 'open') {
       this._needsEos = false;
@@ -361,7 +363,7 @@ class BufferController extends EventHandler {
       logger.warn('exception while calling mediaSource.endOfStream()');
     }
     this._needsEos = false;
- }
+  }
 
 
   onBufferFlushing(data) {

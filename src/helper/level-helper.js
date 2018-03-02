@@ -87,59 +87,59 @@ export function updateFragPTSDTS(details,frag,startPTS,endPTS,startDTS,endDTS) {
 }
 
 export function mergeDetails(oldDetails,newDetails) {
-    var start = Math.max(oldDetails.startSN,newDetails.startSN)-newDetails.startSN,
-        end = Math.min(oldDetails.endSN,newDetails.endSN)-newDetails.startSN,
-        delta = newDetails.startSN - oldDetails.startSN,
-        oldfragments = oldDetails.fragments,
-        newfragments = newDetails.fragments,
-        ccOffset =0,
-        PTSFrag;
+  var start = Math.max(oldDetails.startSN,newDetails.startSN)-newDetails.startSN,
+    end = Math.min(oldDetails.endSN,newDetails.endSN)-newDetails.startSN,
+    delta = newDetails.startSN - oldDetails.startSN,
+    oldfragments = oldDetails.fragments,
+    newfragments = newDetails.fragments,
+    ccOffset =0,
+    PTSFrag;
 
     // check if old/new playlists have fragments in common
-    if ( end < start) {
-      newDetails.PTSKnown = false;
-      return;
-    }
-    // loop through overlapping SN and update startPTS , cc, and duration if any found
-    for(var i = start ; i <= end ; i++) {
-      var oldFrag = oldfragments[delta+i],
-          newFrag = newfragments[i];
-      if (newFrag && oldFrag) {
-        ccOffset = oldFrag.cc - newFrag.cc;
-        if (!isNaN(oldFrag.startPTS)) {
-          newFrag.start = newFrag.startPTS = oldFrag.startPTS;
-          newFrag.endPTS = oldFrag.endPTS;
-          newFrag.duration = oldFrag.duration;
-          newFrag.backtracked = oldFrag.backtracked;
-          newFrag.dropped = oldFrag.dropped;
-          PTSFrag = newFrag;
-        }
-      }
-    }
-
-    if(ccOffset) {
-      logger.log(`discontinuity sliding from playlist, take drift into account`);
-      for(i = 0 ; i < newfragments.length ; i++) {
-        newfragments[i].cc += ccOffset;
-      }
-    }
-
-    // if at least one fragment contains PTS info, recompute PTS information for all fragments
-    if(PTSFrag) {
-      updateFragPTSDTS(newDetails,PTSFrag,PTSFrag.startPTS,PTSFrag.endPTS,PTSFrag.startDTS,PTSFrag.endDTS);
-    } else {
-      // ensure that delta is within oldfragments range
-      // also adjust sliding in case delta is 0 (we could have old=[50-60] and new=old=[50-61])
-      // in that case we also need to adjust start offset of all fragments
-      if (delta >= 0 && delta < oldfragments.length) {
-        // adjust start by sliding offset
-        var sliding = oldfragments[delta].start;
-        for(i = 0 ; i < newfragments.length ; i++) {
-          newfragments[i].start += sliding;
-        }
-      }
-    }
-    // if we are here, it means we have fragments overlapping between
-    // old and new level. reliable PTS info is thus relying on old level
-    newDetails.PTSKnown = oldDetails.PTSKnown;
+  if ( end < start) {
+    newDetails.PTSKnown = false;
+    return;
   }
+  // loop through overlapping SN and update startPTS , cc, and duration if any found
+  for(var i = start ; i <= end ; i++) {
+    var oldFrag = oldfragments[delta+i],
+      newFrag = newfragments[i];
+    if (newFrag && oldFrag) {
+      ccOffset = oldFrag.cc - newFrag.cc;
+      if (!isNaN(oldFrag.startPTS)) {
+        newFrag.start = newFrag.startPTS = oldFrag.startPTS;
+        newFrag.endPTS = oldFrag.endPTS;
+        newFrag.duration = oldFrag.duration;
+        newFrag.backtracked = oldFrag.backtracked;
+        newFrag.dropped = oldFrag.dropped;
+        PTSFrag = newFrag;
+      }
+    }
+  }
+
+  if(ccOffset) {
+    logger.log('discontinuity sliding from playlist, take drift into account');
+    for(i = 0 ; i < newfragments.length ; i++) {
+      newfragments[i].cc += ccOffset;
+    }
+  }
+
+  // if at least one fragment contains PTS info, recompute PTS information for all fragments
+  if(PTSFrag) {
+    updateFragPTSDTS(newDetails,PTSFrag,PTSFrag.startPTS,PTSFrag.endPTS,PTSFrag.startDTS,PTSFrag.endDTS);
+  } else {
+    // ensure that delta is within oldfragments range
+    // also adjust sliding in case delta is 0 (we could have old=[50-60] and new=old=[50-61])
+    // in that case we also need to adjust start offset of all fragments
+    if (delta >= 0 && delta < oldfragments.length) {
+      // adjust start by sliding offset
+      var sliding = oldfragments[delta].start;
+      for(i = 0 ; i < newfragments.length ; i++) {
+        newfragments[i].start += sliding;
+      }
+    }
+  }
+  // if we are here, it means we have fragments overlapping between
+  // old and new level. reliable PTS info is thus relying on old level
+  newDetails.PTSKnown = oldDetails.PTSKnown;
+}

@@ -20,11 +20,11 @@ class SubtitleTrackController extends EventHandler {
 
   constructor(hls) {
     super(hls,
-               Event.MEDIA_ATTACHED,
-               Event.MEDIA_DETACHING,
-               Event.MANIFEST_LOADING,
-               Event.MANIFEST_LOADED,
-               Event.SUBTITLE_TRACK_LOADED);
+      Event.MEDIA_ATTACHED,
+      Event.MEDIA_DETACHING,
+      Event.MANIFEST_LOADING,
+      Event.MANIFEST_LOADED,
+      Event.SUBTITLE_TRACK_LOADED);
     this.tracks = [];
     this.trackId = -1;
     this.media = undefined;
@@ -172,7 +172,7 @@ class SubtitleTrackController extends EventHandler {
 
   /** get index of the selected subtitle track (index in subtitle track lists) **/
   get subtitleTrack() {
-   return this.trackId;
+    return this.trackId;
   }
 
   /** select a subtitle track, based on its index in subtitle track lists**/
@@ -182,7 +182,7 @@ class SubtitleTrackController extends EventHandler {
     }
   }
 
- setSubtitleTrackInternal(newId) {
+  setSubtitleTrackInternal(newId) {
     // check if level idx is valid
     if (newId < -1 || newId >= this.tracks.length) {
       return;

@@ -42,7 +42,7 @@ class XhrLoader {
   loadInternal() {
     var xhr, context = this.context;
     xhr = this.loader = new XMLHttpRequest();
-    
+
     let stats = this.stats;
     stats.tfirst = 0;
     stats.loaded = 0;
@@ -64,7 +64,7 @@ class XhrLoader {
       }
     } catch (e) {
       // IE11 throws an exception on xhr.open if attempting to access an HTTP resource over HTTPS
-      this.callbacks.onError({ code : xhr.status, text: e.message }, context, xhr);
+      this.callbacks.onError({code : xhr.status, text: e.message}, context, xhr);
       return;
     }
 
@@ -82,10 +82,10 @@ class XhrLoader {
 
   readystatechange(event) {
     var xhr = event.currentTarget,
-        readyState = xhr.readyState,
-        stats = this.stats,
-        context = this.context,
-        config = this.config;
+      readyState = xhr.readyState,
+      stats = this.stats,
+      context = this.context,
+      config = this.config;
 
     // don't proceed if xhr has been aborted
     if (stats.aborted) {
@@ -113,13 +113,13 @@ class XhrLoader {
             len = data.length;
           }
           stats.loaded = stats.total = len;
-          let response = { url : xhr.responseURL, data : data };
+          let response = {url : xhr.responseURL, data : data};
           this.callbacks.onSuccess(response, stats, context, xhr);
         } else {
-            // if max nb of retries reached or if http status between 400 and 499 (such error cannot be recovered, retrying is useless), return error
+          // if max nb of retries reached or if http status between 400 and 499 (such error cannot be recovered, retrying is useless), return error
           if (stats.retry >= config.maxRetry || (status >= 400 && status < 499)) {
             logger.error(`${status} while loading ${context.url}` );
-            this.callbacks.onError({ code : status, text : xhr.statusText}, context, xhr);
+            this.callbacks.onError({code : status, text : xhr.statusText}, context, xhr);
           } else {
             // retry
             logger.warn(`${status} while loading ${context.url}, retrying in ${this.retryDelay}...`);
@@ -146,7 +146,7 @@ class XhrLoader {
 
   loadprogress(event) {
     var xhr = event.currentTarget,
-        stats = this.stats;
+      stats = this.stats;
 
     stats.loaded = event.loaded;
     if (event.lengthComputable) {

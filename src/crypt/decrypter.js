@@ -8,7 +8,7 @@ import {logger} from '../utils/logger';
 /*globals self: false */
 
 class Decrypter {
-  constructor(observer, config, { removePKCS7Padding = true } = {}) {
+  constructor(observer, config, {removePKCS7Padding = true} = {}) {
     this.logEnabled = true;
     this.observer = observer;
     this.config = config;
@@ -39,8 +39,7 @@ class Decrypter {
       }
       decryptor.expandKey(key);
       callback(decryptor.decrypt(data, 0, iv, this.removePKCS7Padding));
-    }
-    else {
+    } else {
       if (this.logEnabled) {
         logger.log('WebCrypto AES decrypt');
         this.logEnabled = false;
@@ -56,12 +55,12 @@ class Decrypter {
           // decrypt using web crypto
           let crypto = new AESCrypto(subtle,iv);
           crypto.decrypt(data, aesKey).
-          catch ((err) => {
-            this.onWebCryptoError(err, data, key, iv, callback);
-          }).
-          then((result) => {
-            callback(result);
-          });
+            catch ((err) => {
+              this.onWebCryptoError(err, data, key, iv, callback);
+            }).
+            then((result) => {
+              callback(result);
+            });
         }).
         catch ((err) => {
           this.onWebCryptoError(err, data, key, iv, callback);
@@ -75,8 +74,7 @@ class Decrypter {
       this.disableWebCrypto = true;
       this.logEnabled = true;
       this.decrypt(data, key, iv, callback);
-    }
-    else {
+    } else {
       logger.error(`decrypting error : ${err.message}`);
       this.observer.trigger(Event.ERROR, {type : ErrorTypes.MEDIA_ERROR, details : ErrorDetails.FRAG_DECRYPT_ERROR, fatal : true, reason : err.message});
     }

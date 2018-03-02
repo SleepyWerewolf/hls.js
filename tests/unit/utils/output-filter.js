@@ -8,17 +8,17 @@ describe('OutputFilter', () => {
     let captionsTrackCalled = false;
     return {
       addCues: (trackName, startTime, endTime, screen) => {
-        lastCueArguments = { trackName, startTime, endTime, screen };
+        lastCueArguments = {trackName, startTime, endTime, screen};
         callCount++;
       },
-      createCaptionsTrack: (track) => { 
+      createCaptionsTrack: (track) => {
         captionsTrackCalled = true;
       },
       getCallCount: () => callCount,
       getLastCueAdded: () => lastCueArguments,
       didCaptionsTrackInvoke: () => captionsTrackCalled,
-    }
-  }
+    };
+  };
 
   let timelineController, outputFilter;
 

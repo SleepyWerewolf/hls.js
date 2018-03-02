@@ -1,4 +1,4 @@
-const assert = require("assert");
+const assert = require('assert');
 import BufferHelper from '../../../src/helper/buffer-helper';
 
 function createMockBuffer(buffered) {
@@ -31,7 +31,7 @@ describe('BufferHelper', function() {
     it('should return true if media.buffered throw error', function() {
       const invalidMedia = {
         get buffered() {
-          throw new Error("InvalidStateError");
+          throw new Error('InvalidStateError');
         }
       };
       assert.equal(BufferHelper.isBuffered(invalidMedia, 0), false);
@@ -50,8 +50,8 @@ describe('BufferHelper', function() {
       assert.equal(BufferHelper.isBuffered(media, 2.1), false);
     });
   });
-  describe("bufferInfo", () => {
-    it("should return found buffer info when maxHoleDuration is 0", function() {
+  describe('bufferInfo', () => {
+    it('should return found buffer info when maxHoleDuration is 0', function() {
       // |////////|__________|////////////////|
       // 0       0.5         1               2.0
       const media = {
@@ -94,7 +94,7 @@ describe('BufferHelper', function() {
         nextStart: undefined
       });
     });
-    it("should return found buffer info when maxHoleDuration is 0.5", function() {
+    it('should return found buffer info when maxHoleDuration is 0.5', function() {
       // |////////|__________|////////////////|
       // 0       0.5         1               2.0
       const media = {

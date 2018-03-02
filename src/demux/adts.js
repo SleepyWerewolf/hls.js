@@ -1,8 +1,8 @@
 /**
  *  ADTS parser helper
  */
-import { logger } from '../utils/logger';
-import { ErrorTypes, ErrorDetails } from '../errors';
+import {logger} from '../utils/logger';
+import {ErrorTypes, ErrorDetails} from '../errors';
 
 export function getAudioConfig(observer, data, offset, audioCodec) {
   var adtsObjectType, // :int
@@ -24,7 +24,7 @@ export function getAudioConfig(observer, data, offset, audioCodec) {
   adtsObjectType = ((data[offset + 2] & 0xC0) >>> 6) + 1;
   adtsSampleingIndex = ((data[offset + 2] & 0x3C) >>> 2);
   if (adtsSampleingIndex > adtsSampleingRates.length - 1) {
-    observer.trigger(Event.ERROR, { type: ErrorTypes.MEDIA_ERROR, details: ErrorDetails.FRAG_PARSING_ERROR, fatal: true, reason: `invalid ADTS sampling index:${adtsSampleingIndex}` });
+    observer.trigger(Event.ERROR, {type: ErrorTypes.MEDIA_ERROR, details: ErrorDetails.FRAG_PARSING_ERROR, fatal: true, reason: `invalid ADTS sampling index:${adtsSampleingIndex}`});
     return;
   }
   adtsChanelConfig = ((data[offset + 2] & 0x01) << 2);
@@ -125,7 +125,7 @@ export function getAudioConfig(observer, data, offset, audioCodec) {
     config[2] |= 2 << 2;
     config[3] = 0;
   }
-  return { config: config, samplerate: adtsSampleingRates[adtsSampleingIndex], channelCount: adtsChanelConfig, codec: ('mp4a.40.' + adtsObjectType), manifestCodec: manifestCodec };
+  return {config: config, samplerate: adtsSampleingRates[adtsSampleingIndex], channelCount: adtsChanelConfig, codec: ('mp4a.40.' + adtsObjectType), manifestCodec: manifestCodec};
 }
 
 export function isHeaderPattern(data, offset) {
@@ -133,7 +133,7 @@ export function isHeaderPattern(data, offset) {
 }
 
 export function getHeaderLength(data, offset) {
-  return (!!(data[offset + 1] & 0x01) ? 7 : 9);
+  return (data[offset + 1] & 0x01 ? 7 : 9);
 }
 
 export function getFullFrameLength(data, offset) {
@@ -200,7 +200,7 @@ export function parseFrameHeader(data, offset, pts, frameIndex, frameDuration) {
   if ((frameLength > 0) && ((offset + headerLength + frameLength) <= length)) {
     stamp = pts + frameIndex * frameDuration;
     //logger.log(`AAC frame, offset/length/total/pts:${offset+headerLength}/${frameLength}/${data.byteLength}/${(stamp/90).toFixed(0)}`);
-    return { headerLength, frameLength, stamp };
+    return {headerLength, frameLength, stamp};
   }
 
   return undefined;

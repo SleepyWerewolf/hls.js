@@ -1,4 +1,4 @@
-import Event from "../../../src/events";
+import Event from '../../../src/events';
 
 const assert = require('assert');
 
@@ -19,7 +19,7 @@ function createMockFragment(data, types) {
   data._elementaryStreams = new Set(types);
   data.hasElementaryStream = (type) => {
     return data._elementaryStreams.has(type) === true;
-  }
+  };
   return data;
 }
 
@@ -29,7 +29,7 @@ function createMockFragment(data, types) {
  * @param {Fragment} fragment
  */
 function loadFragment(hls, fragment){
-  hls.trigger(Event.FRAG_LOADED, { frag: fragment });
+  hls.trigger(Event.FRAG_LOADED, {frag: fragment});
 }
 
 /**
@@ -39,7 +39,7 @@ function loadFragment(hls, fragment){
  */
 function loadFragmentAndBuffered(hls, fragment) {
   loadFragment(hls, fragment);
-  hls.trigger(Event.FRAG_BUFFERED, { frag: fragment });
+  hls.trigger(Event.FRAG_BUFFERED, {frag: fragment});
 }
 describe('FragmentTracker', () => {
   describe('getPartialFragment', () => {
@@ -56,7 +56,7 @@ describe('FragmentTracker', () => {
       type: 'main'
     }, ['audio', 'video']);
 
-    hls.trigger(Event.FRAG_LOADED, { frag: fragment });
+    hls.trigger(Event.FRAG_LOADED, {frag: fragment});
 
     buffered = createMockBuffer([
       {
@@ -68,9 +68,9 @@ describe('FragmentTracker', () => {
     timeRanges = {};
     timeRanges['video'] = buffered;
     timeRanges['audio'] = buffered;
-    hls.trigger(Event.BUFFER_APPENDED, { timeRanges });
+    hls.trigger(Event.BUFFER_APPENDED, {timeRanges});
 
-    hls.trigger(Event.FRAG_BUFFERED, { stats: { aborted: true }, id : 'main', frag: fragment });
+    hls.trigger(Event.FRAG_BUFFERED, {stats: {aborted: true}, id : 'main', frag: fragment});
 
     it('detects fragments that partially loaded', () => {
       // Get the partial fragment at a time
@@ -102,7 +102,7 @@ describe('FragmentTracker', () => {
         level: 0,
         type: 'main'
       }, ['audio', 'video']);
-      hls.trigger(Event.FRAG_LOADED, { frag: fragment });
+      hls.trigger(Event.FRAG_LOADED, {frag: fragment});
     };
 
     it('detects fragments that never loaded', () => {
@@ -122,9 +122,9 @@ describe('FragmentTracker', () => {
       timeRanges = {};
       timeRanges['video'] = buffered;
       timeRanges['audio'] = buffered;
-      hls.trigger(Event.BUFFER_APPENDED, { timeRanges });
+      hls.trigger(Event.BUFFER_APPENDED, {timeRanges});
 
-      hls.trigger(Event.FRAG_BUFFERED, { stats: { aborted: true }, id : 'main', frag: fragment });
+      hls.trigger(Event.FRAG_BUFFERED, {stats: {aborted: true}, id : 'main', frag: fragment});
 
       assert.strictEqual(fragmentTracker.getState(fragment), FragmentState.OK);
     });
@@ -140,9 +140,9 @@ describe('FragmentTracker', () => {
       timeRanges = {};
       timeRanges['video'] = buffered;
       timeRanges['audio'] = buffered;
-      hls.trigger(Event.BUFFER_APPENDED, { timeRanges });
+      hls.trigger(Event.BUFFER_APPENDED, {timeRanges});
 
-      hls.trigger(Event.FRAG_BUFFERED, { stats: { aborted: true }, id : 'main', frag: fragment });
+      hls.trigger(Event.FRAG_BUFFERED, {stats: {aborted: true}, id : 'main', frag: fragment});
 
       assert.strictEqual(fragmentTracker.getState(fragment), FragmentState.PARTIAL);
     });
@@ -158,9 +158,9 @@ describe('FragmentTracker', () => {
       timeRanges = {};
       timeRanges['video'] = buffered;
       timeRanges['audio'] = buffered;
-      hls.trigger(Event.BUFFER_APPENDED, { timeRanges });
+      hls.trigger(Event.BUFFER_APPENDED, {timeRanges});
 
-      hls.trigger(Event.FRAG_BUFFERED, { stats: { aborted: true }, id : 'main', frag: fragment });
+      hls.trigger(Event.FRAG_BUFFERED, {stats: {aborted: true}, id : 'main', frag: fragment});
 
       assert.strictEqual(fragmentTracker.getState(fragment), FragmentState.PARTIAL);
 
@@ -174,7 +174,7 @@ describe('FragmentTracker', () => {
       timeRanges = {};
       timeRanges['video'] = buffered;
       timeRanges['audio'] = buffered;
-      hls.trigger(Event.BUFFER_APPENDED, { timeRanges });
+      hls.trigger(Event.BUFFER_APPENDED, {timeRanges});
 
       assert.strictEqual(fragmentTracker.getState(fragment), FragmentState.NOT_LOADED);
     });
@@ -305,7 +305,7 @@ describe('FragmentTracker', () => {
         level: 1,
         type: 'main'
       }, ['audio', 'video']);
-      hls.trigger(Event.FRAG_LOADED, { frag: fragment });
+      hls.trigger(Event.FRAG_LOADED, {frag: fragment});
 
       timeRanges = {};
       timeRanges['video'] = createMockBuffer([
@@ -320,9 +320,9 @@ describe('FragmentTracker', () => {
           endPTS: 2
         },
       ]);
-      hls.trigger(Event.BUFFER_APPENDED, { timeRanges });
+      hls.trigger(Event.BUFFER_APPENDED, {timeRanges});
 
-      hls.trigger(Event.FRAG_BUFFERED, { stats: { aborted: true }, id : 'main', frag: fragment });
+      hls.trigger(Event.FRAG_BUFFERED, {stats: {aborted: true}, id : 'main', frag: fragment});
 
       assert.strictEqual(fragmentTracker.getState(fragment), FragmentState.PARTIAL);
     });
@@ -335,7 +335,7 @@ describe('FragmentTracker', () => {
         level: 1,
         type: 'main'
       }, ['audio', 'video']);
-      hls.trigger(Event.FRAG_LOADED, { frag: fragment });
+      hls.trigger(Event.FRAG_LOADED, {frag: fragment});
 
       timeRanges = {};
       timeRanges['video'] = createMockBuffer([
@@ -350,9 +350,9 @@ describe('FragmentTracker', () => {
           endPTS: 2
         },
       ]);
-      hls.trigger(Event.BUFFER_APPENDED, { timeRanges });
+      hls.trigger(Event.BUFFER_APPENDED, {timeRanges});
 
-      hls.trigger(Event.FRAG_BUFFERED, { stats: { aborted: true }, id : 'main', frag: fragment });
+      hls.trigger(Event.FRAG_BUFFERED, {stats: {aborted: true}, id : 'main', frag: fragment});
 
       assert.strictEqual(fragmentTracker.getState(fragment), FragmentState.PARTIAL);
     });
@@ -365,7 +365,7 @@ describe('FragmentTracker', () => {
         level: 1,
         type: 'audio'
       }, ['audio']);
-      hls.trigger(Event.FRAG_LOADED, { frag: fragment });
+      hls.trigger(Event.FRAG_LOADED, {frag: fragment});
 
       timeRanges = {};
       timeRanges['video'] = createMockBuffer([
@@ -380,15 +380,15 @@ describe('FragmentTracker', () => {
           endPTS: 2
         },
       ]);
-      hls.trigger(Event.BUFFER_APPENDED, { timeRanges });
+      hls.trigger(Event.BUFFER_APPENDED, {timeRanges});
 
-      hls.trigger(Event.FRAG_BUFFERED, { stats: { aborted: true }, id : 'main', frag: fragment });
+      hls.trigger(Event.FRAG_BUFFERED, {stats: {aborted: true}, id : 'main', frag: fragment});
 
       assert.strictEqual(fragmentTracker.getState(fragment), FragmentState.OK);
     });
   });
 
-  describe("removeFragment", () => {
+  describe('removeFragment', () => {
     /** @type {Hls} */
     let hls;
     /** @type {FragmentTracker} */
@@ -397,7 +397,7 @@ describe('FragmentTracker', () => {
       hls = new Hls({});
       fragmentTracker = new FragmentTracker(hls);
     });
-    it("should remove fragment", () => {
+    it('should remove fragment', () => {
       const fragment = createMockFragment({
         startPTS: 0,
         endPTS: 1,
@@ -414,7 +414,7 @@ describe('FragmentTracker', () => {
       assert.strictEqual(fragmentTracker.hasFragment(fragment), false);
     });
   });
-  describe("removeAllFragments", () => {
+  describe('removeAllFragments', () => {
     /** @type {Hls} */
     let hls;
     /** @type {FragmentTracker} */
@@ -423,7 +423,7 @@ describe('FragmentTracker', () => {
       hls = new Hls({});
       fragmentTracker = new FragmentTracker(hls);
     });
-    it("should remove all fragments", () => {
+    it('should remove all fragments', () => {
       const fragments = [
         // 0-1
         createMockFragment({

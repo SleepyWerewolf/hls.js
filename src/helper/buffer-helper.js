@@ -37,17 +37,17 @@ const BufferHelper = {
         return this.bufferedInfo(buffered,pos,maxHoleDuration);
       }
     } catch(error) {
-        // this is to catch
-        // InvalidStateError: Failed to read the 'buffered' property from 'SourceBuffer':
-        // This SourceBuffer has been removed from the parent media source
+      // this is to catch
+      // InvalidStateError: Failed to read the 'buffered' property from 'SourceBuffer':
+      // This SourceBuffer has been removed from the parent media source
     }
     return {len: 0, start: pos, end: pos, nextStart : undefined} ;
   },
 
   bufferedInfo : function(buffered,pos,maxHoleDuration) {
     var buffered2 = [],
-        // bufferStart and bufferEnd are buffer boundaries around current video position
-        bufferLen,bufferStart, bufferEnd,bufferStartNext,i;
+      // bufferStart and bufferEnd are buffer boundaries around current video position
+      bufferLen,bufferStart, bufferEnd,bufferStartNext,i;
     // sort on buffer.start/smaller end (IE does not always return sorted buffered range)
     buffered.sort(function (a, b) {
       var diff = a.start - b.start;
@@ -84,7 +84,7 @@ const BufferHelper = {
     }
     for (i = 0, bufferLen = 0, bufferStart = bufferEnd = pos; i < buffered2.length; i++) {
       var start =  buffered2[i].start,
-          end = buffered2[i].end;
+        end = buffered2[i].end;
       //logger.log('buf start/end:' + buffered.start(i) + '/' + buffered.end(i));
       if ((pos + maxHoleDuration) >= start && pos < end) {
         // play position is inside this buffer TimeRange, retrieve end of buffer position and buffer length

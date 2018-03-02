@@ -2,14 +2,14 @@
  * SAMPLE-AES decrypter
 */
 
- import Decrypter from '../crypt/decrypter';
+import Decrypter from '../crypt/decrypter';
 
- class SampleAesDecrypter {
+class SampleAesDecrypter {
 
   constructor(observer, config, decryptdata, discardEPB) {
     this.decryptdata = decryptdata;
     this.discardEPB = discardEPB;
-    this.decrypter = new Decrypter(observer, config, { removePKCS7Padding: false });
+    this.decrypter = new Decrypter(observer, config, {removePKCS7Padding: false});
   }
 
   decryptBuffer(encryptedData, callback) {
@@ -21,8 +21,8 @@
     let curUnit = samples[sampleIndex].unit;
     let encryptedData = curUnit.subarray(16, curUnit.length - curUnit.length % 16);
     let encryptedBuffer = encryptedData.buffer.slice(
-       encryptedData.byteOffset,
-       encryptedData.byteOffset + encryptedData.length);
+      encryptedData.byteOffset,
+      encryptedData.byteOffset + encryptedData.length);
 
     let localthis = this;
     this.decryptBuffer(encryptedBuffer, function (decryptedData) {
@@ -118,6 +118,6 @@
       }
     }
   }
- }
+}
 
- export default SampleAesDecrypter;
+export default SampleAesDecrypter;

@@ -36,7 +36,7 @@ export default class M3U8Parser {
 
     let matchingGroup = null;
 
-    for (let i = 0; i < groups.length; i ++) {
+    for (let i = 0; i < groups.length; i++) {
       const group = groups[i];
       if (group.id === mediaGroupId) {
         matchingGroup = group;
@@ -59,7 +59,7 @@ export default class M3U8Parser {
   }
 
   static resolve(url, baseUrl) {
-    return URLToolkit.buildAbsoluteURL(baseUrl, url, { alwaysNormalize: true });
+    return URLToolkit.buildAbsoluteURL(baseUrl, url, {alwaysNormalize: true});
   }
 
   static parseMasterPlaylist(string, baseurl) {
@@ -128,7 +128,7 @@ export default class M3U8Parser {
         }
         media.lang = attrs.LANGUAGE;
         if (!media.name) {
-            media.name = media.lang;
+          media.name = media.lang;
         }
         if (audioGroups.length) {
           const groupCodec = M3U8Parser.findGroup(audioGroups, media.groupId);
@@ -143,14 +143,14 @@ export default class M3U8Parser {
 
   static parseLevelPlaylist(string, baseurl, id, type) {
     var currentSN = 0,
-        totalduration = 0,
-        level = {type: null, version: null, url: baseurl, fragments: [], live: true, startSN: 0},
-        levelkey = new LevelKey(),
-        cc = 0,
-        prevFrag = null,
-        frag = new Fragment(),
-        result,
-        i;
+      totalduration = 0,
+      level = {type: null, version: null, url: baseurl, fragments: [], live: true, startSN: 0},
+      levelkey = new LevelKey(),
+      cc = 0,
+      prevFrag = null,
+      frag = new Fragment(),
+      result,
+      i;
 
     LEVEL_PLAYLIST_REGEX_FAST.lastIndex = 0;
 
@@ -161,7 +161,7 @@ export default class M3U8Parser {
         // avoid sliced strings    https://github.com/video-dev/hls.js/issues/939
         const title = (' ' + result[2]).slice(1);
         frag.title = title ? title : null;
-        frag.tagList.push(title ? [ 'INF',duration,title ] : [ 'INF',duration ]);
+        frag.tagList.push(title ? ['INF',duration,title] : ['INF',duration]);
       } else if (result[3]) { // url
         if (!isNaN(frag.duration)) {
           const sn = currentSN++;
@@ -186,8 +186,8 @@ export default class M3U8Parser {
 				  frag.pdt = Date.parse(level.programDateTime);
 			  }
 			  frag.endPdt = frag.pdt + (frag.duration * 1000);
-		  }		  
-		  
+		  }
+
           level.fragments.push(frag);
           prevFrag = frag;
           totalduration += frag.duration;
@@ -222,77 +222,77 @@ export default class M3U8Parser {
         const value2 = (' ' + result[i+2]).slice(1);
 
         switch (result[i]) {
-          case '#':
-            frag.tagList.push(value2 ? [ value1,value2 ] : [ value1 ]);
-            break;
-          case 'PLAYLIST-TYPE':
-            level.type = value1.toUpperCase();
-            break;
-          case 'MEDIA-SEQUENCE':
-            currentSN = level.startSN = parseInt(value1);
-            break;
-          case 'TARGETDURATION':
-            level.targetduration = parseFloat(value1);
-            break;
-          case 'VERSION':
-            level.version = parseInt(value1);
-            break;
-          case 'EXTM3U':
-            break;
-          case 'ENDLIST':
-            level.live = false;
-            break;
-          case 'DIS':
-            cc++;
-            frag.tagList.push(['DIS']);
-            break;
-          case 'DISCONTINUITY-SEQ':
-            cc = parseInt(value1);
-            break;
-          case 'KEY':
-            // https://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.4
-            var decryptparams = value1;
-            var keyAttrs = new AttrList(decryptparams);
-            var decryptmethod = keyAttrs.enumeratedString('METHOD'),
-                decrypturi = keyAttrs.URI,
-                decryptiv = keyAttrs.hexadecimalInteger('IV');
-            if (decryptmethod) {
-              levelkey = new LevelKey();
-              if ((decrypturi) && (['AES-128', 'SAMPLE-AES', 'SAMPLE-AES-CENC'].indexOf(decryptmethod) >= 0)) {
+        case '#':
+          frag.tagList.push(value2 ? [value1,value2] : [value1]);
+          break;
+        case 'PLAYLIST-TYPE':
+          level.type = value1.toUpperCase();
+          break;
+        case 'MEDIA-SEQUENCE':
+          currentSN = level.startSN = parseInt(value1);
+          break;
+        case 'TARGETDURATION':
+          level.targetduration = parseFloat(value1);
+          break;
+        case 'VERSION':
+          level.version = parseInt(value1);
+          break;
+        case 'EXTM3U':
+          break;
+        case 'ENDLIST':
+          level.live = false;
+          break;
+        case 'DIS':
+          cc++;
+          frag.tagList.push(['DIS']);
+          break;
+        case 'DISCONTINUITY-SEQ':
+          cc = parseInt(value1);
+          break;
+        case 'KEY':
+          // https://tools.ietf.org/html/draft-pantos-http-live-streaming-08#section-3.4.4
+          var decryptparams = value1;
+          var keyAttrs = new AttrList(decryptparams);
+          var decryptmethod = keyAttrs.enumeratedString('METHOD'),
+            decrypturi = keyAttrs.URI,
+            decryptiv = keyAttrs.hexadecimalInteger('IV');
+          if (decryptmethod) {
+            levelkey = new LevelKey();
+            if ((decrypturi) && (['AES-128', 'SAMPLE-AES', 'SAMPLE-AES-CENC'].indexOf(decryptmethod) >= 0)) {
 
-                levelkey.method = decryptmethod;
-                // URI to get the key
-                levelkey.baseuri = baseurl;
-                levelkey.reluri = decrypturi;
-                levelkey.key = null;
-                // Initialization Vector (IV)
-                levelkey.iv = decryptiv;
-              }
+              levelkey.method = decryptmethod;
+              // URI to get the key
+              levelkey.baseuri = baseurl;
+              levelkey.reluri = decrypturi;
+              levelkey.key = null;
+              // Initialization Vector (IV)
+              levelkey.iv = decryptiv;
             }
-            break;
-          case 'START':
-            let startParams = value1;
-            let startAttrs = new AttrList(startParams);
-            let startTimeOffset = startAttrs.decimalFloatingPoint('TIME-OFFSET');
-            //TIME-OFFSET can be 0
-            if ( !isNaN(startTimeOffset) ) {
-              level.startTimeOffset = startTimeOffset;
-            }
-            break;
-          case 'MAP':
-            let mapAttrs = new AttrList(value1);
-            frag.relurl = mapAttrs.URI;
-            frag.rawByteRange = mapAttrs.BYTERANGE;
-            frag.baseurl = baseurl;
-            frag.level = id;
-            frag.type = type;
-            frag.sn = 'initSegment';
-            level.initSegment = frag;
-            frag = new Fragment();
-            break;
-          default:
-            logger.warn(`line parsed but not handled: ${result}`);
-            break;
+          }
+          break;
+        case 'START':
+          let startParams = value1;
+          let startAttrs = new AttrList(startParams);
+          let startTimeOffset = startAttrs.decimalFloatingPoint('TIME-OFFSET');
+          //TIME-OFFSET can be 0
+          if ( !isNaN(startTimeOffset) ) {
+            level.startTimeOffset = startTimeOffset;
+          }
+          break;
+        case 'MAP':
+          let mapAttrs = new AttrList(value1);
+          frag.relurl = mapAttrs.URI;
+          frag.rawByteRange = mapAttrs.BYTERANGE;
+          frag.baseurl = baseurl;
+          frag.level = id;
+          frag.type = type;
+          frag.sn = 'initSegment';
+          level.initSegment = frag;
+          frag = new Fragment();
+          break;
+        default:
+          logger.warn(`line parsed but not handled: ${result}`);
+          break;
         }
       }
     }

@@ -11,7 +11,7 @@ export default class LevelKey {
 
   get uri() {
     if (!this._uri && this.reluri) {
-      this._uri = URLToolkit.buildAbsoluteURL(this.baseuri, this.reluri, { alwaysNormalize: true });
+      this._uri = URLToolkit.buildAbsoluteURL(this.baseuri, this.reluri, {alwaysNormalize: true});
     }
     return this._uri;
   }

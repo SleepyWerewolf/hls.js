@@ -1,4 +1,4 @@
-import { removePadding } from '../../../src/crypt/aes-decryptor';
+import {removePadding} from '../../../src/crypt/aes-decryptor';
 const assert = require('assert');
 
 describe('AESDecryptor', () => {

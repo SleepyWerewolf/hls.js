@@ -19,8 +19,7 @@ function retry(cb, numAttempts, interval) {
         if (++attempts >= numAttempts) {
           // reject with the last error
           reject(e);
-        }
-        else {
+        } else {
           setTimeout(attempt, interval);
         }
       });
@@ -45,17 +44,16 @@ if (onTravis) {
   }
   var UA = process.env.UA;
   if (!UA) {
-    throw new Error('No test browser name.')
+    throw new Error('No test browser name.');
   }
   var OS = process.env.OS;
   if (!OS) {
-    throw new Error('No test browser platform.')
+    throw new Error('No test browser platform.');
   }
   browserConfig.name = UA;
   browserConfig.platform = OS;
-}
-else {
-  browserConfig.name = "chrome";
+} else {
+  browserConfig.name = 'chrome';
 }
 var browserDescription = browserConfig.name;
 if (browserConfig.version) {
@@ -81,24 +79,23 @@ describe('testing hls.js playback in the browser on "'+browserDescription+'"', f
       capabilities.accessKey = process.env.SAUCE_ACCESS_KEY;
       capabilities.avoidProxy = true;
       this.browser = new webdriver.Builder().usingServer('http://'+process.env.SAUCE_USERNAME+':'+process.env.SAUCE_ACCESS_KEY+'@ondemand.saucelabs.com:80/wd/hub');
-    }
-    else {
+    } else {
       this.browser = new webdriver.Builder();
     }
     this.browser = this.browser.withCapabilities(capabilities).build();
     this.browser.manage().timeouts().setScriptTimeout(75000);
-    console.log("Retrieving web driver session...");
+    console.log('Retrieving web driver session...');
     return this.browser.getSession().then(function(session) {
-      console.log("Web driver session id: "+session.getId());
+      console.log('Web driver session id: '+session.getId());
       if (onTravis) {
-        console.log("Job URL: https://saucelabs.com/jobs/"+session.getId());
+        console.log('Job URL: https://saucelabs.com/jobs/'+session.getId());
       }
       return retry(function() {
-        console.log("Loading test page...");
+        console.log('Loading test page...');
         return this.browser.get('http://127.0.0.1:8000/tests/functional/auto/hlsjs.html').then(function() {
           // ensure that the page has loaded and we haven't got an error page
           return this.browser.findElement(webdriver.By.css('body#hlsjs-functional-tests')).catch(function(e) {
-            console.log("CSS not found");
+            console.log('CSS not found');
             this.browser.getPageSource().then(function(source){
               console.log(source);
               return Promise.reject(e);
@@ -106,7 +103,7 @@ describe('testing hls.js playback in the browser on "'+browserDescription+'"', f
           }.bind(this));
         }.bind(this));
       }.bind(this)).then(function() {
-        console.log("Test page loaded.");
+        console.log('Test page loaded.');
       });
     }.bind(this), function(err) {
       console.log('error while Retrieving browser session:' + err);
@@ -120,9 +117,9 @@ describe('testing hls.js playback in the browser on "'+browserDescription+'"', f
       console.log('logs');
       console.log(return_value);
       console.log('travis_fold:end:debug_logs');
-      console.log("Quitting browser...");
+      console.log('Quitting browser...');
       return browser.quit().then(function() {
-        console.log("Browser quit.");
+        console.log('Browser quit.');
       });
     });
   });
@@ -133,13 +130,13 @@ describe('testing hls.js playback in the browser on "'+browserDescription+'"', f
         var callback = arguments[arguments.length - 1];
         startStream(url, config, callback);
         video.onloadeddata = function() {
-          callback({ code : 'loadeddata', logs : logString});
+          callback({code : 'loadeddata', logs : logString});
         };
       }, url ,config).then(function(result) {
         assert.strictEqual(result.code, 'loadeddata');
       });
-    }
-  }
+    };
+  };
 
   const testSmoothSwitch = function(url, config) {
     return function() {
@@ -150,13 +147,13 @@ describe('testing hls.js playback in the browser on "'+browserDescription+'"', f
           switchToHighestLevel('next');
         };
         window.setTimeout(function() {
-          callback({ code : video.readyState, logs : logString});
+          callback({code : video.readyState, logs : logString});
         }, 12000);
       }, url ,config).then(function(result) {
         assert.strictEqual(result.code, 4);
       });
-    }
-  }
+    };
+  };
 
   const testSeekOnLive = function(url, config) {
     return function() {
@@ -164,16 +161,18 @@ describe('testing hls.js playback in the browser on "'+browserDescription+'"', f
         var callback = arguments[arguments.length - 1];
         startStream(url, config, callback);
         video.onloadeddata = function() {
-          window.setTimeout(function() { video.currentTime = video.duration - 5;}, 5000);
+          window.setTimeout(function() {
+            video.currentTime = video.duration - 5;
+          }, 5000);
         };
         video.onseeked = function() {
-          callback({ code : 'seeked', logs : logString});
+          callback({code : 'seeked', logs : logString});
         };
       }, url ,config).then(function(result) {
         assert.strictEqual(result.code, 'seeked');
       });
-    }
-  }
+    };
+  };
 
   const testSeekOnVOD = function(url, config) {
     return function() {
@@ -181,16 +180,18 @@ describe('testing hls.js playback in the browser on "'+browserDescription+'"', f
         var callback = arguments[arguments.length - 1];
         startStream(url, config, callback);
         video.onloadeddata = function() {
-          window.setTimeout(function() { video.currentTime = video.duration - 5;}, 5000);
+          window.setTimeout(function() {
+            video.currentTime = video.duration - 5;
+          }, 5000);
         };
         video.onended = function() {
-          callback({ code : 'ended', logs : logString});
+          callback({code : 'ended', logs : logString});
         };
       }, url ,config).then(function(result) {
         assert.strictEqual(result.code, 'ended');
       });
-    }
-  }
+    };
+  };
 
   const testSeekEndVOD = function(url, config) {
     return function() {
@@ -198,16 +199,18 @@ describe('testing hls.js playback in the browser on "'+browserDescription+'"', f
         var callback = arguments[arguments.length - 1];
         startStream(url, config, callback);
         video.onloadeddata = function() {
-          window.setTimeout(function() { video.currentTime = video.duration;}, 5000);
+          window.setTimeout(function() {
+            video.currentTime = video.duration;
+          }, 5000);
         };
         video.onended = function() {
-          callback({ code : 'ended', logs : logString});
+          callback({code : 'ended', logs : logString});
         };
       }, url ,config).then(function(result) {
         assert.strictEqual(result.code, 'ended');
       });
-    }
-  }
+    };
+  };
 
   const testIsPlayingVOD = function(url, config) {
     return function() {
@@ -221,19 +224,19 @@ describe('testing hls.js playback in the browser on "'+browserDescription+'"', f
           let currentTime = video.currentTime;
           if(expectedPlaying) {
             window.setTimeout(function() {
-              console.log("video expected playing. [last currentTime/new currentTime]=[" + currentTime + "/" + video.currentTime + "]");
-              callback({ playing : currentTime !== video.currentTime});
+              console.log('video expected playing. [last currentTime/new currentTime]=[' + currentTime + '/' + video.currentTime + ']');
+              callback({playing : currentTime !== video.currentTime});
             }, 5000);
           } else {
-            console.log("video not playing. [paused/ended/buffered.length]=[" + video.paused + "/" + video.ended + "/" + video.buffered.length + "]");
-            callback({ playing : false });
+            console.log('video not playing. [paused/ended/buffered.length]=[' + video.paused + '/' + video.ended + '/' + video.buffered.length + ']');
+            callback({playing : false});
           }
         };
       }, url ,config).then(function(result) {
         assert.strictEqual(result.playing, true);
       });
-    }
-  }
+    };
+  };
 
   for (var name in streams) {
     var stream = streams[name];

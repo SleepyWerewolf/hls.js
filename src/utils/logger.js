@@ -60,12 +60,11 @@ export var enableLogs = function(debugConfig) {
     // Some browsers don't allow to use bind on console object anyway
     // fallback to default if needed
     try {
-     exportedLogger.log();
+      exportedLogger.log();
     } catch (e) {
       exportedLogger = fakeLogger;
     }
-  }
-  else {
+  } else {
     exportedLogger = fakeLogger;
   }
 };

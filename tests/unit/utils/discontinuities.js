@@ -1,6 +1,6 @@
 const assert = require('assert');
 
-import { shouldAlignOnDiscontinuities, findDiscontinuousReferenceFrag, adjustPts, alignDiscontinuities } from '../../../src/utils/discontinuities';
+import {shouldAlignOnDiscontinuities, findDiscontinuousReferenceFrag, adjustPts, alignDiscontinuities} from '../../../src/utils/discontinuities';
 
 const mockReferenceFrag = {
   start: 20,
@@ -71,9 +71,9 @@ describe('level-helper', function () {
   });
 
 
-it ('adjusts level fragments without overlapping CC range but with programDateTime info', function () {
+  it ('adjusts level fragments without overlapping CC range but with programDateTime info', function () {
 
-    const lastFrag = { cc : 0 };
+    const lastFrag = {cc : 0};
     const lastLevel = {
       details : {
         PTSKnown : true,
@@ -106,28 +106,28 @@ it ('adjusts level fragments without overlapping CC range but with programDateTi
 
     var details = {
       fragments: [
-          {
-            start: 0,
-            startPTS: 0,
-            endPTS: 4,
-            duration: 4,
-            cc: 2,
-          },
-          {
-            start: 4,
-            startPTS: 4,
-            endPTS: 8,
-            duration: 4,
-            cc: 2
-          },
-          {
-            start: 8,
-            startPTS: 8,
-            endPTS: 16,
-            duration: 8,
-            cc: 3
-          }
-        ],
+        {
+          start: 0,
+          startPTS: 0,
+          endPTS: 4,
+          duration: 4,
+          cc: 2,
+        },
+        {
+          start: 4,
+          startPTS: 4,
+          endPTS: 8,
+          duration: 4,
+          cc: 2
+        },
+        {
+          start: 8,
+          startPTS: 8,
+          endPTS: 16,
+          duration: 8,
+          cc: 3
+        }
+      ],
       PTSKnown: false,
       programDateTime : new Date('2017-08-28 00:00:50'),
       startCC : 2,
@@ -135,29 +135,29 @@ it ('adjusts level fragments without overlapping CC range but with programDateTi
     };
 
     var detailsExpected = {
-        fragments : [
-          {
-            start: 70,
-            startPTS: 70,
-            endPTS: 74,
-            duration: 4,
-            cc: 2
-          },
-          {
-            start: 74,
-            startPTS: 74,
-            endPTS: 78,
-            duration: 4,
-            cc: 2
-          },
-          {
-            start: 78,
-            startPTS: 78,
-            endPTS: 86,
-            duration: 8,
-            cc: 3
-          }
-        ],
+      fragments : [
+        {
+          start: 70,
+          startPTS: 70,
+          endPTS: 74,
+          duration: 4,
+          cc: 2
+        },
+        {
+          start: 74,
+          startPTS: 74,
+          endPTS: 78,
+          duration: 4,
+          cc: 2
+        },
+        {
+          start: 78,
+          startPTS: 78,
+          endPTS: 86,
+          duration: 8,
+          cc: 3
+        }
+      ],
       PTSKnown: true,
       programDateTime : new Date('2017-08-28 00:00:50'),
       startCC : 2,
@@ -170,7 +170,7 @@ it ('adjusts level fragments without overlapping CC range but with programDateTi
 
   it('finds the first fragment in an array which matches the CC of the first fragment in another array', function () {
     const prevDetails = {
-      fragments: [mockReferenceFrag, { cc: 1  }]
+      fragments: [mockReferenceFrag, {cc: 1}]
     };
     const curDetails = {
       fragments: mockFrags
@@ -182,19 +182,19 @@ it ('adjusts level fragments without overlapping CC range but with programDateTi
 
   it('returns undefined if there are no frags in the previous level', function () {
     const expected = undefined;
-    const actual = findDiscontinuousReferenceFrag({ fragments: [] }, { fragments: mockFrags });
+    const actual = findDiscontinuousReferenceFrag({fragments: []}, {fragments: mockFrags});
     assert.equal(expected, actual);
   });
 
   it('returns undefined if there are no matching frags in the previous level', function () {
     const expected = undefined;
-    const actual = findDiscontinuousReferenceFrag({ fragments: [{ cc: 10 }] }, { fragments: mockFrags });
+    const actual = findDiscontinuousReferenceFrag({fragments: [{cc: 10}]}, {fragments: mockFrags});
     assert.equal(expected, actual);
   });
 
   it('returns undefined if there are no frags in the current level', function () {
     const expected = undefined;
-    const actual = findDiscontinuousReferenceFrag({ fragments: [{ cc: 0 }] }, { fragments: [] });
+    const actual = findDiscontinuousReferenceFrag({fragments: [{cc: 0}]}, {fragments: []});
     assert.equal(expected, actual);
   });
 

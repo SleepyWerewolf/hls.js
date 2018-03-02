@@ -27,7 +27,7 @@ const setupEach = function(config) {
   media = new MediaMock();
 
   emeController = new EMEController(new HlsMock(config));
-}
+};
 
 describe('EMEController', () => {
 
@@ -54,29 +54,29 @@ describe('EMEController', () => {
 
   it('should request keys when `emeEnabled` is true (but not set them)', (done) => {
 
-      let reqMediaKsAccessSpy = sinon.spy(() => {
-        return Promise.resolve({
-          // Media-keys mock
-        })
+    let reqMediaKsAccessSpy = sinon.spy(() => {
+      return Promise.resolve({
+        // Media-keys mock
       });
+    });
 
-      setupEach({
-        emeEnabled: true,
-        requestMediaKeySystemAccessFunc: reqMediaKsAccessSpy
-      });
+    setupEach({
+      emeEnabled: true,
+      requestMediaKeySystemAccessFunc: reqMediaKsAccessSpy
+    });
 
-      emeController.onMediaAttached({media});
+    emeController.onMediaAttached({media});
 
+    media.setMediaKeys.callCount.should.be.equal(0);
+    reqMediaKsAccessSpy.callCount.should.be.equal(0);
+
+    emeController.onManifestParsed({levels: fakeLevels});
+
+    setTimeout(() => {
       media.setMediaKeys.callCount.should.be.equal(0);
-      reqMediaKsAccessSpy.callCount.should.be.equal(0);
-
-      emeController.onManifestParsed({levels: fakeLevels});
-
-      setTimeout(() => {
-        media.setMediaKeys.callCount.should.be.equal(0);
-        reqMediaKsAccessSpy.callCount.should.be.equal(1);
-        done();
-      }, 0)
+      reqMediaKsAccessSpy.callCount.should.be.equal(1);
+      done();
+    }, 0);
 
   });
 
@@ -85,7 +85,7 @@ describe('EMEController', () => {
     let reqMediaKsAccessSpy = sinon.spy(() => {
       return Promise.resolve({
         // Media-keys mock
-      })
+      });
     });
 
     setupEach({
@@ -94,8 +94,8 @@ describe('EMEController', () => {
     });
 
     let badData = {
-      initDataType: "cenc",
-      initData: "bad data"
+      initDataType: 'cenc',
+      initData: 'bad data'
     };
 
     emeController.onMediaAttached({media});
@@ -107,8 +107,8 @@ describe('EMEController', () => {
       assert.equal(emeController.hls.trigger.args[0][1].details, ErrorDetails.KEY_SYSTEM_NO_KEYS);
       assert.equal(emeController.hls.trigger.args[1][1].details, ErrorDetails.KEY_SYSTEM_NO_ACCESS);
       done();
-    }, 0)
+    }, 0);
 
   });
 
-})
+});

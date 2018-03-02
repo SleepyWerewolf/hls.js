@@ -39,4 +39,4 @@ export default class HlsMock {
       this[methodName].reset();
     });
   }
-};
+}

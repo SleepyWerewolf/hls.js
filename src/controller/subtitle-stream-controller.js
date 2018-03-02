@@ -87,53 +87,55 @@ class SubtitleStreamController extends TaskLoop {
 
   doTick() {
     switch(this.state) {
-      case State.IDLE:
-        const tracks = this.tracks;
-        let trackId = this.currentTrackId;
+    case State.IDLE:
+      const tracks = this.tracks;
+      let trackId = this.currentTrackId;
 
-        const processedFragSNs = this.vttFragSNsProcessed[trackId],
-            fragQueue = this.vttFragQueues[trackId],
-            currentFragSN = !!this.currentlyProcessing ? this.currentlyProcessing.sn : -1;
+      const processedFragSNs = this.vttFragSNsProcessed[trackId],
+        fragQueue = this.vttFragQueues[trackId],
+        currentFragSN = this.currentlyProcessing ? this.currentlyProcessing.sn : -1;
 
-        const alreadyProcessed = function(frag) {
-          return processedFragSNs.indexOf(frag.sn) > -1;
-        };
+      const alreadyProcessed = function(frag) {
+        return processedFragSNs.indexOf(frag.sn) > -1;
+      };
 
-        const alreadyInQueue = function(frag) {
-          return fragQueue.some(fragInQueue => {return fragInQueue.sn === frag.sn;});
-        };
+      const alreadyInQueue = function(frag) {
+        return fragQueue.some(fragInQueue => {
+          return fragInQueue.sn === frag.sn;
+        });
+      };
 
         // exit if tracks don't exist
-        if (!tracks) {
-          break;
-        }
-        var trackDetails;
-
-        if (trackId < tracks.length) {
-          trackDetails = tracks[trackId].details;
-        }
-
-        if (typeof trackDetails === 'undefined') {
-          break;
-        }
-
-        // Add all fragments that haven't been, aren't currently being and aren't waiting to be processed, to queue.
-        trackDetails.fragments.forEach(frag => {
-          if(!(alreadyProcessed(frag) || frag.sn === currentFragSN || alreadyInQueue(frag))) {
-            // Load key if subtitles are encrypted
-            if ((frag.decryptdata && frag.decryptdata.uri != null) && (frag.decryptdata.key == null)) {
-              logger.log(`Loading key for ${frag.sn}`);
-              this.state = State.KEY_LOADING;
-              this.hls.trigger(Event.KEY_LOADING, {frag: frag});
-            } else {
-              // Frags don't know their subtitle track ID, so let's just add that...
-              frag.trackId = trackId;
-              fragQueue.push(frag);
-              this.nextFrag();
-            }
-          }
-        });
+      if (!tracks) {
+        break;
       }
+      var trackDetails;
+
+      if (trackId < tracks.length) {
+        trackDetails = tracks[trackId].details;
+      }
+
+      if (typeof trackDetails === 'undefined') {
+        break;
+      }
+
+      // Add all fragments that haven't been, aren't currently being and aren't waiting to be processed, to queue.
+      trackDetails.fragments.forEach(frag => {
+        if(!(alreadyProcessed(frag) || frag.sn === currentFragSN || alreadyInQueue(frag))) {
+          // Load key if subtitles are encrypted
+          if ((frag.decryptdata && frag.decryptdata.uri != null) && (frag.decryptdata.key == null)) {
+            logger.log(`Loading key for ${frag.sn}`);
+            this.state = State.KEY_LOADING;
+            this.hls.trigger(Event.KEY_LOADING, {frag: frag});
+          } else {
+            // Frags don't know their subtitle track ID, so let's just add that...
+            frag.trackId = trackId;
+            fragQueue.push(frag);
+            this.nextFrag();
+          }
+        }
+      });
+    }
   }
 
   // Got all new subtitle tracks.
@@ -166,33 +168,33 @@ class SubtitleStreamController extends TaskLoop {
 
   onFragLoaded(data) {
     var fragCurrent = this.fragCurrent,
-        decryptData = data.frag.decryptdata;
+      decryptData = data.frag.decryptdata;
     let fragLoaded = data.frag,
-        hls = this.hls;
+      hls = this.hls;
     if (this.state === State.FRAG_LOADING &&
         fragCurrent &&
         data.frag.type === 'subtitle' &&
         fragCurrent.sn === data.frag.sn) {
-          // check to see if the payload needs to be decrypted
-          if ((data.payload.byteLength > 0) && (decryptData != null) && (decryptData.key != null) && (decryptData.method === 'AES-128')) {
-            var startTime;
-            try {
-              startTime = performance.now();
-            } catch (error) {
-              startTime = Date.now();
-            }
-            // decrypt the subtitles
-            this.decrypter.decrypt(data.payload, decryptData.key.buffer, decryptData.iv.buffer, function(decryptedData) {
-              var endTime;
-              try {
-                endTime = performance.now();
-              } catch (error) {
-                endTime = Date.now();
-              }
-              hls.trigger(Event.FRAG_DECRYPTED, { frag: fragLoaded, payload : decryptedData, stats: { tstart: startTime, tdecrypt: endTime } });
-            });
-          }
+      // check to see if the payload needs to be decrypted
+      if ((data.payload.byteLength > 0) && (decryptData != null) && (decryptData.key != null) && (decryptData.method === 'AES-128')) {
+        var startTime;
+        try {
+          startTime = performance.now();
+        } catch (error) {
+          startTime = Date.now();
         }
+        // decrypt the subtitles
+        this.decrypter.decrypt(data.payload, decryptData.key.buffer, decryptData.iv.buffer, function(decryptedData) {
+          var endTime;
+          try {
+            endTime = performance.now();
+          } catch (error) {
+            endTime = Date.now();
+          }
+          hls.trigger(Event.FRAG_DECRYPTED, {frag: fragLoaded, payload : decryptedData, stats: {tstart: startTime, tdecrypt: endTime}});
+        });
+      }
+    }
   }
 }
 export default SubtitleStreamController;

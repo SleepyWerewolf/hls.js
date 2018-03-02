@@ -3,7 +3,7 @@
  */
 
 import Event from '../events';
-import { ErrorTypes, ErrorDetails } from '../errors';
+import {ErrorTypes, ErrorDetails} from '../errors';
 import Decrypter from '../crypt/decrypter';
 import AACDemuxer from '../demux/aacdemuxer';
 import MP4Demuxer from '../demux/mp4demuxer';
@@ -49,7 +49,7 @@ class DemuxerInline {
         } catch (error) {
           endTime = Date.now();
         }
-        localthis.observer.trigger(Event.FRAG_DECRYPTED, { stats: { tstart: startTime, tdecrypt: endTime } });
+        localthis.observer.trigger(Event.FRAG_DECRYPTED, {stats: {tstart: startTime, tdecrypt: endTime}});
         localthis.pushDecrypted(new Uint8Array(decryptedData), decryptdata, new Uint8Array(initSegment), audioCodec, videoCodec, timeOffset, discontinuity, trackSwitch, contiguous, duration, accurateTimeOffset, defaultInitPTS);
       });
     } else {
@@ -69,10 +69,10 @@ class DemuxerInline {
       const config = this.config;
       // probing order is TS/AAC/MP3/MP4
       const muxConfig = [
-        { demux: TSDemuxer, remux: MP4Remuxer },
-        { demux: MP4Demuxer, remux: PassThroughRemuxer },
-        { demux: AACDemuxer, remux: MP4Remuxer },
-        { demux: MP3Demuxer, remux: MP4Remuxer }
+        {demux: TSDemuxer, remux: MP4Remuxer},
+        {demux: MP4Demuxer, remux: PassThroughRemuxer},
+        {demux: AACDemuxer, remux: MP4Remuxer},
+        {demux: MP3Demuxer, remux: MP4Remuxer}
       ];
 
       // probe for content type
@@ -87,7 +87,7 @@ class DemuxerInline {
         }
       }
       if (!demuxer) {
-        observer.trigger(Event.ERROR, { type: ErrorTypes.MEDIA_ERROR, details: ErrorDetails.FRAG_PARSING_ERROR, fatal: true, reason: 'no demux matching with content found' });
+        observer.trigger(Event.ERROR, {type: ErrorTypes.MEDIA_ERROR, details: ErrorDetails.FRAG_PARSING_ERROR, fatal: true, reason: 'no demux matching with content found'});
         return;
       }
       this.demuxer = demuxer;

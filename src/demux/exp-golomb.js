@@ -131,7 +131,7 @@ class ExpGolomb {
   readUShort() {
     return this.readBits(16);
   }
-    // ():int
+  // ():int
   readUInt() {
     return this.readBits(32);
   }
@@ -259,26 +259,26 @@ class ExpGolomb {
         // aspect_ratio_info_present_flag
         const aspectRatioIdc = readUByte();
         switch (aspectRatioIdc) {
-          case 1: pixelRatio = [1,1]; break;
-          case 2: pixelRatio = [12,11]; break;
-          case 3: pixelRatio = [10,11]; break;
-          case 4: pixelRatio = [16,11]; break;
-          case 5: pixelRatio = [40,33]; break;
-          case 6: pixelRatio = [24,11]; break;
-          case 7: pixelRatio = [20,11]; break;
-          case 8: pixelRatio = [32,11]; break;
-          case 9: pixelRatio = [80,33]; break;
-          case 10: pixelRatio = [18,11]; break;
-          case 11: pixelRatio = [15,11]; break;
-          case 12: pixelRatio = [64,33]; break;
-          case 13: pixelRatio = [160,99]; break;
-          case 14: pixelRatio = [4,3]; break;
-          case 15: pixelRatio = [3,2]; break;
-          case 16: pixelRatio = [2,1]; break;
-          case 255: {
-            pixelRatio = [readUByte() << 8 | readUByte(), readUByte() << 8 | readUByte()];
-            break;
-          }
+        case 1: pixelRatio = [1,1]; break;
+        case 2: pixelRatio = [12,11]; break;
+        case 3: pixelRatio = [10,11]; break;
+        case 4: pixelRatio = [16,11]; break;
+        case 5: pixelRatio = [40,33]; break;
+        case 6: pixelRatio = [24,11]; break;
+        case 7: pixelRatio = [20,11]; break;
+        case 8: pixelRatio = [32,11]; break;
+        case 9: pixelRatio = [80,33]; break;
+        case 10: pixelRatio = [18,11]; break;
+        case 11: pixelRatio = [15,11]; break;
+        case 12: pixelRatio = [64,33]; break;
+        case 13: pixelRatio = [160,99]; break;
+        case 14: pixelRatio = [4,3]; break;
+        case 15: pixelRatio = [3,2]; break;
+        case 16: pixelRatio = [2,1]; break;
+        case 255: {
+          pixelRatio = [readUByte() << 8 | readUByte(), readUByte() << 8 | readUByte()];
+          break;
+        }
         }
       }
     }

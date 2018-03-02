@@ -14,16 +14,16 @@ const StringDecoder = function StringDecoder() {
         throw new Error('Error - expected string data.');
       }
       return decodeURIComponent(encodeURIComponent(data));
-        },
-    };
+    },
   };
+};
 
 function VTTParser() {
-    this.window = window;
-    this.state = 'INITIAL';
-    this.buffer = '';
-    this.decoder = new StringDecoder();
-    this.regionList = [];
+  this.window = window;
+  this.state = 'INITIAL';
+  this.buffer = '';
+  this.decoder = new StringDecoder();
+  this.regionList = [];
 }
 
 
@@ -152,43 +152,43 @@ function parseCue(input, cue, regionList) {
 
     parseOptions(input, function(k, v) {
       switch (k) {
-        case 'region':
-          // Find the last region we parsed with the same region id.
-          for (var i = regionList.length - 1; i >= 0; i--) {
-            if (regionList[i].id === v) {
-              settings.set(k, regionList[i].region);
-              break;
-            }
+      case 'region':
+        // Find the last region we parsed with the same region id.
+        for (var i = regionList.length - 1; i >= 0; i--) {
+          if (regionList[i].id === v) {
+            settings.set(k, regionList[i].region);
+            break;
           }
-          break;
-        case 'vertical':
-          settings.alt(k, v, ['rl', 'lr']);
-          break;
-        case 'line':
-          var vals = v.split(','),
-            vals0 = vals[0];
-          settings.integer(k, vals0);
-          if (settings.percent(k, vals0)) {
-            settings.set('snapToLines', false);
-          }
-          settings.alt(k, vals0, ['auto']);
-          if (vals.length === 2) {
-            settings.alt('lineAlign', vals[1], ['start', center, 'end']);
-          }
-          break;
-        case 'position':
-          vals = v.split(',');
-          settings.percent(k, vals[0]);
-          if (vals.length === 2) {
-            settings.alt('positionAlign', vals[1], ['start', center, 'end', 'line-left', 'line-right', 'auto']);
-          }
-          break;
-        case 'size':
-          settings.percent(k, v);
-          break;
-        case 'align':
-          settings.alt(k, v, ['start', center, 'end', 'left', 'right']);
-          break;
+        }
+        break;
+      case 'vertical':
+        settings.alt(k, v, ['rl', 'lr']);
+        break;
+      case 'line':
+        var vals = v.split(','),
+          vals0 = vals[0];
+        settings.integer(k, vals0);
+        if (settings.percent(k, vals0)) {
+          settings.set('snapToLines', false);
+        }
+        settings.alt(k, vals0, ['auto']);
+        if (vals.length === 2) {
+          settings.alt('lineAlign', vals[1], ['start', center, 'end']);
+        }
+        break;
+      case 'position':
+        vals = v.split(',');
+        settings.percent(k, vals[0]);
+        if (vals.length === 2) {
+          settings.alt('positionAlign', vals[1], ['start', center, 'end', 'line-left', 'line-right', 'auto']);
+        }
+        break;
+      case 'size':
+        settings.percent(k, v);
+        break;
+      case 'align':
+        settings.alt(k, v, ['start', center, 'end', 'left', 'right']);
+        break;
       }
     }, /:/, /\s/);
 
@@ -275,11 +275,11 @@ VTTParser.prototype = {
     function parseHeader(input) {
       parseOptions(input, function(k, v) {
         switch (k) {
-          case 'Region':
-            // 3.3 WebVTT region metadata header syntax
-            console.log('parse region', v);
-            //parseRegion(v);
-            break;
+        case 'Region':
+          // 3.3 WebVTT region metadata header syntax
+          console.log('parse region', v);
+          //parseRegion(v);
+          break;
         }
       }, /:/);
     }
@@ -318,78 +318,78 @@ VTTParser.prototype = {
         }
 
         switch (self.state) {
-          case 'HEADER':
-            // 13-18 - Allow a header (metadata) under the WEBVTT line.
-            if (/:/.test(line)) {
-              parseHeader(line);
-            } else if (!line) {
-              // An empty line terminates the header and starts the body (cues).
-              self.state = 'ID';
-            }
+        case 'HEADER':
+          // 13-18 - Allow a header (metadata) under the WEBVTT line.
+          if (/:/.test(line)) {
+            parseHeader(line);
+          } else if (!line) {
+            // An empty line terminates the header and starts the body (cues).
+            self.state = 'ID';
+          }
+          continue;
+        case 'NOTE':
+          // Ignore NOTE blocks.
+          if (!line) {
+            self.state = 'ID';
+          }
+          continue;
+        case 'ID':
+          // Check for the start of NOTE blocks.
+          if (/^NOTE($|[ \t])/.test(line)) {
+            self.state = 'NOTE';
+            break;
+          }
+          // 19-29 - Allow any number of line terminators, then initialize new cue values.
+          if (!line) {
             continue;
-          case 'NOTE':
-            // Ignore NOTE blocks.
-            if (!line) {
-              self.state = 'ID';
-            }
+          }
+          self.cue = new VTTCue(0, 0, '');
+          self.state = 'CUE';
+          // 30-39 - Check if self line contains an optional identifier or timing data.
+          if (line.indexOf('-->') === -1) {
+            self.cue.id = line;
             continue;
-          case 'ID':
-            // Check for the start of NOTE blocks.
-            if (/^NOTE($|[ \t])/.test(line)) {
-              self.state = 'NOTE';
-              break;
-            }
-            // 19-29 - Allow any number of line terminators, then initialize new cue values.
-            if (!line) {
-              continue;
-            }
-            self.cue = new VTTCue(0, 0, '');
-            self.state = 'CUE';
-            // 30-39 - Check if self line contains an optional identifier or timing data.
-            if (line.indexOf('-->') === -1) {
-              self.cue.id = line;
-              continue;
-            }
+          }
           // Process line as start of a cue.
           /*falls through*/
-          case 'CUE':
-            // 40 - Collect cue timings and settings.
-            try {
-              parseCue(line, self.cue, self.regionList);
-            } catch (e) {
-              // In case of an error ignore rest of the cue.
-              self.cue = null;
-              self.state = 'BADCUE';
-              continue;
-            }
-            self.state = 'CUETEXT';
+        case 'CUE':
+          // 40 - Collect cue timings and settings.
+          try {
+            parseCue(line, self.cue, self.regionList);
+          } catch (e) {
+            // In case of an error ignore rest of the cue.
+            self.cue = null;
+            self.state = 'BADCUE';
             continue;
-          case 'CUETEXT':
-            var hasSubstring = line.indexOf('-->') !== -1;
-            // 34 - If we have an empty line then report the cue.
-            // 35 - If we have the special substring '-->' then report the cue,
-            // but do not collect the line as we need to process the current
-            // one as a new cue.
-            if (!line || hasSubstring && (alreadyCollectedLine = true)) {
-              // We are done parsing self cue.
-              if (self.oncue) {
-                self.oncue(self.cue);
-              }
-              self.cue = null;
-              self.state = 'ID';
-              continue;
+          }
+          self.state = 'CUETEXT';
+          continue;
+        case 'CUETEXT':
+          var hasSubstring = line.indexOf('-->') !== -1;
+          // 34 - If we have an empty line then report the cue.
+          // 35 - If we have the special substring '-->' then report the cue,
+          // but do not collect the line as we need to process the current
+          // one as a new cue.
+          if (!line || hasSubstring && (alreadyCollectedLine = true)) {
+            // We are done parsing self cue.
+            if (self.oncue) {
+              self.oncue(self.cue);
             }
-            if (self.cue.text) {
-              self.cue.text += '\n';
-            }
-            self.cue.text += line;
+            self.cue = null;
+            self.state = 'ID';
             continue;
-          case 'BADCUE': // BADCUE
-            // 54-62 - Collect and discard the remaining cue.
-            if (!line) {
-              self.state = 'ID';
-            }
-            continue;
+          }
+          if (self.cue.text) {
+            self.cue.text += '\n';
+          }
+          self.cue.text += line;
+          continue;
+        case 'BADCUE': // BADCUE
+          // 54-62 - Collect and discard the remaining cue.
+          if (!line) {
+            self.state = 'ID';
+          }
+          continue;
         }
       }
     } catch (e) {
@@ -431,6 +431,6 @@ VTTParser.prototype = {
   }
 };
 
-export { fixLineBreaks };
+export {fixLineBreaks};
 
 export default VTTParser;
