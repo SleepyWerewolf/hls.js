@@ -123,9 +123,6 @@ class StreamController extends TaskLoop {
   doTick() {
 
     switch(this.state) {
-    case State.ERROR:
-      //don't do anything in error state to avoid breaking further ...
-      break;
     case State.BUFFER_FLUSHING:
       // in buffer flushing state, reset fragLoadError counter
       this.fragLoadError = 0;
@@ -354,21 +351,21 @@ class StreamController extends TaskLoop {
         if (!levelDetails.programDateTime) {//Uses buffer and sequence number to calculate switch segment (required if using EXT-X-DISCONTINUITY-SEQUENCE)
           const targetSN = fragPrevious.sn + 1;
           if (targetSN >= levelDetails.startSN && targetSN <= levelDetails.endSN) {
-			  const fragNext = fragments[targetSN - levelDetails.startSN];
-			  if (fragPrevious.cc === fragNext.cc) {
+            const fragNext = fragments[targetSN - levelDetails.startSN];
+            if (fragPrevious.cc === fragNext.cc) {
               frag = fragNext;
               logger.log(`live playlist, switching playlist, load frag with next SN: ${frag.sn}`);
-			  }
+            }
           }
           // next frag SN not available (or not with same continuity counter)
           // look for a frag sharing the same CC
           if (!frag) {
-			  frag = BinarySearch.search(fragments, function(frag) {
+            frag = BinarySearch.search(fragments, function(frag) {
               return fragPrevious.cc - frag.cc;
-			  });
-			  if (frag) {
+            });
+            if (frag) {
               logger.log(`live playlist, switching playlist, load frag with same CC: ${frag.sn}`);
-			  }
+            }
           }
         } else {//Relies on PDT in order to switch bitrates (Support EXT-X-DISCONTINUITY without EXT-X-DISCONTINUITY-SEQUENCE)
           frag = this._findFragmentByPDT(fragments, fragPrevious.endPdt + 1);
@@ -433,7 +430,8 @@ class StreamController extends TaskLoop {
       let candidateLookupTolerance = Math.min(maxFragLookUpTolerance, candidate.duration + (candidate.deltaPTS ? candidate.deltaPTS : 0));
       if (candidate.start + candidate.duration - candidateLookupTolerance <= bufferEnd) {
         return 1;
-      } // if maxFragLookUpTolerance will have negative value then don't return -1 for first element
+      } // eslint-disable-line brace-style
+      // if maxFragLookUpTolerance will have negative value then don't return -1 for first element
       else if (candidate.start - candidateLookupTolerance > bufferEnd && candidate.start) {
         return -1;
       }

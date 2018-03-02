@@ -5,8 +5,6 @@ import AESDecryptor from './aes-decryptor';
 import {ErrorTypes, ErrorDetails} from '../errors';
 import {logger} from '../utils/logger';
 
-/*globals self: false */
-
 class Decrypter {
   constructor(observer, config, {removePKCS7Padding = true} = {}) {
     this.logEnabled = true;
@@ -18,7 +16,9 @@ class Decrypter {
       try {
         const browserCrypto = crypto ? crypto : self.crypto;
         this.subtle = browserCrypto.subtle || browserCrypto.webkitSubtle;
-      } catch (e) {}
+      } catch (e) {
+        console.warn(e.message);
+      }
     }
     this.disableWebCrypto = !this.subtle;
   }

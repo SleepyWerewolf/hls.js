@@ -254,8 +254,7 @@ class BufferController extends EventHandler {
         this.mediaSource.removeSourceBuffer(sb);
         sb.removeEventListener('updateend', this.onsbue);
         sb.removeEventListener('error', this.onsbe);
-      } catch(err) {
-      }
+      } catch(err) {} // eslint-disable-line no-empty
     }
     this.sourceBuffer = {};
     this.flushRange = [];

@@ -232,7 +232,7 @@ class TimelineController extends EventHandler {
         }
       }
       this.lastSn = sn;
-    }
+    } // eslint-disable-line brace-style
     // If fragment is subtitle type, parse as WebVTT.
     else if (frag.type === 'subtitle') {
       if (payload.byteLength) {
@@ -333,8 +333,7 @@ class TimelineController extends EventHandler {
       }
 
       if (ccValid) {
-        if (ccType === 0) // || ccType === 1
-        {
+        if (ccType === 0) { // || ccType === 1
           actualCCBytes.push(ccbyte1);
           actualCCBytes.push(ccbyte2);
         }

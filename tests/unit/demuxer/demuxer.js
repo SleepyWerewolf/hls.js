@@ -194,7 +194,7 @@ describe('Demuxer tests', function() {
     var evt = {
       data : {
         event : {},
-			 data : {}
+        data : {}
       }
     };
 
@@ -221,7 +221,7 @@ describe('Demuxer tests', function() {
     var evt = {
       data : {
         event : 'init',
-			 data : {}
+        data : {}
       }
     };
 

@@ -300,14 +300,14 @@ oceans_aes-audio=65000-video=236000-3.ts
     assert.strictEqual(result.fragments[0].decryptdata.method, 'AES-128');
     var sn = 1;
     var uint8View = new Uint8Array(16);
-    for (var i = 12; i < 16; i++) {
+    for (let i = 12; i < 16; i++) {
       uint8View[i] = (sn >> 8*(15-i)) & 0xff;
     }
     assert(bufferIsEqual(result.fragments[0].decryptdata.iv.buffer, uint8View.buffer));
 
     sn = 3;
     uint8View = new Uint8Array(16);
-    for (var i = 12; i < 16; i++) {
+    for (let i = 12; i < 16; i++) {
       uint8View[i] = (sn >> 8*(15-i)) & 0xff;
     }
     assert(bufferIsEqual(result.fragments[2].decryptdata.iv.buffer, uint8View.buffer));

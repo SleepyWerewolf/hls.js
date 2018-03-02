@@ -143,8 +143,10 @@ class AudioStreamController extends TaskLoop {
     //logger.log('audioStream:' + this.state);
     switch(this.state) {
     case State.ERROR:
+      // eslint-disable-next-line no-fallthrough
       //don't do anything in error state to avoid breaking further ...
     case State.PAUSED:
+      // eslint-disable-next-line no-fallthrough
       //don't do anything in paused state either ...
     case State.BUFFER_FLUSHING:
       break;
@@ -245,7 +247,7 @@ class AudioStreamController extends TaskLoop {
         }
         if (trackDetails.initSegment && !trackDetails.initSegment.data) {
           frag = trackDetails.initSegment;
-        }
+        } // eslint-disable-line brace-style
         // if bufferEnd before start of playlist, load first fragment
         else if (bufferEnd <= start) {
           frag = fragments[0];
@@ -283,7 +285,8 @@ class AudioStreamController extends TaskLoop {
             let candidateLookupTolerance = Math.min(maxFragLookUpTolerance, candidate.duration);
             if ((candidate.start + candidate.duration - candidateLookupTolerance) <= bufferEnd) {
               return 1;
-            }// if maxFragLookUpTolerance will have negative value then don't return -1 for first element
+            } // eslint-disable-line brace-style
+            // if maxFragLookUpTolerance will have negative value then don't return -1 for first element
             else if (candidate.start - candidateLookupTolerance > bufferEnd && candidate.start) {
               return -1;
             }

@@ -510,7 +510,7 @@ class MP4Remuxer {
           inputSamples.splice(i, 1);
           track.len -= sample.unit.length;
           // Don't touch nextPtsNorm or i
-        }
+        } // eslint-disable-line brace-style
 
         // Insert missing frames if:
         // 1: We're more than maxAudioFramesDrift frame away

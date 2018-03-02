@@ -101,7 +101,7 @@ export function mergeDetails(oldDetails,newDetails) {
     return;
   }
   // loop through overlapping SN and update startPTS , cc, and duration if any found
-  for(var i = start ; i <= end ; i++) {
+  for(let i = start ; i <= end ; i++) {
     var oldFrag = oldfragments[delta+i],
       newFrag = newfragments[i];
     if (newFrag && oldFrag) {
@@ -119,7 +119,7 @@ export function mergeDetails(oldDetails,newDetails) {
 
   if(ccOffset) {
     logger.log('discontinuity sliding from playlist, take drift into account');
-    for(i = 0 ; i < newfragments.length ; i++) {
+    for(let i = 0 ; i < newfragments.length ; i++) {
       newfragments[i].cc += ccOffset;
     }
   }
@@ -134,7 +134,7 @@ export function mergeDetails(oldDetails,newDetails) {
     if (delta >= 0 && delta < oldfragments.length) {
       // adjust start by sliding offset
       var sliding = oldfragments[delta].start;
-      for(i = 0 ; i < newfragments.length ; i++) {
+      for(let i = 0 ; i < newfragments.length ; i++) {
         newfragments[i].start += sliding;
       }
     }

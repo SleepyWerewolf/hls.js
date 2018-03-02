@@ -24,7 +24,7 @@ class CapLevelController extends EventHandler {
   }
 
   onFpsDropLevelCapping(data) {
-	  // Don't add a restricted level more than once
+    // Don't add a restricted level more than once
     if (CapLevelController.isLevelAllowed(data.droppedLevel, this.restrictedLevels)) {
       this.restrictedLevels.push(data.droppedLevel);
     }
@@ -102,7 +102,7 @@ class CapLevelController extends EventHandler {
     let pixelRatio = 1;
     try {
       pixelRatio =  window.devicePixelRatio;
-    } catch(e) {}
+    } catch(e) {} // eslint-disable-line no-empty
     return pixelRatio;
   }
 

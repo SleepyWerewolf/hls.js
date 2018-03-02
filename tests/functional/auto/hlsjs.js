@@ -1,33 +1,13 @@
-var assert = require('assert');
-var webdriver = require('selenium-webdriver');
+const assert = require('assert');
+const webdriver = require('selenium-webdriver');
 // requiring this automatically adds the chromedriver binary to the PATH
-var chromedriver = require('chromedriver');
-var HttpServer = require('http-server');
-var streams = require('../../test-streams');
+const chromedriver = require('chromedriver');
+const HttpServer = require('http-server');
+const streams = require('../../test-streams');
 
-function retry(cb, numAttempts, interval) {
-  numAttempts = numAttempts || 20;
-  interval = interval || 3000;
-  return new Promise(function(resolve, reject) {
-    var attempts = 0;
-    attempt();
-
-    function attempt() {
-      cb().then(function(res) {
-        resolve(res);
-      }).catch(function(e) {
-        if (++attempts >= numAttempts) {
-          // reject with the last error
-          reject(e);
-        } else {
-          setTimeout(attempt, interval);
-        }
-      });
-    }
-  });
-}
-
-var onTravis = !!process.env.TRAVIS;
+const Hls = window.Hls;
+const onTravis = !!process.env.TRAVIS;
+const browserConfig = {version : 'latest'};
 
 HttpServer.createServer({
   showDir: false,
@@ -35,8 +15,6 @@ HttpServer.createServer({
   root: './',
 }).listen(8000, '127.0.0.1');
 
-
-var browserConfig = {version : 'latest'};
 if (onTravis) {
   var UA_VERSION = process.env.UA_VERSION;
   if (UA_VERSION) {
@@ -63,8 +41,138 @@ if (browserConfig.platform) {
   browserDescription += ', '+browserConfig.platform;
 }
 
+let stream;
+let video;
+let logString;
+let hls;
+
+/**
+ * @module
+ * declares `logString` on global window
+ */
+(function() {
+  var methods = ['log', 'debug', 'info', 'warn', 'error'];
+  methods.forEach(function(methodName) {
+    var original = console[methodName];
+    if (!original) {
+      return;
+    }
+    console[methodName] = function() {
+      append(methodName, Array.prototype.slice.call(arguments).map(JSON.stringify).join(' '));
+      return original.apply(this, arguments);
+    };
+  });
+
+  var log = document.getElementById('log');
+  var inner = log.getElementsByClassName('inner')[0];
+
+  function append(methodName, msg) {
+    var a = (new Date()).toISOString().replace('T', ' ').replace('Z', '')+': '+msg;
+    var text = document.createTextNode(a);
+    var line = document.createElement('pre');
+    line.className = 'line line-'+methodName;
+    line.appendChild(text);
+    window.logString = logString += a + '\n';
+    inner.appendChild(line);
+  }
+})();
+
+function retry(cb, numAttempts, interval) {
+  numAttempts = numAttempts || 20;
+  interval = interval || 3000;
+  return new Promise(function(resolve, reject) {
+    var attempts = 0;
+    attempt();
+
+    function attempt() {
+      cb().then(function(res) {
+        resolve(res);
+      }).catch(function(e) {
+        if (++attempts >= numAttempts) {
+          // reject with the last error
+          reject(e);
+        } else {
+          setTimeout(attempt, interval);
+        }
+      });
+    }
+  });
+}
+
+function switchToLowestLevel(mode) {
+  switch(mode) {
+  case 'current':
+    hls.currentLevel = 0;
+    break;
+  case 'next':
+    hls.nextLevel = 0;
+    break;
+  case 'load':
+  default:
+    hls.loadLevel = 0;
+    break;
+  }
+}
+
+function switchToHighestLevel(mode) {
+  var highestLevel = hls.levels.length-1;
+  switch(mode) {
+  case 'current':
+    hls.currentLevel = highestLevel;
+    break;
+  case 'next':
+    hls.nextLevel = highestLevel;
+    break;
+  case 'load':
+  default:
+    hls.loadLevel = highestLevel;
+    break;
+  }
+}
+
+function startStream(streamUrl, config, callback) {
+  if (Hls.isSupported()) {
+    if (hls) {
+      callback({code : 'hlsjsAlreadyInitialised', logs : logString});
+      return;
+    }
+    window.video = video = document.getElementById('video');
+    try {
+      window.hls = hls = new Hls(Object.assign({}, config, {debug: true}));
+      console.log(navigator.userAgent);
+      hls.loadSource(streamUrl);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        video.play();
+      });
+      hls.on(Hls.Events.ERROR, function(event, data) {
+        if (data.fatal) {
+          console.log('hlsjs fatal error :' + data.details);
+          if (data.details === Hls.ErrorDetails.INTERNAL_EXCEPTION) {
+            console.log('exception in :' + data.event);
+            console.log(data.err.stack ? JSON.stringify(data.err.stack) : data.err.message);
+          }
+          callback({code : data.details, logs : logString});
+        }
+      });
+      video.onerror = function(event) {
+        console.log('video error, code :' + video.error.code);
+        callback({code : 'video_error_' + video.error.code, logs : logString});
+      };
+    } catch(err) {
+      callback({code : 'exception', logs : logString});
+    }
+  } else {
+    callback({code : 'notSupported', logs : logString});
+  }
+}
+
 describe('testing hls.js playback in the browser on "'+browserDescription+'"', function() {
   beforeEach(function() {
+    video = window.video;
+    logString = window.logString;
+    hls = window.hls;
+
     var capabilities = {
       name: '"'+stream.description+'" on "'+browserDescription+'"',
       browserName: browserConfig.name,
@@ -239,7 +347,7 @@ describe('testing hls.js playback in the browser on "'+browserDescription+'"', f
   };
 
   for (var name in streams) {
-    var stream = streams[name];
+    stream = streams[name];
     var url = stream.url;
     var config = stream.config || {};
     if (!stream.blacklist_ua || stream.blacklist_ua.indexOf(browserConfig.name) === -1) {

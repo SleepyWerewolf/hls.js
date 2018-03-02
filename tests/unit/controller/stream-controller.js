@@ -155,7 +155,7 @@ describe('StreamController tests', function() {
     var bufferEnd = fragPrevious.start + fragPrevious.duration;
     var end = fragments[fragments.length - 1].start + fragments[fragments.length - 1].duration;
 
-	  it('SN search choosing fragment after level loaded', function () {
+    it('SN search choosing fragment after level loaded', function () {
       var config = {};
       var hls = {
         config : config,
@@ -168,9 +168,9 @@ describe('StreamController tests', function() {
       var resultSN = foundFragment ? foundFragment.sn : -1;
       assert.equal(foundFragment, fragments[3], 'Expected sn 4, found sn segment ' + resultSN);
 
-	  });
+    });
 
-	  it('PDT search choosing fragment after level loaded', function () {
+    it('PDT search choosing fragment after level loaded', function () {
       var config = {};
       var hls = {
         config : config,
@@ -184,9 +184,9 @@ describe('StreamController tests', function() {
       var resultSN = foundFragment ? foundFragment.sn : -1;
       assert.equal(foundFragment, fragments[2], 'Expected sn 3, found sn segment ' + resultSN);
 
-	  });
+    });
 
-	  it('Unit test _findFragmentBySN', function () {
+    it('Unit test _findFragmentBySN', function () {
       var config = { };
       var hls = {
         config : config,
@@ -198,9 +198,9 @@ describe('StreamController tests', function() {
       var resultSN = foundFragment ? foundFragment.sn : -1;
       assert.equal(foundFragment, fragments[3], 'Expected sn 4, found sn segment ' + resultSN);
 
-	  });
+    });
 
-	  it('Unit test _findFragmentByPDT usual behaviour', function () {
+    it('Unit test _findFragmentByPDT usual behaviour', function () {
       var config = { };
       var hls = {
         config : config,
@@ -212,9 +212,9 @@ describe('StreamController tests', function() {
       var resultSN = foundFragment ? foundFragment.sn : -1;
       assert.equal(foundFragment, fragments[2], 'Expected sn 3, found sn segment ' + resultSN);
 
-	  });
+    });
 
-	  it('Unit test _findFragmentByPDT beyond limits', function () {
+    it('Unit test _findFragmentByPDT beyond limits', function () {
       var config = { };
       var hls = {
         config : config,
@@ -228,9 +228,9 @@ describe('StreamController tests', function() {
       foundFragment = streamController._findFragmentByPDT(fragments, fragments[fragments.length - 1].endPdt + 1);
       resultSN = foundFragment ? foundFragment.sn : -1;
       assert.equal(foundFragment, null, 'Expected sn -1, found sn segment ' + resultSN);
-	  });
+    });
 
-	  it('Unit test _findFragmentByPDT at the beginning', function () {
+    it('Unit test _findFragmentByPDT at the beginning', function () {
       var config = { };
       var hls = {
         config : config,
@@ -241,9 +241,9 @@ describe('StreamController tests', function() {
 
       var resultSN = foundFragment ? foundFragment.sn : -1;
       assert.equal(foundFragment, fragments[0], 'Expected sn 1, found sn segment ' + resultSN);
-	  });
+    });
 
-	  it('Unit test _findFragmentByPDT for last segment', function () {
+    it('Unit test _findFragmentByPDT for last segment', function () {
       var config = { };
       var hls = {
         config : config,
@@ -254,7 +254,7 @@ describe('StreamController tests', function() {
 
       var resultSN = foundFragment ? foundFragment.sn : -1;
       assert.equal(foundFragment, fragments[4], 'Expected sn 5, found sn segment ' + resultSN);
-	  });
+    });
   });
 
 });

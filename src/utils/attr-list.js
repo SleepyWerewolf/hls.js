@@ -1,4 +1,5 @@
 const DECIMAL_RESOLUTION_REGEX = /^(\d+)x(\d+)$/;
+// eslint-disable-next-line no-useless-escape
 const ATTR_LIST_REGEX = /\s*(.+?)\s*=((?:\".*?\")|.*?)(?:,|$)/g;
 
 // adapted from https://github.com/kanongil/node-m3u8parse/blob/master/attrlist.js
