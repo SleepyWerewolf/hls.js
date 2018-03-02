@@ -38,7 +38,6 @@
     "docs:release": "npm run docs:clean && npm run docs:generate && npm run docs:update",
     "lint": "eslint src/ tests/",
     "precommit": "./scripts/precommit",
-    "prerelease": "mversion prerelease && npm run build:release",
     "pretest": "npm run lint",
     "release:pre": "mversion prerelease && npm run build:release",
     "release:patch": "mversion p && npm run build:release",
