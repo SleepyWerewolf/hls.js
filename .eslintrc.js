@@ -7,7 +7,7 @@ module.exports = {
   "globals": {
     // Allowed globals
     "console": true,
-    "MediaSource": true,
+    //"MediaSource": true,
     "performance": true,
     "crypto": true,
     "fetch": true,
@@ -26,7 +26,7 @@ module.exports = {
   // see https://github.com/felixge/node-style-guide
   "extends": [
     "eslint:recommended",
-    "node-style-guide"
+    //"node-style-guide"
   ],
   "parserOptions": {
     "sourceType": "module"
@@ -48,9 +48,20 @@ module.exports = {
     ],
 
     // part of Node Style-guide but ignored
+    // (commented until we enable node-style-guide)
+    /*
     "max-len": 0,
     "max-statements": 0,
-    "space-after-keywords": 0
+    "space-after-keywords": 0,
+    */
+
+    // loosening of code-quality rules we may want to fix later (warnings for now)
+    "no-unused-vars": 1,
+    "no-console": 1,
+    "no-fallthrough": 1,
+    "no-case-declarations": 1,
+    "no-irregular-whitespace": 1,
+    "no-self-assign": 1
 
   }
 };
