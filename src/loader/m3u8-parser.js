@@ -108,7 +108,7 @@ export default class M3U8Parser {
     return levels;
   }
 
-  static parseMasterPlaylistMedia(string, baseurl, type, audioGroups=[]) {
+  static parseMasterPlaylistMedia(string, baseurl, type, audioGroups = []) {
     let result;
     let medias = [];
     let id = 0;
@@ -218,8 +218,8 @@ export default class M3U8Parser {
         }
 
         // avoid sliced strings    https://github.com/video-dev/hls.js/issues/939
-        const value1 = (' ' + result[i+1]).slice(1);
-        const value2 = (' ' + result[i+2]).slice(1);
+        const value1 = (' ' + result[i + 1]).slice(1);
+        const value2 = (' ' + result[i + 2]).slice(1);
 
         switch (result[i]) {
         case '#':
@@ -275,7 +275,7 @@ export default class M3U8Parser {
           let startAttrs = new AttrList(startParams);
           let startTimeOffset = startAttrs.decimalFloatingPoint('TIME-OFFSET');
           //TIME-OFFSET can be 0
-          if ( !isNaN(startTimeOffset) ) {
+          if (!isNaN(startTimeOffset)) {
             level.startTimeOffset = startTimeOffset;
           }
           break;
@@ -300,7 +300,7 @@ export default class M3U8Parser {
     //logger.log('found ' + level.fragments.length + ' fragments');
     if(frag && !frag.relurl) {
       level.fragments.pop();
-      totalduration-=frag.duration;
+      totalduration -= frag.duration;
     }
     level.totalduration = totalduration;
     level.averagetargetduration = totalduration / level.fragments.length;

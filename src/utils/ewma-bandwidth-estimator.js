@@ -22,7 +22,7 @@ class EwmaBandWidthEstimator {
 
   sample(durationMs,numBytes) {
     durationMs = Math.max(durationMs, this.minDelayMs_);
-    var bandwidth = 8000* numBytes / durationMs,
+    var bandwidth = 8000 * numBytes / durationMs,
       //console.log('instant bw:'+ Math.round(bandwidth));
       // we weight sample using loading duration....
       weight = durationMs / 1000;

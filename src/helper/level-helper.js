@@ -87,22 +87,22 @@ export function updateFragPTSDTS(details,frag,startPTS,endPTS,startDTS,endDTS) {
 }
 
 export function mergeDetails(oldDetails,newDetails) {
-  var start = Math.max(oldDetails.startSN,newDetails.startSN)-newDetails.startSN,
-    end = Math.min(oldDetails.endSN,newDetails.endSN)-newDetails.startSN,
+  var start = Math.max(oldDetails.startSN,newDetails.startSN) - newDetails.startSN,
+    end = Math.min(oldDetails.endSN,newDetails.endSN) - newDetails.startSN,
     delta = newDetails.startSN - oldDetails.startSN,
     oldfragments = oldDetails.fragments,
     newfragments = newDetails.fragments,
-    ccOffset =0,
+    ccOffset = 0,
     PTSFrag;
 
     // check if old/new playlists have fragments in common
-  if ( end < start) {
+  if (end < start) {
     newDetails.PTSKnown = false;
     return;
   }
   // loop through overlapping SN and update startPTS , cc, and duration if any found
   for(let i = start ; i <= end ; i++) {
-    var oldFrag = oldfragments[delta+i],
+    var oldFrag = oldfragments[delta + i],
       newFrag = newfragments[i];
     if (newFrag && oldFrag) {
       ccOffset = oldFrag.cc - newFrag.cc;

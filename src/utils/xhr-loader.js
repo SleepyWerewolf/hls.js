@@ -69,7 +69,7 @@ class XhrLoader {
     }
 
     if (context.rangeEnd) {
-      xhr.setRequestHeader('Range','bytes=' + context.rangeStart + '-' + (context.rangeEnd-1));
+      xhr.setRequestHeader('Range','bytes=' + context.rangeStart + '-' + (context.rangeEnd - 1));
     }
     xhr.onreadystatechange = this.readystatechange.bind(this);
     xhr.onprogress = this.loadprogress.bind(this);
@@ -93,7 +93,7 @@ class XhrLoader {
     }
 
     // >= HEADERS_RECEIVED
-    if (readyState >=2) {
+    if (readyState >= 2) {
       // clear xhr timeout and rearm it if readyState less than 4
       window.clearTimeout(this.requestTimeout);
       if (stats.tfirst === 0) {
@@ -118,7 +118,7 @@ class XhrLoader {
         } else {
           // if max nb of retries reached or if http status between 400 and 499 (such error cannot be recovered, retrying is useless), return error
           if (stats.retry >= config.maxRetry || (status >= 400 && status < 499)) {
-            logger.error(`${status} while loading ${context.url}` );
+            logger.error(`${status} while loading ${context.url}`);
             this.callbacks.onError({code : status, text : xhr.statusText}, context, xhr);
           } else {
             // retry
@@ -140,7 +140,7 @@ class XhrLoader {
   }
 
   loadtimeout() {
-    logger.warn(`timeout while loading ${this.context.url}` );
+    logger.warn(`timeout while loading ${this.context.url}`);
     this.callbacks.onTimeout(this.stats, this.context, null);
   }
 

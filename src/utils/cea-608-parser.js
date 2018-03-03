@@ -220,11 +220,11 @@ class PenState {
   }
 
   equals(other) {
-    return ( (this.foreground === other.foreground) &&
+    return ((this.foreground === other.foreground) &&
                  (this.underline === other.underline) &&
                  (this.italics === other.italics) &&
                  (this.background === other.background) &&
-                 (this.flash === other.flash) );
+                 (this.flash === other.flash));
   }
 
   copy(newPenState) {
@@ -344,7 +344,7 @@ class Row {
   moveCursor(relPos) {
     var newPos = this.pos + relPos;
     if (relPos > 1) {
-      for (var i = this.pos+1; i < newPos+1 ; i++) {
+      for (var i = this.pos + 1; i < newPos + 1 ; i++) {
         this.chars[i].setPenState(this.currPenState);
       }
     }
@@ -503,7 +503,7 @@ class CaptionScreen {
     logger.log('INFO', 'pacData = ' + JSON.stringify(pacData));
     var newRow = pacData.row - 1;
     if (this.nrRollUpRows  && newRow < this.nrRollUpRows - 1) {
-      newRow = this.nrRollUpRows-1;
+      newRow = this.nrRollUpRows - 1;
     }
 
     //Make sure this only affects Roll-up Captions by checking this.nrRollUpRows
@@ -523,7 +523,7 @@ class CaptionScreen {
         var prevLineTime = lastOutputScreen.rows[topRowIndex].cueStartTime;
         if(prevLineTime && prevLineTime < logger.time) {
           for (let i = 0; i < this.nrRollUpRows; i++) {
-            this.rows[newRow-this.nrRollUpRows+i+1].copy(lastOutputScreen.rows[topRowIndex+i]);
+            this.rows[newRow - this.nrRollUpRows + i + 1].copy(lastOutputScreen.rows[topRowIndex + i]);
           }
         }
       }
@@ -533,7 +533,7 @@ class CaptionScreen {
     var row = this.rows[this.currRow];
     if (pacData.indent !== null) {
       var indent = pacData.indent;
-      var prevPos = Math.max(indent-1, 0);
+      var prevPos = Math.max(indent - 1, 0);
       row.setCursor(pacData.indent);
       pacData.color = row.chars[prevPos].penState.foreground;
     }
@@ -581,7 +581,7 @@ class CaptionScreen {
     for (var i = 0 ; i < NR_ROWS ; i++) {
       var rowText = this.rows[i].getTextString();
       if (rowText) {
-        rowNr = i+1;
+        rowNr = i + 1;
         if (asOneRow) {
           displayText.push('Row ' + rowNr + ': \'' + rowText + '\'');
         } else {
@@ -616,7 +616,7 @@ class Cea608Channel {
     this.displayedMemory = new CaptionScreen();
     this.nonDisplayedMemory = new CaptionScreen();
     this.lastOutputScreen = new CaptionScreen();
-    this.currRollUpRow = this.displayedMemory.rows[NR_ROWS-1];
+    this.currRollUpRow = this.displayedMemory.rows[NR_ROWS - 1];
     this.writeScreen = this.displayedMemory;
     this.mode = null;
     this.cueStartTime = null; // Keeps track of where a cue started.
@@ -627,7 +627,7 @@ class Cea608Channel {
     this.displayedMemory.reset();
     this.nonDisplayedMemory.reset();
     this.lastOutputScreen.reset();
-    this.currRollUpRow = this.displayedMemory.rows[NR_ROWS-1];
+    this.currRollUpRow = this.displayedMemory.rows[NR_ROWS - 1];
     this.writeScreen = this.displayedMemory;
     this.mode = null;
     this.cueStartTime = null;
@@ -712,7 +712,7 @@ class Cea608Channel {
   }
 
   ccRU(nrRows) { //Roll-Up Captions-2,3,or 4 Rows
-    logger.log('INFO', 'RU(' + nrRows +') - Roll Up');
+    logger.log('INFO', 'RU(' + nrRows + ') - Roll Up');
     this.writeScreen = this.displayedMemory;
     this.setMode('MODE_ROLL-UP');
     this.writeScreen.setRollUpRows(nrRows);
@@ -777,7 +777,7 @@ class Cea608Channel {
     styles.underline = secondByte % 2 === 1;
     styles.italics = secondByte >= 0x2e;
     if (!styles.italics) {
-      var colorIndex = Math.floor(secondByte/2) - 0x10;
+      var colorIndex = Math.floor(secondByte / 2) - 0x10;
       var colors = ['white', 'green', 'blue', 'cyan', 'red', 'yellow', 'magenta'];
       styles.foreground = colors[colorIndex];
     } else {
@@ -855,14 +855,14 @@ class Cea608Parser {
     this.lastTime = t;
     logger.setTime(t);
 
-    for (var i = 0 ; i < byteList.length ; i+=2) {
+    for (var i = 0 ; i < byteList.length ; i += 2) {
       a = byteList[i] & 0x7f;
-      b = byteList[i+1] & 0x7f;
+      b = byteList[i + 1] & 0x7f;
       if (a === 0 && b === 0) {
         this.dataCounters.padding += 2;
         continue;
       } else {
-        logger.log('DATA', '[' + numArrayToHexArray([byteList[i], byteList[i+1]]) +'] -> (' + numArrayToHexArray([a, b]) + ')');
+        logger.log('DATA', '[' + numArrayToHexArray([byteList[i], byteList[i + 1]]) + '] -> (' + numArrayToHexArray([a, b]) + ')');
       }
       cmdFound = this.parseCmd(a, b);
       if (!cmdFound) {
@@ -877,8 +877,8 @@ class Cea608Parser {
       if (!cmdFound) {
         charsFound = this.parseChars(a, b);
         if (charsFound) {
-          if (this.currChNr && this.currChNr >=0) {
-            var channel = this.channels[this.currChNr-1];
+          if (this.currChNr && this.currChNr >= 0) {
+            var channel = this.channels[this.currChNr - 1];
             channel.insertChars(charsFound);
           } else {
             logger.log('WARNING', 'No channel found yet. TEXT-MODE?');
@@ -892,7 +892,7 @@ class Cea608Parser {
       } else {
         this.dataCounters.other += 2;
         logger.log('WARNING', 'Couldn\'t parse cleaned data ' + numArrayToHexArray([a, b]) +
-                            ' orig: ' + numArrayToHexArray([byteList[i], byteList[i+1]]));
+                            ' orig: ' + numArrayToHexArray([byteList[i], byteList[i + 1]]));
       }
     }
   }
@@ -975,7 +975,7 @@ class Cea608Parser {
   parseMidrow(a, b) {
     var chNr = null;
 
-    if ( ((a === 0x11) || (a === 0x19)) && 0x20 <= b && b <= 0x2f) {
+    if (((a === 0x11) || (a === 0x19)) && 0x20 <= b && b <= 0x2f) {
       if (a === 0x11) {
         chNr = 1;
       } else  {
@@ -985,7 +985,7 @@ class Cea608Parser {
         logger.log('ERROR', 'Mismatch channel in midrow parsing');
         return false;
       }
-      var channel = this.channels[chNr-1];
+      var channel = this.channels[chNr - 1];
       channel.ccMIDROW(b);
       logger.log('DEBUG', 'MIDROW (' + numArrayToHexArray([a, b]) + ')');
       return true;
@@ -1021,7 +1021,7 @@ class Cea608Parser {
       row = (chNr === 1) ? rowsHighCh1[a] : rowsHighCh2[a];
     }
     var pacData = this.interpretPAC(row, b);
-    var channel = this.channels[chNr-1];
+    var channel = this.channels[chNr - 1];
     channel.setPAC(pacData);
     this.lastCmdA = a;
     this.lastCmdB = b;
@@ -1044,12 +1044,12 @@ class Cea608Parser {
     }
     pacData.underline = (pacIndex & 1) === 1;
     if (pacIndex <= 0xd) {
-      pacData.color = ['white', 'green', 'blue', 'cyan', 'red', 'yellow', 'magenta', 'white'][Math.floor(pacIndex/2)];
+      pacData.color = ['white', 'green', 'blue', 'cyan', 'red', 'yellow', 'magenta', 'white'][Math.floor(pacIndex / 2)];
     } else if (pacIndex <= 0xf) {
       pacData.italics = true;
       pacData.color = 'white';
     } else {
-      pacData.indent = (Math.floor((pacIndex-0x10)/2))*4;
+      pacData.indent = (Math.floor((pacIndex - 0x10) / 2)) * 4;
     }
     return pacData; // Note that row has zero offset. The spec uses 1.
   }
@@ -1106,13 +1106,13 @@ class Cea608Parser {
       channel;
 
     var case1 = (a === 0x10 || a === 0x18) && (0x20 <= b && b <= 0x2f);
-    var case2 = (a === 0x17 || a === 0x1f) && (0x2d <=b && b <= 0x2f);
+    var case2 = (a === 0x17 || a === 0x1f) && (0x2d <= b && b <= 0x2f);
     if (!(case1 || case2)) {
       return false;
     }
     bkgData = {};
     if (a  === 0x10 || a === 0x18) {
-      index = Math.floor((b-0x20)/2);
+      index = Math.floor((b - 0x20) / 2);
       bkgData.background = backgroundColors[index];
       if (b % 2 === 1) {
         bkgData.background = bkgData.background + '_semi';
@@ -1126,7 +1126,7 @@ class Cea608Parser {
       }
     }
     chNr = (a < 0x18) ? 1 : 2;
-    channel = this.channels[chNr-1];
+    channel = this.channels[chNr - 1];
     channel.setBkgData(bkgData);
     this.lastCmdA = null;
     this.lastCmdB = null;
@@ -1137,7 +1137,7 @@ class Cea608Parser {
      * Reset state of parser and its channels.
      */
   reset() {
-    for (var i=0 ; i < this.channels.length ; i++) {
+    for (var i = 0 ; i < this.channels.length ; i++) {
       if (this.channels[i]) {
         this.channels[i].reset();
       }
@@ -1150,7 +1150,7 @@ class Cea608Parser {
      * Trigger the generation of a cue, and the start of a new one if displayScreens are not empty.
      */
   cueSplitAtTime(t) {
-    for (var i=0 ; i < this.channels.length ; i++) {
+    for (var i = 0 ; i < this.channels.length ; i++) {
       if (this.channels[i]) {
         this.channels[i].cueSplitAtTime(t);
       }

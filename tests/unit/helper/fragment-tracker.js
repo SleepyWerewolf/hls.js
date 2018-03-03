@@ -9,8 +9,8 @@ const LevelType = PlaylistLoader.LevelType;
 
 function createMockBuffer(buffered) {
   return {
-    start: i => (buffered.length > i) ? buffered[i].startPTS: null,
-    end : i => (buffered.length > i) ? buffered[i].endPTS: null,
+    start: i => (buffered.length > i) ? buffered[i].startPTS : null,
+    end : i => (buffered.length > i) ? buffered[i].endPTS : null,
     length: buffered.length,
   };
 }

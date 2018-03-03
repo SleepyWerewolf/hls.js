@@ -49,7 +49,7 @@ class MP4Remuxer {
         // if first audio DTS is not aligned with first video DTS then we need to take that into account
         // when providing timeOffset to remuxAudio / remuxVideo. if we don't do that, there might be a permanent / small
         // drift between audio and video streams
-        let audiovideoDeltaDts = (audioTrack.samples[0].dts - videoTrack.samples[0].dts)/videoTrack.inputTimeScale;
+        let audiovideoDeltaDts = (audioTrack.samples[0].dts - videoTrack.samples[0].dts) / videoTrack.inputTimeScale;
         audioTimeOffset += Math.max(0,audiovideoDeltaDts);
         videoTimeOffset += Math.max(0,-audiovideoDeltaDts);
       }
@@ -218,21 +218,21 @@ class MP4Remuxer {
       //  - less than 100ms gaps between new time offset (if accurate) and next expected PTS OR
       //  - less than 200 ms PTS gaps (timeScale/5)
       contiguous |= (inputSamples.length && nextAvcDts &&
-                     ((accurateTimeOffset && Math.abs(timeOffset-nextAvcDts/timeScale) < 0.1) ||
-                      Math.abs((inputSamples[0].pts-nextAvcDts-initDTS)) < timeScale/5)
+                     ((accurateTimeOffset && Math.abs(timeOffset - nextAvcDts / timeScale) < 0.1) ||
+                      Math.abs((inputSamples[0].pts - nextAvcDts - initDTS)) < timeScale / 5)
       );
     }
 
     if (!contiguous) {
       // if not contiguous, let's use target timeOffset
-      nextAvcDts = timeOffset*timeScale;
+      nextAvcDts = timeOffset * timeScale;
     }
 
     // PTS is coded on 33bits, and can loop from -2^32 to 2^32
     // ptsNormalize will make PTS/DTS value monotonic, we use last known DTS value as reference value
     inputSamples.forEach(function(sample) {
-      sample.pts = ptsNormalize(sample.pts-initDTS, nextAvcDts);
-      sample.dts = ptsNormalize(sample.dts-initDTS, nextAvcDts);
+      sample.pts = ptsNormalize(sample.pts - initDTS, nextAvcDts);
+      sample.dts = ptsNormalize(sample.dts - initDTS, nextAvcDts);
     });
 
     // sort video samples by DTS then PTS then demux id order
@@ -243,9 +243,9 @@ class MP4Remuxer {
     });
 
     // handle broken streams with PTS < DTS, tolerance up 200ms (18000 in 90kHz timescale)
-    let PTSDTSshift = inputSamples.reduce( (prev, curr) => Math.max(Math.min(prev,curr.pts-curr.dts),-18000),0);
+    let PTSDTSshift = inputSamples.reduce((prev, curr) => Math.max(Math.min(prev,curr.pts - curr.dts),-18000),0);
     if (PTSDTSshift < 0) {
-      logger.warn(`PTS < DTS detected in video samples, shifting DTS by ${Math.round(PTSDTSshift/90)} ms to overcome this issue`);
+      logger.warn(`PTS < DTS detected in video samples, shifting DTS by ${Math.round(PTSDTSshift / 90)} ms to overcome this issue`);
       for (let i = 0; i < inputSamples.length; i++) {
         inputSamples[i].dts += PTSDTSshift;
       }
@@ -272,13 +272,13 @@ class MP4Remuxer {
         // offset PTS as well, ensure that PTS is smaller or equal than new DTS
         firstPTS = Math.max(firstPTS - delta, nextAvcDts);
         inputSamples[0].pts = firstPTS;
-        logger.log(`Video/PTS/DTS adjusted: ${Math.round(firstPTS/90)}/${Math.round(firstDTS/90)},delta:${delta} ms`);
+        logger.log(`Video/PTS/DTS adjusted: ${Math.round(firstPTS / 90)}/${Math.round(firstDTS / 90)},delta:${delta} ms`);
       }
     }
     nextDTS = firstDTS;
 
     // compute lastPTS/lastDTS
-    sample = inputSamples[inputSamples.length-1];
+    sample = inputSamples[inputSamples.length - 1];
     lastDTS =  Math.max(sample.dts,0);
     lastPTS =  Math.max(sample.pts,0,lastDTS);
 
@@ -286,7 +286,7 @@ class MP4Remuxer {
     // sample duration (as expected by trun MP4 boxes), should be the delta between sample DTS
     // set this constant duration as being the avg delta between consecutive DTS.
     if (isSafari) {
-      mp4SampleDuration = Math.round((lastDTS-firstDTS)/(inputSamples.length-1));
+      mp4SampleDuration = Math.round((lastDTS - firstDTS) / (inputSamples.length - 1));
     }
 
     let nbNalu = 0, naluLen = 0;
@@ -303,7 +303,7 @@ class MP4Remuxer {
       // normalize PTS/DTS
       if (isSafari) {
         // sample DTS is computed using a constant decoding offset (mp4SampleDuration) between samples
-        sample.dts = firstDTS + i*mp4SampleDuration;
+        sample.dts = firstDTS + i * mp4SampleDuration;
       } else {
         // ensure sample monotonic DTS
         sample.dts = Math.max(sample.dts,firstDTS);
@@ -345,10 +345,10 @@ class MP4Remuxer {
       if(!isSafari) {
         // expected sample duration is the Decoding Timestamp diff of consecutive samples
         if (i < nbSamples - 1) {
-          mp4SampleDuration = inputSamples[i+1].dts - avcSample.dts;
+          mp4SampleDuration = inputSamples[i + 1].dts - avcSample.dts;
         } else {
           let config = this.config,
-            lastFrameDuration = avcSample.dts - inputSamples[i > 0 ? i-1 : i].dts;
+            lastFrameDuration = avcSample.dts - inputSamples[i > 0 ? i - 1 : i].dts;
           if (config.stretchShortVideoTrack) {
             // In some cases, a segment's audio track duration may exceed the video track duration.
             // Since we've already remuxed audio, and we know how long the audio track is, we look to
@@ -365,7 +365,7 @@ class MP4Remuxer {
               if (mp4SampleDuration < 0) {
                 mp4SampleDuration = lastFrameDuration;
               }
-              logger.log(`It is approximately ${deltaToFrameEnd/90} ms to the next segment; using duration ${mp4SampleDuration/90} ms for the last video frame.`);
+              logger.log(`It is approximately ${deltaToFrameEnd / 90} ms to the next segment; using duration ${mp4SampleDuration / 90} ms for the last video frame.`);
             } else {
               mp4SampleDuration = lastFrameDuration;
             }
@@ -375,7 +375,7 @@ class MP4Remuxer {
         }
         compositionTimeOffset = Math.round(avcSample.pts - avcSample.dts);
       } else {
-        compositionTimeOffset = Math.max(0,mp4SampleDuration*Math.round((avcSample.pts - avcSample.dts)/mp4SampleDuration));
+        compositionTimeOffset = Math.max(0,mp4SampleDuration * Math.round((avcSample.pts - avcSample.dts) / mp4SampleDuration));
       }
 
       //console.log('PTS/DTS/initDTS/normPTS/normDTS/relative PTS : ${avcSample.pts}/${avcSample.dts}/${initDTS}/${ptsnorm}/${dtsnorm}/${(avcSample.pts/4294967296).toFixed(3)}');
@@ -431,7 +431,7 @@ class MP4Remuxer {
   remuxAudio(track, timeOffset, contiguous,accurateTimeOffset) {
     const inputTimeScale = track.inputTimeScale,
       mp4timeScale = track.timescale,
-      scaleFactor = inputTimeScale/mp4timeScale,
+      scaleFactor = inputTimeScale / mp4timeScale,
       mp4SampleDuration = track.isAAC ? 1024 : 1152,
       inputSampleDuration = mp4SampleDuration * scaleFactor,
       ptsNormalize = this._PTSNormalize,
@@ -456,14 +456,14 @@ class MP4Remuxer {
     // this helps ensuring audio continuity
     // and this also avoids audio glitches/cut when switching quality, or reporting wrong duration on first audio frame
     contiguous |= (inputSamples.length && nextAudioPts &&
-                   ((accurateTimeOffset && Math.abs(timeOffset-nextAudioPts/inputTimeScale) < 0.1) ||
-                    Math.abs((inputSamples[0].pts-nextAudioPts-initDTS)) < 20*inputSampleDuration)
+                   ((accurateTimeOffset && Math.abs(timeOffset - nextAudioPts / inputTimeScale) < 0.1) ||
+                    Math.abs((inputSamples[0].pts - nextAudioPts - initDTS)) < 20 * inputSampleDuration)
     );
 
 
     // compute normalized PTS
     inputSamples.forEach(function(sample) {
-      sample.pts = sample.dts = ptsNormalize(sample.pts - initDTS, timeOffset*inputTimeScale);
+      sample.pts = sample.dts = ptsNormalize(sample.pts - initDTS, timeOffset * inputTimeScale);
     });
 
     // filter out sample with negative PTS that are not playable anyway
@@ -484,7 +484,7 @@ class MP4Remuxer {
         nextAudioPts = inputSamples[0].pts;
       } else {
         // if timeOffset is accurate, let's use it as predicted next audio PTS
-        nextAudioPts = timeOffset*inputTimeScale;
+        nextAudioPts = timeOffset * inputTimeScale;
       }
     }
 
@@ -494,19 +494,19 @@ class MP4Remuxer {
     // When possible, we inject a silent frame; when that's not possible, we duplicate the last
     // frame.
 
-    if ( track.isAAC) {
+    if (track.isAAC) {
       const maxAudioFramesDrift = this.config.maxAudioFramesDrift;
-      for (let i = 0, nextPts = nextAudioPts; i < inputSamples.length; ) {
+      for (let i = 0, nextPts = nextAudioPts; i < inputSamples.length;) {
         // First, let's see how far off this frame is from where we expect it to be
         var sample = inputSamples[i], delta;
         let pts = sample.pts;
         delta = pts - nextPts;
 
-        const duration = Math.abs(1000*delta/inputTimeScale);
+        const duration = Math.abs(1000 * delta / inputTimeScale);
 
         // If we're overlapping by more than a duration, drop this sample
-        if (delta <= -maxAudioFramesDrift*inputSampleDuration) {
-          logger.warn(`Dropping 1 audio frame @ ${(nextPts/inputTimeScale).toFixed(3)}s due to ${Math.round(duration)} ms overlap.`);
+        if (delta <= -maxAudioFramesDrift * inputSampleDuration) {
+          logger.warn(`Dropping 1 audio frame @ ${(nextPts / inputTimeScale).toFixed(3)}s due to ${Math.round(duration)} ms overlap.`);
           inputSamples.splice(i, 1);
           track.len -= sample.unit.length;
           // Don't touch nextPtsNorm or i
@@ -516,9 +516,9 @@ class MP4Remuxer {
         // 1: We're more than maxAudioFramesDrift frame away
         // 2: Not more than MAX_SILENT_FRAME_DURATION away
         // 3: currentTime (aka nextPtsNorm) is not 0
-        else if (delta >= maxAudioFramesDrift*inputSampleDuration && duration < MAX_SILENT_FRAME_DURATION && nextPts) {
+        else if (delta >= maxAudioFramesDrift * inputSampleDuration && duration < MAX_SILENT_FRAME_DURATION && nextPts) {
           var missing = Math.round(delta / inputSampleDuration);
-          logger.warn(`Injecting ${missing} audio frame @ ${(nextPts/inputTimeScale).toFixed(3)}s due to ${Math.round(1000*delta/inputTimeScale)} ms gap.`);
+          logger.warn(`Injecting ${missing} audio frame @ ${(nextPts / inputTimeScale).toFixed(3)}s due to ${Math.round(1000 * delta / inputTimeScale)} ms gap.`);
           for (var j = 0; j < missing; j++) {
             let newStamp = Math.max(nextPts,0);
             fillFrame = AAC.getSilentFrame(track.manifestCodec || track.codec,track.channelCount);
@@ -549,7 +549,7 @@ class MP4Remuxer {
     }
 
 
-    for (let j =0 , nbSamples = inputSamples.length; j < nbSamples ; j++) {
+    for (let j = 0 , nbSamples = inputSamples.length; j < nbSamples ; j++) {
       let audioSample = inputSamples[j];
       let unit = audioSample.unit;
       let pts = audioSample.pts;
@@ -578,7 +578,7 @@ class MP4Remuxer {
               // if we have frame overlap, overlapping for more than half a frame duraion
             } else if (delta < -12) {
               // drop overlapping audio frames... browser will deal with it
-              logger.log(`drop overlapping AAC sample, expected/parsed/delta:${(nextAudioPts/inputTimeScale).toFixed(3)}s/${(pts/inputTimeScale).toFixed(3)}s/${(-delta)}ms`);
+              logger.log(`drop overlapping AAC sample, expected/parsed/delta:${(nextAudioPts / inputTimeScale).toFixed(3)}s/${(pts / inputTimeScale).toFixed(3)}s/${(-delta)}ms`);
               track.len -= unit.byteLength;
               continue;
             }
@@ -692,7 +692,7 @@ class MP4Remuxer {
   remuxEmptyAudio(track, timeOffset, contiguous, videoData) {
     let inputTimeScale = track.inputTimeScale,
       mp4timeScale = track.samplerate ? track.samplerate : inputTimeScale,
-      scaleFactor = inputTimeScale/mp4timeScale,
+      scaleFactor = inputTimeScale / mp4timeScale,
       nextAudioPts = this.nextAudioPts,
 
       // sync with video's timestamp
@@ -751,7 +751,7 @@ class MP4Remuxer {
 
   remuxText(track,timeOffset) {
     track.samples.sort(function(a, b) {
-      return (a.pts-b.pts);
+      return (a.pts - b.pts);
     });
 
     var length = track.samples.length, sample;

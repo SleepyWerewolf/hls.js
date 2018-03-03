@@ -19,7 +19,7 @@ describe('binary search util', function() {
       list = [4, 8, 15, 16, 23, 42];
     });
     it('finds the element if it is present', function () {
-      for(var i=0; i<list.length; i++) {
+      for(var i = 0; i < list.length; i++) {
         var item = list[i];
         var foundItem = BinarySearch.search(list, buildComparisonFunction(item));
         assert.strictEqual(foundItem, item);

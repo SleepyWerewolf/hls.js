@@ -17,8 +17,8 @@ const cueString2millis = function(timeString) {
   }
 
   ts += 1000 * secs;
-  ts += 60*1000 * mins;
-  ts += 60*60*1000 * hours;
+  ts += 60 * 1000 * mins;
+  ts += 60 * 60 * 1000 * hours;
 
   return ts;
 };
@@ -161,7 +161,7 @@ const WebVTTParser = {
         }
       }
       // Parse line by default.
-      parser.parse(line+'\n');
+      parser.parse(line + '\n');
     });
 
     parser.flush();

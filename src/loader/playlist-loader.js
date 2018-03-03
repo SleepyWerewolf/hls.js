@@ -238,7 +238,7 @@ class PlaylistLoader extends EventHandler {
     return true;
   }
 
-  loadsuccess(response, stats, context, networkDetails=null) {
+  loadsuccess(response, stats, context, networkDetails = null) {
 
     if (context.isSidxRequest) {
       this._handleSidxRequest(response, context);

@@ -513,7 +513,7 @@ export default class Hls {
     const levels = hls.levels;
     const autoLevelCapping = hls.autoLevelCapping;
     let maxAutoLevel;
-    if (autoLevelCapping=== -1 && levels && levels.length) {
+    if (autoLevelCapping === -1 && levels && levels.length) {
       maxAutoLevel = levels.length - 1;
     } else {
       maxAutoLevel = autoLevelCapping;

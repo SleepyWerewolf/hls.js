@@ -219,7 +219,7 @@ class BufferController extends EventHandler {
     this.appending = false;
     let parent = this.parent;
     // count nb of pending segments waiting for appending on this sourcebuffer
-    let pending = this.segments.reduce( (counter, segment) => (segment.parent === parent) ? counter + 1 : counter , 0);
+    let pending = this.segments.reduce((counter, segment) => (segment.parent === parent) ? counter + 1 : counter , 0);
 
     // this.sourceBuffer is better to use than media.buffered as it is closer to the PTS data from the fragments
     let timeRanges = {};
@@ -300,7 +300,7 @@ class BufferController extends EventHandler {
         }
       }
     }
-    this.hls.trigger(Event.BUFFER_CREATED, {tracks : tracks} );
+    this.hls.trigger(Event.BUFFER_CREATED, {tracks : tracks});
   }
 
   onBufferAppending(data) {
@@ -416,7 +416,7 @@ class BufferController extends EventHandler {
       logger.log('Media Source duration is set to Infinity');
       this._msDuration = this.mediaSource.duration = Infinity;
     } else if ((this._levelDuration > this._msDuration && this._levelDuration > duration) ||
-      (duration === Infinity || isNaN(duration) )) {
+      (duration === Infinity || isNaN(duration))) {
       // levelDuration was the last value we set.
       // not using mediaSource.duration as the browser may tweak this value
       // only update Media Source duration if its value increase, this is to avoid
@@ -574,7 +574,7 @@ class BufferController extends EventHandler {
                    to avoid rounding issues/infinite loop,
                    only flush buffer range of length greater than 500ms.
                 */
-                if (Math.min(flushEnd,bufEnd) - flushStart > 0.5 ) {
+                if (Math.min(flushEnd,bufEnd) - flushStart > 0.5) {
                   this.flushBufferCounter++;
                   logger.log(`flush ${type} [${flushStart},${flushEnd}], of [${bufStart},${bufEnd}], pos:${this.media.currentTime}`);
                   sb.remove(flushStart, flushEnd);

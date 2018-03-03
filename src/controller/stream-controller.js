@@ -271,7 +271,7 @@ class StreamController extends TaskLoop {
 
     // find fragment index, contiguous with end of buffer position
     let start = fragments[0].start,
-      end = fragments[fragLen-1].start + fragments[fragLen-1].duration,
+      end = fragments[fragLen - 1].start + fragments[fragLen - 1].duration,
       bufferEnd = bufferInfo.end,
       frag;
 
@@ -315,9 +315,9 @@ class StreamController extends TaskLoop {
 
     // check if requested position is within seekable boundaries :
     //logger.log(`start/pos/bufEnd/seeking:${start.toFixed(3)}/${pos.toFixed(3)}/${bufferEnd.toFixed(3)}/${this.media.seeking}`);
-    let maxLatency = config.liveMaxLatencyDuration !== undefined ? config.liveMaxLatencyDuration : config.liveMaxLatencyDurationCount*levelDetails.targetduration;
+    let maxLatency = config.liveMaxLatencyDuration !== undefined ? config.liveMaxLatencyDuration : config.liveMaxLatencyDurationCount * levelDetails.targetduration;
 
-    if (bufferEnd < Math.max(start-config.maxFragLookUpTolerance, end - maxLatency)) {
+    if (bufferEnd < Math.max(start - config.maxFragLookUpTolerance, end - maxLatency)) {
       let liveSyncPosition = this.liveSyncPosition = this.computeLivePosition(start, levelDetails);
       logger.log(`buffer end: ${bufferEnd.toFixed(3)} is located too far from the end of live sliding playlist, reset currentTime to : ${liveSyncPosition.toFixed(3)}`);
       bufferEnd = liveSyncPosition;
@@ -466,7 +466,7 @@ class StreamController extends TaskLoop {
 
     } else {
       // reach end of playlist
-      foundFrag = fragments[fragLen-1];
+      foundFrag = fragments[fragLen - 1];
     }
     if (foundFrag) {
       frag = foundFrag;
@@ -620,7 +620,7 @@ class StreamController extends TaskLoop {
         media decode error, check this, to avoid seeking back to
         wrong position after a media decode error
       */
-      if(currentTime > video.playbackRate*this.lastCurrentTime) {
+      if(currentTime > video.playbackRate * this.lastCurrentTime) {
         this.lastCurrentTime = currentTime;
       }
       if (BufferHelper.isBuffered(video,currentTime)) {
@@ -1016,7 +1016,7 @@ class StreamController extends TaskLoop {
             audioCodec = this.lastAudioCodec;
           }
           if(audioCodec) {
-            if(audioCodec.indexOf('mp4a.40.5') !==-1) {
+            if(audioCodec.indexOf('mp4a.40.5') !== -1) {
               audioCodec = 'mp4a.40.2';
             } else {
               audioCodec = 'mp4a.40.5';
@@ -1064,7 +1064,7 @@ class StreamController extends TaskLoop {
           ua = navigator.userAgent.toLowerCase();
         if(audioCodec && this.audioCodecSwap) {
           logger.log('swapping playlist audio codec');
-          if(audioCodec.indexOf('mp4a.40.5') !==-1) {
+          if(audioCodec.indexOf('mp4a.40.5') !== -1) {
             audioCodec = 'mp4a.40.2';
           } else {
             audioCodec = 'mp4a.40.5';
@@ -1387,7 +1387,7 @@ class StreamController extends TaskLoop {
     let config = this.config;
     if (config.maxMaxBufferLength >= minLength) {
       // reduce max buffer length as it might be too high. we do this to avoid loop flushing ...
-      config.maxMaxBufferLength/=2;
+      config.maxMaxBufferLength /= 2;
       logger.warn(`main:reduce max buffer length to ${config.maxMaxBufferLength}s`);
       return true;
     }
@@ -1410,7 +1410,7 @@ class StreamController extends TaskLoop {
         let startPosition = media.seeking ? currentTime : this.startPosition,
           startPositionBuffered = BufferHelper.isBuffered(mediaBuffer,startPosition),
           firstbufferedPosition = buffered.start(0),
-          startNotBufferedButClose = !startPositionBuffered && (Math.abs(startPosition-firstbufferedPosition) < config.maxSeekHole);
+          startNotBufferedButClose = !startPositionBuffered && (Math.abs(startPosition - firstbufferedPosition) < config.maxSeekHole);
         // if currentTime not matching with expected startPosition or startPosition not buffered but close to first buffered
         if (currentTime !== startPosition || startNotBufferedButClose) {
           logger.log(`target start position:${startPosition}`);
@@ -1436,7 +1436,7 @@ class StreamController extends TaskLoop {
         if (playheadMoving) {
           // played moving, but was previously stalled => now not stuck anymore
           if (this.stallReported) {
-            logger.warn(`playback not stuck anymore @${currentTime}, after ${Math.round(performance.now()-this.stalled)}ms`);
+            logger.warn(`playback not stuck anymore @${currentTime}, after ${Math.round(performance.now() - this.stalled)}ms`);
             this.stallReported = false;
           }
           this.stalled = undefined;

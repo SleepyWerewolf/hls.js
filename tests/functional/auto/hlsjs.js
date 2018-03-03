@@ -34,14 +34,13 @@ if (onTravis) {
 }
 var browserDescription = browserConfig.name;
 if (browserConfig.version) {
-  browserDescription += ' ('+browserConfig.version+')';
+  browserDescription += ' (' + browserConfig.version + ')';
 }
 if (browserConfig.platform) {
-  browserDescription += ', '+browserConfig.platform;
+  browserDescription += ', ' + browserConfig.platform;
 }
 
 // Browser environment state
-let Hls;
 let stream;
 let video;
 let logString;
@@ -53,10 +52,10 @@ function setupConsoleLogRedirection() {
 
   // append log message
   function append(methodName, msg) {
-    var a = (new Date()).toISOString().replace('T', ' ').replace('Z', '')+': '+msg;
+    var a = (new Date()).toISOString().replace('T', ' ').replace('Z', '') + ': ' + msg;
     var text = document.createTextNode(a);
     var line = document.createElement('pre');
-    line.className = 'line line-'+methodName;
+    line.className = 'line line-' + methodName;
     line.appendChild(text);
     inner.appendChild(line);
 
@@ -116,7 +115,7 @@ function switchToLowestLevel(mode) {
 }
 
 function switchToHighestLevel(mode) {
-  var highestLevel = hls.levels.length-1;
+  var highestLevel = hls.levels.length - 1;
   switch(mode) {
   case 'current':
     hls.currentLevel = highestLevel;
@@ -139,7 +138,7 @@ function startStream(streamUrl, config, callback) {
     }
     window.video = video = document.getElementById('video');
     try {
-      window.hls = hls = new Hls(Object.assign({}, config, {debug: true}));
+      window.hls = hls = new window.Hls(Object.assign({}, config, {debug: true}));
       console.log(navigator.userAgent);
       hls.loadSource(streamUrl);
       hls.attachMedia(video);
@@ -168,21 +167,15 @@ function startStream(streamUrl, config, callback) {
   }
 }
 
-describe('testing hls.js playback in the browser on "'+browserDescription+'"', function() {
+describe('testing hls.js playback in the browser on "' + browserDescription + '"', function() {
 
   before(function() {
-    hls = window.Hls;
-
     setupConsoleLogRedirection();
   });
 
   beforeEach(function() {
-    video = window.video;
-    logString = window.logString;
-    hls = window.hls;
-
     var capabilities = {
-      name: '"'+stream.description+'" on "'+browserDescription+'"',
+      name: '"' + stream.description + '" on "' + browserDescription + '"',
       browserName: browserConfig.name,
       platform: browserConfig.platform,
       version: browserConfig.version,
@@ -190,11 +183,11 @@ describe('testing hls.js playback in the browser on "'+browserDescription+'"', f
     };
     if (onTravis) {
       capabilities['tunnel-identifier'] = process.env.TRAVIS_JOB_NUMBER;
-      capabilities.build = 'HLSJS-'+process.env.TRAVIS_BUILD_NUMBER;
+      capabilities.build = 'HLSJS-' + process.env.TRAVIS_BUILD_NUMBER;
       capabilities.username = process.env.SAUCE_USERNAME;
       capabilities.accessKey = process.env.SAUCE_ACCESS_KEY;
       capabilities.avoidProxy = true;
-      this.browser = new webdriver.Builder().usingServer('http://'+process.env.SAUCE_USERNAME+':'+process.env.SAUCE_ACCESS_KEY+'@ondemand.saucelabs.com:80/wd/hub');
+      this.browser = new webdriver.Builder().usingServer('http://' + process.env.SAUCE_USERNAME + ':' + process.env.SAUCE_ACCESS_KEY + '@ondemand.saucelabs.com:80/wd/hub');
     } else {
       this.browser = new webdriver.Builder();
     }
@@ -202,9 +195,9 @@ describe('testing hls.js playback in the browser on "'+browserDescription+'"', f
     this.browser.manage().timeouts().setScriptTimeout(75000);
     console.log('Retrieving web driver session...');
     return this.browser.getSession().then(function(session) {
-      console.log('Web driver session id: '+session.getId());
+      console.log('Web driver session id: ' + session.getId());
       if (onTravis) {
-        console.log('Job URL: https://saucelabs.com/jobs/'+session.getId());
+        console.log('Job URL: https://saucelabs.com/jobs/' + session.getId());
       }
       return retry(function() {
         console.log('Loading test page...');

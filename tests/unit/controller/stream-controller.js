@@ -147,7 +147,7 @@ describe('StreamController tests', function() {
     ];
 
     var fragLen = fragments.length;
-    var levelDetails ={
+    var levelDetails = {
       startSN : fragments[0].sn,
       endSN : fragments[fragments.length - 1].sn,
       programDateTime : undefined //If this field is undefined SN search is used by default
@@ -250,7 +250,7 @@ describe('StreamController tests', function() {
         on : function(){}
       };
       var streamController = new StreamController(hls);
-      var foundFragment = streamController._findFragmentByPDT(fragments, fragments[fragments.length - 1].pdt );
+      var foundFragment = streamController._findFragmentByPDT(fragments, fragments[fragments.length - 1].pdt);
 
       var resultSN = foundFragment ? foundFragment.sn : -1;
       assert.equal(foundFragment, fragments[4], 'Expected sn 5, found sn segment ' + resultSN);

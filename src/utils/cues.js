@@ -8,14 +8,14 @@ export function newCue(track, startTime, endTime, captionScreen) {
   var text;
   var VTTCue = window.VTTCue || window.TextTrackCue;
 
-  for (var r=0; r<captionScreen.rows.length; r++) {
+  for (var r = 0; r < captionScreen.rows.length; r++) {
     row = captionScreen.rows[r];
     indenting = true;
     indent = 0;
     text = '';
 
     if (!row.isEmpty()) {
-      for (var c=0; c<row.chars.length; c++) {
+      for (var c = 0; c < row.chars.length; c++) {
         if (row.chars[c].uchar.match(/\s/) && indenting) {
           indent++;
         } else {

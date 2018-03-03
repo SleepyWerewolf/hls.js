@@ -87,7 +87,7 @@ export function alignDiscontinuities(lastFrag, lastLevel, details) {
     let lastPDT = lastLevel.details.programDateTime;
     let newPDT = details.programDateTime;
     // date diff is in ms. frag.start is in seconds
-    let sliding = (newPDT - lastPDT)/1000 + lastLevel.details.fragments[0].start;
+    let sliding = (newPDT - lastPDT) / 1000 + lastLevel.details.fragments[0].start;
     if (!isNaN(sliding)) {
       logger.log(`adjusting PTS using programDateTime delta, sliding:${sliding.toFixed(3)}`);
       adjustPts(sliding,details);

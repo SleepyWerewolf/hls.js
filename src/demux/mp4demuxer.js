@@ -57,7 +57,7 @@ class MP4Demuxer {
 
   static probe(data) {
     // ensure we find a moof box in the first 16 kB
-    return MP4Demuxer.findBox( {data : data, start : 0, end : Math.min(data.length, 16384)} ,['moof']).length > 0;
+    return MP4Demuxer.findBox({data : data, start : 0, end : Math.min(data.length, 16384)} ,['moof']).length > 0;
   }
 
   static bin2str(buffer) {
@@ -95,9 +95,9 @@ class MP4Demuxer {
       buffer = buffer.data;
     }
     buffer[offset] = value >> 24;
-    buffer[offset+1] = (value >> 16) & 0xff;
-    buffer[offset+2] = (value >> 8) & 0xff;
-    buffer[offset+3] = value & 0xff;
+    buffer[offset + 1] = (value >> 16) & 0xff;
+    buffer[offset + 2] = (value >> 8) & 0xff;
+    buffer[offset + 3] = value & 0xff;
   }
 
 
@@ -133,7 +133,7 @@ class MP4Demuxer {
           results.push({data : data, start : i + 8, end : endbox});
         } else {
           // recursively search for the next box along the path
-          subresults = MP4Demuxer.findBox({data : data, start : i +8, end : endbox}, path.slice(1));
+          subresults = MP4Demuxer.findBox({data : data, start : i + 8, end : endbox}, path.slice(1));
           if (subresults.length) {
             results = results.concat(subresults);
           }
@@ -274,14 +274,14 @@ class MP4Demuxer {
 
           const hdlr = MP4Demuxer.findBox(trak, ['mdia', 'hdlr'])[0];
           if (hdlr) {
-            const hdlrType = MP4Demuxer.bin2str(hdlr.data.subarray(hdlr.start+8, hdlr.start+12));
+            const hdlrType = MP4Demuxer.bin2str(hdlr.data.subarray(hdlr.start + 8, hdlr.start + 12));
             let type = {'soun' : 'audio', 'vide' : 'video'}[hdlrType];
             if (type) {
               // extract codec info. TODO : parse codec details to be able to build MIME type
-              let codecBox = MP4Demuxer.findBox( trak, ['mdia','minf','stbl','stsd']);
+              let codecBox = MP4Demuxer.findBox(trak, ['mdia','minf','stbl','stsd']);
               if (codecBox.length) {
                 codecBox = codecBox[0];
-                let codecType = MP4Demuxer.bin2str(codecBox.data.subarray(codecBox.start+12, codecBox.start+16));
+                let codecType = MP4Demuxer.bin2str(codecBox.data.subarray(codecBox.start + 12, codecBox.start + 16));
                 logger.log(`MP4Demuxer:${type}:${codecType} found`);
               }
               result[trackId] = {timescale : timescale , type : type};
@@ -363,11 +363,11 @@ class MP4Demuxer {
           var version = tfdt.data[tfdt.start];
           var baseMediaDecodeTime = MP4Demuxer.readUint32(tfdt, 4);
           if (version === 0) {
-            MP4Demuxer.writeUint32(tfdt, 4, baseMediaDecodeTime - timeOffset*timescale);
+            MP4Demuxer.writeUint32(tfdt, 4, baseMediaDecodeTime - timeOffset * timescale);
           } else {
             baseMediaDecodeTime *= Math.pow(2, 32);
             baseMediaDecodeTime += MP4Demuxer.readUint32(tfdt, 8);
-            baseMediaDecodeTime -= timeOffset*timescale;
+            baseMediaDecodeTime -= timeOffset * timescale;
             baseMediaDecodeTime = Math.max(baseMediaDecodeTime,0);
             const upper = Math.floor(baseMediaDecodeTime / (UINT32_MAX + 1));
             const lower = Math.floor(baseMediaDecodeTime % (UINT32_MAX + 1));

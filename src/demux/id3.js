@@ -24,11 +24,11 @@ class ID3 {
     */
     if (offset + 10 <= data.length) {
       //look for 'ID3' identifier
-      if (data[offset] === 0x49 && data[offset+1] === 0x44 && data[offset+2] === 0x33) {
+      if (data[offset] === 0x49 && data[offset + 1] === 0x44 && data[offset + 2] === 0x33) {
         //check version is within range
-        if (data[offset+3] < 0xFF && data[offset+4] < 0xFF) {
+        if (data[offset + 3] < 0xFF && data[offset + 4] < 0xFF) {
           //check size is within range
-          if (data[offset+6] < 0x80 && data[offset+7] < 0x80 && data[offset+8] < 0x80 && data[offset+9] < 0x80) {
+          if (data[offset + 6] < 0x80 && data[offset + 7] < 0x80 && data[offset + 8] < 0x80 && data[offset + 9] < 0x80) {
             return true;
           }
         }
@@ -50,11 +50,11 @@ class ID3 {
     */
     if (offset + 10 <= data.length) {
       //look for '3DI' identifier
-      if (data[offset] === 0x33 && data[offset+1] === 0x44 && data[offset+2] === 0x49) {
+      if (data[offset] === 0x33 && data[offset + 1] === 0x44 && data[offset + 2] === 0x49) {
         //check version is within range
-        if (data[offset+3] < 0xFF && data[offset+4] < 0xFF) {
+        if (data[offset + 3] < 0xFF && data[offset + 4] < 0xFF) {
           //check size is within range
-          if (data[offset+6] < 0x80 && data[offset+7] < 0x80 && data[offset+8] < 0x80 && data[offset+9] < 0x80) {
+          if (data[offset + 6] < 0x80 && data[offset + 7] < 0x80 && data[offset + 8] < 0x80 && data[offset + 9] < 0x80) {
             return true;
           }
         }
@@ -99,9 +99,9 @@ class ID3 {
   static _readSize(data, offset) {
     let size = 0;
     size  = ((data[offset]   & 0x7f) << 21);
-    size |= ((data[offset+1] & 0x7f) << 14);
-    size |= ((data[offset+2] & 0x7f) << 7);
-    size |=  (data[offset+3] & 0x7f);
+    size |= ((data[offset + 1] & 0x7f) << 14);
+    size |= ((data[offset + 2] & 0x7f) << 7);
+    size |=  (data[offset + 3] & 0x7f);
     return size;
   }
 

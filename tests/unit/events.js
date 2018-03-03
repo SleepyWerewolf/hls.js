@@ -5,7 +5,7 @@ function getAllCapsSnakeCaseToCamelCase(eventType) {
   var eventValue = '';
   var previousWasUscore, nextChar;
 
-  for(var i=0;i<eventType.length;i++) {
+  for(var i = 0;i < eventType.length;i++) {
     nextChar = eventType.charAt(i);
     if (i !== 0 && !previousWasUscore) {
       nextChar = nextChar.toLowerCase();

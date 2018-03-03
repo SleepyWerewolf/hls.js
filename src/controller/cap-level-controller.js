@@ -128,7 +128,7 @@ class CapLevelController extends EventHandler {
     // the max level
     let maxLevelIndex = levels.length - 1;
 
-    for (let i = 0; i < levels.length; i+= 1) {
+    for (let i = 0; i < levels.length; i += 1) {
       const level = levels[i];
       if ((level.width >= width || level.height >= height) && atGreatestBandiwdth(level, levels[i + 1])) {
         maxLevelIndex = i;

@@ -255,7 +255,7 @@ class MP4 {
   }
 
   static mvhd(timescale,duration) {
-    duration*=timescale;
+    duration *= timescale;
     const upperWordDuration = Math.floor(duration / (UINT32_MAX + 1));
     const lowerWordDuration = Math.floor(duration % (UINT32_MAX + 1));
     var
@@ -411,12 +411,12 @@ class MP4 {
       0x00, 0x00, 0x00, // flags
 
       0x03, // descriptor_type
-      0x17+configlen, // length
+      0x17 + configlen, // length
       0x00, 0x01, //es_id
       0x00, // stream_priority
 
       0x04, // descriptor_type
-      0x0f+configlen, // length
+      0x0f + configlen, // length
       0x40, //codec : mpeg4_audio
       0x15, // stream_type
       0x00, 0x00, 0x00, // buffer_size
@@ -473,7 +473,7 @@ class MP4 {
 
   static tkhd(track) {
     var id = track.id,
-      duration = track.duration*track.timescale,
+      duration = track.duration * track.timescale,
       width = track.width,
       height = track.height,
       upperWordDuration = Math.floor(duration / (UINT32_MAX + 1)),
@@ -537,11 +537,11 @@ class MP4 {
       MP4.box(MP4.types.tfdt, new Uint8Array([
         0x01, // version 1
         0x00, 0x00, 0x00, // flags
-        (upperWordBaseMediaDecodeTime >>24),
+        (upperWordBaseMediaDecodeTime >> 24),
         (upperWordBaseMediaDecodeTime >> 16) & 0XFF,
         (upperWordBaseMediaDecodeTime >> 8) & 0XFF,
         (upperWordBaseMediaDecodeTime & 0xFF),
-        (lowerWordBaseMediaDecodeTime >>24),
+        (lowerWordBaseMediaDecodeTime >> 24),
         (lowerWordBaseMediaDecodeTime >> 16) & 0XFF,
         (lowerWordBaseMediaDecodeTime >> 8) & 0XFF,
         (lowerWordBaseMediaDecodeTime & 0xFF)
@@ -584,7 +584,7 @@ class MP4 {
   }
 
   static trun(track, offset) {
-    var samples= track.samples || [],
+    var samples = track.samples || [],
       len = samples.length,
       arraylen = 12 + (16 * len),
       array = new Uint8Array(arraylen),
@@ -628,7 +628,7 @@ class MP4 {
         (cts >>> 16) & 0xFF,
         (cts >>> 8) & 0xFF,
         cts & 0xFF // sample_composition_time_offset
-      ],12+16*i);
+      ],12 + 16 * i);
     }
     return MP4.box(MP4.types.trun, array);
   }

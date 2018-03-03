@@ -73,7 +73,7 @@ class AttrList {
       var value = match[2], quote = '"';
 
       if (value.indexOf(quote) === 0 &&
-          value.lastIndexOf(quote) === (value.length-1)) {
+          value.lastIndexOf(quote) === (value.length - 1)) {
         value = value.slice(1, -1);
       }
       attrs[match[1]] = value;

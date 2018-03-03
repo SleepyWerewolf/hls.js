@@ -65,11 +65,11 @@ class TSDemuxer {
 
   static _syncOffset(data) {
     // scan 1000 first bytes
-    const scanwindow  = Math.min(1000,data.length - 3*188);
+    const scanwindow  = Math.min(1000,data.length - 3 * 188);
     let i = 0;
     while(i < scanwindow) {
       // a TS fragment should contain at least 3 TS packets, a PAT, a PMT, and one PID, each starting with 0x47
-      if (data[i] === 0x47 && data[i+188] === 0x47 && data[i+2*188] === 0x47) {
+      if (data[i] === 0x47 && data[i + 188] === 0x47 && data[i + 2 * 188] === 0x47) {
         return i;
       } else {
         i++;
@@ -257,7 +257,7 @@ class TSDemuxer {
             logger.log('reparse from beginning');
             unknownPIDs = false;
             // we set it to -188, the += 188 in the for loop will reset start to 0
-            start = syncOffset-188;
+            start = syncOffset - 188;
           }
           pmtParsed = this.pmtParsed = true;
           break;
@@ -465,18 +465,18 @@ class TSDemuxer {
           pesPts -= 8589934592;
         }
         if (pesFlags & 0x40) {
-          pesDts = (frag[14] & 0x0E ) * 536870912 +// 1 << 29
-            (frag[15] & 0xFF ) * 4194304 +// 1 << 22
-            (frag[16] & 0xFE ) * 16384 +// 1 << 14
-            (frag[17] & 0xFF ) * 128 +// 1 << 7
-            (frag[18] & 0xFE ) / 2;
+          pesDts = (frag[14] & 0x0E) * 536870912 +// 1 << 29
+            (frag[15] & 0xFF) * 4194304 +// 1 << 22
+            (frag[16] & 0xFE) * 16384 +// 1 << 14
+            (frag[17] & 0xFF) * 128 +// 1 << 7
+            (frag[18] & 0xFE) / 2;
           // check if greater than 2^32 -1
           if (pesDts > 4294967295) {
             // decrement 2^33
             pesDts -= 8589934592;
           }
-          if (pesPts - pesDts > 60*90000) {
-            logger.warn(`${Math.round((pesPts - pesDts)/90000)}s delta between PTS and DTS, align them`);
+          if (pesPts - pesDts > 60 * 90000) {
+            logger.warn(`${Math.round((pesPts - pesDts) / 90000)}s delta between PTS and DTS, align them`);
             pesPts = pesDts;
           }
         } else {
@@ -490,27 +490,27 @@ class TSDemuxer {
       stream.size -= payloadStartOffset;
       //reassemble PES packet
       pesData = new Uint8Array(stream.size);
-      for( let j = 0, dataLen = data.length; j < dataLen ; j++) {
+      for(let j = 0, dataLen = data.length; j < dataLen ; j++) {
         frag = data[j];
         let len = frag.byteLength;
         if (payloadStartOffset) {
           if (payloadStartOffset > len) {
             // trim full frag if PES header bigger than frag
-            payloadStartOffset-=len;
+            payloadStartOffset -= len;
             continue;
           } else {
             // trim partial frag if PES header smaller than frag
             frag = frag.subarray(payloadStartOffset);
-            len-=payloadStartOffset;
+            len -= payloadStartOffset;
             payloadStartOffset = 0;
           }
         }
         pesData.set(frag, i);
-        i+=len;
+        i += len;
       }
       if (pesLen) {
         // payload size : remove PES header + PES extension
-        pesLen -= pesHdrLen+3;
+        pesLen -= pesHdrLen + 3;
       }
       return {data: pesData, pts: pesPts, dts: pesDts, len: pesLen};
     } else {
@@ -673,7 +673,7 @@ class TSDemuxer {
               }
             }
           } else if (payloadSize < expGolombDecoder.bytesAvailable) {
-            for (i = 0; i<payloadSize; i++) {
+            for (i = 0; i < payloadSize; i++) {
               expGolombDecoder.readUByte();
             }
           }
@@ -723,7 +723,7 @@ class TSDemuxer {
         if (avcSample) {
           pushAccesUnit(avcSample,track);
         }
-        avcSample = this.avcSample = createAVCSample(false,pes.pts,pes.dts,debug ? 'AUD ': '');
+        avcSample = this.avcSample = createAVCSample(false,pes.pts,pes.dts,debug ? 'AUD ' : '');
         break;
         // Filler Data
       case 12:
@@ -751,7 +751,7 @@ class TSDemuxer {
   _insertSampleInOrder(arr, data) {
     var len = arr.length;
     if (len > 0) {
-      if (data.pts >= arr[len-1].pts) {
+      if (data.pts >= arr[len - 1].pts) {
         arr.push(data);
       } else {
         for (var pos = len - 1; pos >= 0; pos--) {
@@ -771,7 +771,7 @@ class TSDemuxer {
     // try to fallback to previous sample if current one is empty
     if (!avcSample || avcSample.units.length === 0) {
       let track = this._avcTrack, samples = track.samples;
-      avcSample = samples[samples.length-1];
+      avcSample = samples[samples.length - 1];
     }
     if (avcSample) {
       let units = avcSample.units;
@@ -809,7 +809,7 @@ class TSDemuxer {
       if(!value) {
         state = 3;
       } else if (value === 1) {
-        if (lastUnitStart >=0) {
+        if (lastUnitStart >= 0) {
           unit = {data: array.subarray(lastUnitStart, i - state - 1), type: lastUnitType};
           //logger.log('pushing NALU, type/size:' + unit.type + '/' + unit.data.byteLength);
           units.push(unit);
@@ -855,7 +855,7 @@ class TSDemuxer {
         state = 0;
       }
     }
-    if (lastUnitStart >=0 && state >=0) {
+    if (lastUnitStart >= 0 && state >= 0) {
       unit = {data: array.subarray(lastUnitStart, len), type: lastUnitType, state : state};
       units.push(unit);
       //logger.log('pushing NALU, type/size/state:' + unit.type + '/' + unit.data.byteLength + '/' + state);
@@ -964,10 +964,10 @@ class TSDemuxer {
     // if last AAC frame is overflowing, we should ensure timestamps are contiguous:
     // first sample PTS should be equal to last sample PTS + frameDuration
     if(aacOverFlow && aacLastPTS) {
-      var newPTS = aacLastPTS+frameDuration;
-      if(Math.abs(newPTS-pts) > 1) {
-        logger.log(`AAC: align PTS for overlapping frames by ${Math.round((newPTS-pts)/90)}`);
-        pts=newPTS;
+      var newPTS = aacLastPTS + frameDuration;
+      if(Math.abs(newPTS - pts) > 1) {
+        logger.log(`AAC: align PTS for overlapping frames by ${Math.round((newPTS - pts) / 90)}`);
+        pts = newPTS;
       }
     }
 

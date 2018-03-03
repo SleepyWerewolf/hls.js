@@ -72,7 +72,7 @@ class AudioStreamController extends TaskLoop {
 
   //Signal that video PTS was found
   onInitPtsFound(data) {
-    var demuxerId=data.id, cc = data.frag.cc, initPTS = data.initPTS;
+    var demuxerId = data.id, cc = data.frag.cc, initPTS = data.initPTS;
     if(demuxerId === 'main') {
       //Always update the new INIT PTS
       //Can change due level switch
@@ -211,7 +211,7 @@ class AudioStreamController extends TaskLoop {
           // if we are not seeking or if we are seeking but everything (almost) til the end is buffered, let's signal eos
           // we don't compare exactly media.duration === bufferInfo.end as there could be some subtle media duration difference when switching
           // between different renditions. using half frag duration should help cope with these cases.
-          if (!this.media.seeking || (this.media.duration-bufferEnd) < fragPrevious.duration/2) {
+          if (!this.media.seeking || (this.media.duration - bufferEnd) < fragPrevious.duration / 2) {
             // Finalize the media stream
             this.hls.trigger(Event.BUFFER_EOS,{type : 'audio'});
             this.state = State.ENDED;
@@ -223,7 +223,7 @@ class AudioStreamController extends TaskLoop {
         let fragments = trackDetails.fragments,
           fragLen = fragments.length,
           start = fragments[0].start,
-          end = fragments[fragLen-1].start + fragments[fragLen-1].duration,
+          end = fragments[fragLen - 1].start + fragments[fragLen - 1].duration,
           frag;
 
           // When switching audio track, reload audio as close as possible to currentTime
@@ -305,7 +305,7 @@ class AudioStreamController extends TaskLoop {
             }
           } else {
             // reach end of playlist
-            foundFrag = fragments[fragLen-1];
+            foundFrag = fragments[fragLen - 1];
           }
           if (foundFrag) {
             frag = foundFrag;
@@ -459,7 +459,7 @@ class AudioStreamController extends TaskLoop {
 
     this.fragCurrent = null;
     this.state = State.PAUSED;
-    this.waitingFragment=null;
+    this.waitingFragment = null;
     // destroy useless demuxer when switching audio to main
     if (!altAudio) {
       if (this.demuxer) {
@@ -475,7 +475,7 @@ class AudioStreamController extends TaskLoop {
     if(altAudio){
       this.audioSwitch = true;
       //main audio track are handled by stream-controller, just do something if switching to alt audio track
-      this.state=State.IDLE;
+      this.state = State.IDLE;
     }
     this.tick();
   }
@@ -583,8 +583,8 @@ class AudioStreamController extends TaskLoop {
           this.demuxer.push(data.payload, initSegmentData, audioCodec, null, fragCurrent, duration, accurateTimeOffset, initPTS);
         } else {
           logger.log(`unknown video PTS for continuity counter ${cc}, waiting for video PTS before demuxing audio frag ${sn} of [${details.startSN} ,${details.endSN}],track ${trackId}`);
-          this.waitingFragment=data;
-          this.state=State.WAITING_INIT_PTS;
+          this.waitingFragment = data;
+          this.state = State.WAITING_INIT_PTS;
         }
       }
     }
@@ -642,7 +642,7 @@ class AudioStreamController extends TaskLoop {
         fragNew.sn === fragCurrent.sn &&
         fragNew.level === fragCurrent.level &&
         this.state === State.PARSING) {
-      let trackId= this.trackId,
+      let trackId = this.trackId,
         track = this.tracks[trackId],
         hls = this.hls;
 
@@ -661,7 +661,7 @@ class AudioStreamController extends TaskLoop {
       if(audioSwitch && media) {
         if (media.readyState) {
           let currentTime = media.currentTime;
-          logger.log('switching audio track : currentTime:'+ currentTime);
+          logger.log('switching audio track : currentTime:' + currentTime);
           if (currentTime >= data.startPTS) {
             logger.log('switching audio track : flushing all audio');
             this.state = State.BUFFER_FLUSHING;
@@ -673,7 +673,7 @@ class AudioStreamController extends TaskLoop {
           }
         } else {
           //Lets announce that the initial audio track switch flush occur
-          this.audioSwitch=false;
+          this.audioSwitch = false;
           hls.trigger(Event.AUDIO_TRACK_SWITCHED, {id : trackId});
         }
       }
@@ -788,13 +788,13 @@ class AudioStreamController extends TaskLoop {
         if(loadError) {
           loadError++;
         } else {
-          loadError=1;
+          loadError = 1;
         }
         let config = this.config;
         if (loadError <= config.fragLoadingMaxRetry) {
           this.fragLoadError = loadError;
           // exponential backoff capped to config.fragLoadingMaxRetryTimeout
-          var delay = Math.min(Math.pow(2,loadError-1)*config.fragLoadingRetryDelay,config.fragLoadingMaxRetryTimeout);
+          var delay = Math.min(Math.pow(2,loadError - 1) * config.fragLoadingRetryDelay,config.fragLoadingMaxRetryTimeout);
           logger.warn(`audioStreamController: frag loading failed, retry in ${delay} ms`);
           this.retryDate = performance.now() + delay;
           // retry loading state
@@ -823,13 +823,13 @@ class AudioStreamController extends TaskLoop {
       if (data.parent === 'audio' && (this.state === State.PARSING || this.state === State.PARSED)) {
         const media = this.mediaBuffer,
           currentTime = this.media.currentTime,
-          mediaBuffered = media && BufferHelper.isBuffered(media,currentTime) && BufferHelper.isBuffered(media,currentTime+0.5);
+          mediaBuffered = media && BufferHelper.isBuffered(media,currentTime) && BufferHelper.isBuffered(media,currentTime + 0.5);
           // reduce max buf len if current position is buffered
         if (mediaBuffered) {
           const config = this.config;
           if(config.maxMaxBufferLength >= config.maxBufferLength) {
             // reduce max buffer length as it might be too high. we do this to avoid loop flushing ...
-            config.maxMaxBufferLength/=2;
+            config.maxMaxBufferLength /= 2;
             logger.warn(`audio:reduce max buffer length to ${config.maxMaxBufferLength}s`);
           }
           this.state = State.IDLE;

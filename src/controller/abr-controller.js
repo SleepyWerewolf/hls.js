@@ -68,7 +68,7 @@ class AbrController extends EventHandler {
     let hls = this.hls, v = hls.media,frag = this.fragCurrent, loader = frag.loader, minAutoLevel = hls.minAutoLevel;
 
     // if loader has been destroyed or loading has been aborted, stop timer and return
-    if(!loader || ( loader.stats && loader.stats.aborted)) {
+    if(!loader || (loader.stats && loader.stats.aborted)) {
       logger.warn('frag loader destroy or aborted, disarm abandonRules');
       this.clearTimer();
       // reset forced auto level value so that next level will be selected
@@ -113,7 +113,7 @@ class AbrController extends EventHandler {
           // only emergency switch down if it takes less time to load new fragment at lowest level instead
           // of finishing loading current one ...
           if (fragLevelNextLoadedDelay < fragLoadedDelay) {
-            logger.warn(`loading too slow, abort fragment loading and switch to level ${nextLoadLevel}:fragLoadedDelay[${nextLoadLevel}]<fragLoadedDelay[${frag.level-1}];bufferStarvationDelay:${fragLevelNextLoadedDelay.toFixed(1)}<${fragLoadedDelay.toFixed(1)}:${bufferStarvationDelay.toFixed(1)}`);
+            logger.warn(`loading too slow, abort fragment loading and switch to level ${nextLoadLevel}:fragLoadedDelay[${nextLoadLevel}]<fragLoadedDelay[${frag.level - 1}];bufferStarvationDelay:${fragLevelNextLoadedDelay.toFixed(1)}<${fragLoadedDelay.toFixed(1)}:${bufferStarvationDelay.toFixed(1)}`);
             // force next load level in auto mode
             hls.nextLoadLevel = nextLoadLevel;
             // update bw estimate for this fragment before cancelling load (this will help reducing the bw)
@@ -145,7 +145,7 @@ class AbrController extends EventHandler {
         let loadedBytes = (level.loaded ? level.loaded.bytes : 0) + data.stats.loaded;
         let loadedDuration = (level.loaded ? level.loaded.duration : 0) + data.frag.duration;
         level.loaded = {bytes : loadedBytes, duration : loadedDuration};
-        level.realBitrate = Math.round(8*loadedBytes/loadedDuration);
+        level.realBitrate = Math.round(8 * loadedBytes / loadedDuration);
       }
       // if fragment has been loaded to perform a bitrate test,
       if (data.frag.bitrateTest) {
@@ -167,12 +167,12 @@ class AbrController extends EventHandler {
       // in case we use config.startFragPrefetch while media is not attached yet, fragment might be parsed while media not attached yet, but it will only be buffered on media attached
       // as a consequence it could happen really late in the process. meaning that appending duration might appears huge ... leading to underestimated throughput estimation
       let fragLoadingProcessingMs = stats.tparsed - stats.trequest;
-      logger.log(`latency/loading/parsing/append/kbps:${Math.round(stats.tfirst-stats.trequest)}/${Math.round(stats.tload-stats.tfirst)}/${Math.round(stats.tparsed-stats.tload)}/${Math.round(stats.tbuffered-stats.tparsed)}/${Math.round(8*stats.loaded/(stats.tbuffered-stats.trequest))}`);
+      logger.log(`latency/loading/parsing/append/kbps:${Math.round(stats.tfirst - stats.trequest)}/${Math.round(stats.tload - stats.tfirst)}/${Math.round(stats.tparsed - stats.tload)}/${Math.round(stats.tbuffered - stats.tparsed)}/${Math.round(8 * stats.loaded / (stats.tbuffered - stats.trequest))}`);
       this._bwEstimator.sample(fragLoadingProcessingMs,stats.loaded);
       stats.bwEstimate = this._bwEstimator.getEstimate();
       // if fragment has been loaded to perform a bitrate test, (hls.startLevel = -1), store bitrate test delay duration
       if (frag.bitrateTest) {
-        this.bitrateTestDelay = fragLoadingProcessingMs/1000;
+        this.bitrateTestDelay = fragLoadingProcessingMs / 1000;
       } else {
         this.bitrateTestDelay = 0;
       }
@@ -247,12 +247,12 @@ class AbrController extends EventHandler {
           // cap maxLoadingDelay and ensure it is not bigger 'than bitrate test' frag duration
           const maxLoadingDelay = currentFragDuration ? Math.min(currentFragDuration,config.maxLoadingDelay) : config.maxLoadingDelay;
           maxStarvationDelay = maxLoadingDelay - bitrateTestDelay;
-          logger.trace(`bitrate test took ${Math.round(1000*bitrateTestDelay)}ms, set first fragment max fetchDuration to ${Math.round(1000*maxStarvationDelay)} ms`);
+          logger.trace(`bitrate test took ${Math.round(1000 * bitrateTestDelay)}ms, set first fragment max fetchDuration to ${Math.round(1000 * maxStarvationDelay)} ms`);
           // don't use conservative factor on bitrate test
           bwFactor = bwUpFactor = 1;
         }
       }
-      bestLevel = this._findBestLevel(currentLevel,currentFragDuration,avgbw,minAutoLevel,maxAutoLevel,bufferStarvationDelay+maxStarvationDelay,bwFactor,bwUpFactor,levels);
+      bestLevel = this._findBestLevel(currentLevel,currentFragDuration,avgbw,minAutoLevel,maxAutoLevel,bufferStarvationDelay + maxStarvationDelay,bwFactor,bwUpFactor,levels);
       return Math.max(bestLevel,0);
     }
   }
@@ -261,7 +261,7 @@ class AbrController extends EventHandler {
     for (let i = maxAutoLevel; i >= minAutoLevel; i--) {
       let levelInfo = levels[i],
         levelDetails = levelInfo.details,
-        avgDuration = levelDetails ? levelDetails.totalduration/levelDetails.fragments.length : currentFragDuration,
+        avgDuration = levelDetails ? levelDetails.totalduration / levelDetails.fragments.length : currentFragDuration,
         live = levelDetails ? levelDetails.live : false,
         adjustedbw;
       // follow algorithm captured from stagefright :
@@ -285,7 +285,7 @@ class AbrController extends EventHandler {
       // we don't account for max Fetch Duration for live streams, this is to avoid switching down when near the edge of live sliding window ...
       // special case to support startLevel = -1 (bitrateTest) on live streams : in that case we should not exit loop so that _findBestLevel will return -1
         // eslint-disable-next-line no-irregular-whitespace
-        (!fetchDuration || (live  && !this.bitrateTestDelay) || fetchDuration < maxFetchDuration) ) {
+        (!fetchDuration || (live  && !this.bitrateTestDelay) || fetchDuration < maxFetchDuration)) {
         // as we are looping from highest to lowest, this will return the best achievable quality level
         return i;
       }
