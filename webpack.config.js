@@ -23,7 +23,8 @@ const uglifyJsOptions = {
   mangle: {
     toplevel: true,
     eval: true
-  }
+  },
+  sourceMap: true
 };
 
 const baseConfig = {
