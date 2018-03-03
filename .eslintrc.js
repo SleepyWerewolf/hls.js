@@ -26,13 +26,12 @@ module.exports = {
   // see https://github.com/felixge/node-style-guide
   "extends": [
     "eslint:recommended",
-    //"node-style-guide"
+    "standard"
   ],
   "parserOptions": {
     "sourceType": "module"
   },
   "rules": {
-
     // our basic style rules
     "semi": ["error", "always"],
     "indent": [
@@ -50,18 +49,27 @@ module.exports = {
     "space-infix-ops": 2,
     "space-unary-ops": [2, {"words": true, "nonwords": false}],
     "space-in-parens": ["error", "never"],
+    "keyword-spacing": [2, {"before": true, "after": true}],
 
-    "no-undef": 0,
+    "one-var": 0,
 
-    // part of Node Style-guide but ignored
-    // (commented until we enable node-style-guide)
+    // limit code block and line length
     /*
     "max-len": 0,
     "max-statements": 0,
-    "space-after-keywords": 0,
+    "max-depth": 0,
+    "max-nested-callbacks": 0,
+    "max-params": 0,
+    "max-statements": 0,
+    "max-statements-per-line": 0
     */
 
-    // loosening of code-quality rules we may want to fix later (warnings for now)
+    // loosening of code-quality rules we may want to fix later
+    // (warnings for now)
+    "standard/no-callback-literal": 1,
+    "import/first": 1,
+    "no-empty": 1,
+    "no-mixed-operators": 1,
     "no-unused-vars": 1,
     "no-console": 1,
     "no-fallthrough": 1,
