@@ -4,7 +4,7 @@
 import {logger} from '../utils/logger';
 import {ErrorTypes, ErrorDetails} from '../errors';
 
-export function getAudioConfig(observer, data, offset, audioCodec) {
+export function getAudioConfig (observer, data, offset, audioCodec) {
   var adtsObjectType, // :int
     adtsSampleingIndex, // :int
     adtsExtensionSampleingIndex, // :int
@@ -128,21 +128,21 @@ export function getAudioConfig(observer, data, offset, audioCodec) {
   return {config: config, samplerate: adtsSampleingRates[adtsSampleingIndex], channelCount: adtsChanelConfig, codec: ('mp4a.40.' + adtsObjectType), manifestCodec: manifestCodec};
 }
 
-export function isHeaderPattern(data, offset) {
+export function isHeaderPattern (data, offset) {
   return data[offset] === 0xff && (data[offset + 1] & 0xf6) === 0xf0;
 }
 
-export function getHeaderLength(data, offset) {
+export function getHeaderLength (data, offset) {
   return (data[offset + 1] & 0x01 ? 7 : 9);
 }
 
-export function getFullFrameLength(data, offset) {
+export function getFullFrameLength (data, offset) {
   return ((data[offset + 3] & 0x03) << 11) |
     (data[offset + 4] << 3) |
     ((data[offset + 5] & 0xE0) >>> 5);
 }
 
-export function isHeader(data, offset) {
+export function isHeader (data, offset) {
   // Look for ADTS header | 1111 1111 | 1111 X00X | where X can be either 0 or 1
   // Layer bits (position 14 and 15) in header should be always 0 for ADTS
   // More info https://wiki.multimedia.cx/index.php?title=ADTS
@@ -152,7 +152,7 @@ export function isHeader(data, offset) {
   return false;
 }
 
-export function probe(data, offset) {
+export function probe (data, offset) {
   // same as isHeader but we also check that ADTS frame follows last ADTS frame
   // or end of data is reached
   if (offset + 1 < data.length && isHeaderPattern(data, offset)) {
@@ -171,7 +171,7 @@ export function probe(data, offset) {
   return false;
 }
 
-export function initTrackConfig(track, observer, data, offset, audioCodec) {
+export function initTrackConfig (track, observer, data, offset, audioCodec) {
   if (!track.samplerate) {
     var config = getAudioConfig(observer, data, offset, audioCodec);
     track.config = config.config;
@@ -183,11 +183,11 @@ export function initTrackConfig(track, observer, data, offset, audioCodec) {
   }
 }
 
-export function getFrameDuration(samplerate) {
+export function getFrameDuration (samplerate) {
   return 1024 * 90000 / samplerate;
 }
 
-export function parseFrameHeader(data, offset, pts, frameIndex, frameDuration) {
+export function parseFrameHeader (data, offset, pts, frameIndex, frameDuration) {
   var headerLength, frameLength, stamp;
   var length = data.length;
 
@@ -199,14 +199,14 @@ export function parseFrameHeader(data, offset, pts, frameIndex, frameDuration) {
 
   if ((frameLength > 0) && ((offset + headerLength + frameLength) <= length)) {
     stamp = pts + frameIndex * frameDuration;
-    //logger.log(`AAC frame, offset/length/total/pts:${offset+headerLength}/${frameLength}/${data.byteLength}/${(stamp/90).toFixed(0)}`);
+    // logger.log(`AAC frame, offset/length/total/pts:${offset+headerLength}/${frameLength}/${data.byteLength}/${(stamp/90).toFixed(0)}`);
     return {headerLength, frameLength, stamp};
   }
 
   return undefined;
 }
 
-export function appendFrame(track, data, offset, pts, frameIndex) {
+export function appendFrame (track, data, offset, pts, frameIndex) {
   var frameDuration = getFrameDuration(track.samplerate);
   var header = parseFrameHeader(data, offset, pts, frameIndex, frameDuration);
   if (header) {
@@ -214,7 +214,7 @@ export function appendFrame(track, data, offset, pts, frameIndex) {
     var headerLength = header.headerLength;
     var frameLength = header.frameLength;
 
-    //logger.log(`AAC frame, offset/length/total/pts:${offset+headerLength}/${frameLength}/${data.byteLength}/${(stamp/90).toFixed(0)}`);
+    // logger.log(`AAC frame, offset/length/total/pts:${offset+headerLength}/${frameLength}/${data.byteLength}/${(stamp/90).toFixed(0)}`);
     var aacSample = {
       unit: data.subarray(offset + headerLength, offset + headerLength + frameLength),
       pts: stamp,
@@ -229,4 +229,3 @@ export function appendFrame(track, data, offset, pts, frameIndex) {
 
   return undefined;
 }
-

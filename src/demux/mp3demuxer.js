@@ -6,21 +6,20 @@ import {logger} from '../utils/logger';
 import MpegAudio from './mpegaudio';
 
 class MP3Demuxer {
-
-  constructor(observer, remuxer, config) {
+  constructor (observer, remuxer, config) {
     this.observer = observer;
     this.config = config;
     this.remuxer = remuxer;
   }
 
-  resetInitSegment(initSegment, audioCodec, videoCodec, duration) {
+  resetInitSegment (initSegment, audioCodec, videoCodec, duration) {
     this._audioTrack = {container: 'audio/mpeg', type: 'audio', id: -1, sequenceNumber: 0, isAAC: false, samples: [], len: 0, manifestCodec: audioCodec, duration: duration, inputTimeScale: 90000};
   }
 
-  resetTimeStamp() {
+  resetTimeStamp () {
   }
 
-  static probe(data) {
+  static probe (data) {
     // check if data contains ID3 timestamp and MPEG sync word
     var offset, length;
     let id3Data = ID3.getID3Data(data, 0);
@@ -39,7 +38,7 @@ class MP3Demuxer {
   }
 
   // feed incoming data to the front of the parsing pipeline
-  append(data, timeOffset, contiguous, accurateTimeOffset) {
+  append (data, timeOffset, contiguous, accurateTimeOffset) {
     let id3Data = ID3.getID3Data(data, 0);
     let timestamp = ID3.getTimeStamp(id3Data);
     let pts = timestamp ? 90 * timestamp : timeOffset * 90000;
@@ -58,7 +57,7 @@ class MP3Demuxer {
           stamp = frame.sample.pts;
           frameIndex++;
         } else {
-          //logger.log('Unable to parse Mpeg audio frame');
+          // logger.log('Unable to parse Mpeg audio frame');
           break;
         }
       } else if (ID3.isHeader(data, offset)) {
@@ -66,7 +65,7 @@ class MP3Demuxer {
         id3Samples.push({pts: stamp, dts: stamp, data: id3Data});
         offset += id3Data.length;
       } else {
-        //nothing found, keep looking
+        // nothing found, keep looking
         offset++;
       }
     }
@@ -80,7 +79,7 @@ class MP3Demuxer {
       accurateTimeOffset);
   }
 
-  destroy() {
+  destroy () {
   }
 }
 

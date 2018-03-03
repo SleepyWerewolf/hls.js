@@ -28,15 +28,15 @@ const KeySystems = {
  * @returns {Array<MediaSystemConfiguration>} An array of supported configurations
  */
 
-const createWidevineMediaKeySystemConfigurations = function(audioCodecs, videoCodecs, drmSystemOptions) { /* jshint ignore:line */
+const createWidevineMediaKeySystemConfigurations = function (audioCodecs, videoCodecs, drmSystemOptions) { /* jshint ignore:line */
   const baseConfig = {
-    //initDataTypes: ['keyids', 'mp4'],
-    //label: "",
-    //persistentState: "not-allowed", // or "required" ?
-    //distinctiveIdentifier: "not-allowed", // or "required" ?
-    //sessionTypes: ['temporary'],
+    // initDataTypes: ['keyids', 'mp4'],
+    // label: "",
+    // persistentState: "not-allowed", // or "required" ?
+    // distinctiveIdentifier: "not-allowed", // or "required" ?
+    // sessionTypes: ['temporary'],
     videoCapabilities: [
-      //{ contentType: 'video/mp4; codecs="avc1.42E01E"' }
+      // { contentType: 'video/mp4; codecs="avc1.42E01E"' }
     ]
   };
 
@@ -62,8 +62,8 @@ const createWidevineMediaKeySystemConfigurations = function(audioCodecs, videoCo
  * @param {Array<string>} videoCodecs List of required video codecs to support
  * @returns {Array<MediaSystemConfiguration> | null} A non-empty Array of MediaKeySystemConfiguration objects or `null`
  */
-const getSupportedMediaKeySystemConfigurations = function(keySystem, audioCodecs, videoCodecs) {
-  switch(keySystem) {
+const getSupportedMediaKeySystemConfigurations = function (keySystem, audioCodecs, videoCodecs) {
+  switch (keySystem) {
   case KeySystems.WIDEVINE:
     return createWidevineMediaKeySystemConfigurations(audioCodecs, videoCodecs);
   default:
@@ -79,12 +79,11 @@ const getSupportedMediaKeySystemConfigurations = function(keySystem, audioCodecs
  * @constructor
  */
 class EMEController extends EventHandler {
-
   /**
      * @constructs
      * @param {Hls} hls Our Hls.js instance
      */
-  constructor(hls) {
+  constructor (hls) {
     super(hls,
       Event.MEDIA_ATTACHED,
       Event.MANIFEST_PARSED
@@ -110,9 +109,9 @@ class EMEController extends EventHandler {
      * @param {string} keySystem Identifier for the key-system, see `KeySystems` enum
      * @returns {string} License server URL for key-system (if any configured, otherwise causes error)
      */
-  getLicenseServerUrl(keySystem) {
+  getLicenseServerUrl (keySystem) {
     let url;
-    switch(keySystem) {
+    switch (keySystem) {
     case KeySystems.WIDEVINE:
       url = this._widevineLicenseUrl;
       break;
@@ -140,8 +139,7 @@ class EMEController extends EventHandler {
      * @param {Array<string>} audioCodecs List of required audio codecs to support
      * @param {Array<string>} videoCodecs List of required video codecs to support
      */
-  _attemptKeySystemAccess(keySystem, audioCodecs, videoCodecs) {
-
+  _attemptKeySystemAccess (keySystem, audioCodecs, videoCodecs) {
     // TODO: add other DRM "options"
 
     const mediaKeySystemConfigs = getSupportedMediaKeySystemConfigurations(keySystem, audioCodecs, videoCodecs);
@@ -163,7 +161,7 @@ class EMEController extends EventHandler {
       });
   }
 
-  get requestMediaKeySystemAccess() {
+  get requestMediaKeySystemAccess () {
     if (!this._requestMediaKeySystemAccess) {
       throw new Error('No requestMediaKeySystemAccess function configured');
     }
@@ -176,8 +174,7 @@ class EMEController extends EventHandler {
      * @param {string} keySystem
      * @param {MediaKeySystemAccess} mediaKeySystemAccess https://developer.mozilla.org/en-US/docs/Web/API/MediaKeySystemAccess
      */
-  _onMediaKeySystemAccessObtained(keySystem, mediaKeySystemAccess) {
-
+  _onMediaKeySystemAccessObtained (keySystem, mediaKeySystemAccess) {
     logger.log(`Access for key-system "${keySystem}" obtained`);
 
     const mediaKeysListItem = {
@@ -207,11 +204,10 @@ class EMEController extends EventHandler {
      * Handles key-creation (represents access to CDM). We are going to create key-sessions upon this
      * for all existing keys where no session exists yet.
      */
-  _onMediaKeysCreated() {
-
+  _onMediaKeysCreated () {
     // check for all key-list items if a session exists, otherwise, create one
     this._mediaKeysList.forEach((mediaKeysListItem) => {
-      if(!mediaKeysListItem.mediaKeysSession) {
+      if (!mediaKeysListItem.mediaKeysSession) {
         mediaKeysListItem.mediaKeysSession = mediaKeysListItem.mediaKeys.createSession();
         this._onNewMediaKeySession(mediaKeysListItem.mediaKeysSession);
       }
@@ -222,7 +218,7 @@ class EMEController extends EventHandler {
      *
      * @param {*} keySession
      */
-  _onNewMediaKeySession(keySession) {
+  _onNewMediaKeySession (keySession) {
     logger.log(`New key-system session ${keySession.sessionId}`);
 
     keySession.addEventListener('message', (event) => {
@@ -230,8 +226,7 @@ class EMEController extends EventHandler {
     }, false);
   }
 
-  _onKeySessionMessage(keySession, message) {
-
+  _onKeySessionMessage (keySession, message) {
     logger.log('Got EME message event, creating license request');
 
     this._requestLicense(message, (data) => {
@@ -240,8 +235,7 @@ class EMEController extends EventHandler {
     });
   }
 
-  _onMediaEncrypted(initDataType, initData) {
-
+  _onMediaEncrypted (initDataType, initData) {
     logger.log(`Media is encrypted using "${initDataType}" init data type`);
 
     this._isMediaEncrypted = true;
@@ -252,9 +246,8 @@ class EMEController extends EventHandler {
     this._generateRequestWithPreferredKeySession();
   }
 
-  _attemptSetMediaKeys() {
+  _attemptSetMediaKeys () {
     if (!this._hasSetMediaKeys) {
-
       // FIXME: see if we can/want/need-to really to deal with several potential key-sessions?
       const keysListItem = this._mediaKeysList[0];
       if (!keysListItem || !keysListItem.mediaKeys) {
@@ -274,8 +267,7 @@ class EMEController extends EventHandler {
     }
   }
 
-  _generateRequestWithPreferredKeySession() {
-
+  _generateRequestWithPreferredKeySession () {
     // FIXME: see if we can/want/need-to really to deal with several potential key-sessions?
     const keysListItem = this._mediaKeysList[0];
     if (!keysListItem) {
@@ -330,7 +322,7 @@ class EMEController extends EventHandler {
      * @param {function} callback Called when XHR has succeeded
      * @returns {XMLHttpRequest} Unsent (but opened state) XHR object
      */
-  _createLicenseXhr(url, keyMessage, callback) {
+  _createLicenseXhr (url, keyMessage, callback) {
     const xhr = new XMLHttpRequest();
     const licenseXhrSetup = this._licenseXhrSetup;
 
@@ -372,9 +364,8 @@ class EMEController extends EventHandler {
      * @param {function} callback Called when XHR has succeeded
      *
      */
-  _onLicenseRequestReadyStageChange(xhr, url, keyMessage, callback) {
-
-    switch(xhr.readyState) {
+  _onLicenseRequestReadyStageChange (xhr, url, keyMessage, callback) {
+    switch (xhr.readyState) {
     case 4:
       if (xhr.status === 200) {
         this._requestLicenseFailureCount = 0;
@@ -399,7 +390,6 @@ class EMEController extends EventHandler {
       }
       break;
     }
-
   }
 
   /**
@@ -407,11 +397,10 @@ class EMEController extends EventHandler {
      * @param {ArrayBuffer} keyMessage
      * @returns {ArrayBuffer} Challenge data posted to license server
      */
-  _generateLicenseRequestChallenge(keysListItem, keyMessage) {
+  _generateLicenseRequestChallenge (keysListItem, keyMessage) {
     let challenge;
 
     if (keysListItem.mediaKeySystemDomain === KeySystems.PLAYREADY) {
-
       logger.error('PlayReady is not supported (yet)');
 
       // from https://github.com/MicrosoftEdge/Demos/blob/master/eme/scripts/demo.js
@@ -434,7 +423,6 @@ class EMEController extends EventHandler {
             }
         }
         */
-
     } else if (keysListItem.mediaKeySystemDomain === KeySystems.WIDEVINE) {
       // For Widevine CDMs, the challenge is the keyMessage.
       challenge = keyMessage;
@@ -445,8 +433,7 @@ class EMEController extends EventHandler {
     return challenge;
   }
 
-  _requestLicense(keyMessage, callback) {
-
+  _requestLicense (keyMessage, callback) {
     logger.log('Requesting content license for key-system');
 
     const keysListItem = this._mediaKeysList[0];
@@ -468,7 +455,7 @@ class EMEController extends EventHandler {
     xhr.send(this._generateLicenseRequestChallenge(keysListItem, keyMessage));
   }
 
-  onMediaAttached(data) {
+  onMediaAttached (data) {
     if (!this._emeEnabled) {
       return;
     }
@@ -485,7 +472,7 @@ class EMEController extends EventHandler {
     });
   }
 
-  onManifestParsed(data) {
+  onManifestParsed (data) {
     if (!this._emeEnabled) {
       return;
     }

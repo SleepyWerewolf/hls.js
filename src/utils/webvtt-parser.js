@@ -2,14 +2,14 @@ import VTTParser from './vttparser';
 import {utf8ArrayToStr} from '../demux/id3';
 
 // String.prototype.startsWith is not supported in IE11
-const startsWith = function(inputString, searchString, position) {
+const startsWith = function (inputString, searchString, position) {
   return inputString.substr(position || 0, searchString.length) === searchString;
 };
 
-const cueString2millis = function(timeString) {
+const cueString2millis = function (timeString) {
   let ts = parseInt(timeString.substr(-3));
-  let secs = parseInt(timeString.substr(-6,2));
-  let mins = parseInt(timeString.substr(-9,2));
+  let secs = parseInt(timeString.substr(-6, 2));
+  let mins = parseInt(timeString.substr(-9, 2));
   let hours = timeString.length > 9 ? parseInt(timeString.substr(0, timeString.indexOf(':'))) : 0;
 
   if (isNaN(ts) || isNaN(secs) || isNaN(mins) || isNaN(hours)) {
@@ -24,7 +24,7 @@ const cueString2millis = function(timeString) {
 };
 
 // From https://github.com/darkskyapp/string-hash
-const hash = function(text) {
+const hash = function (text) {
   let hash = 5381;
   let i = text.length;
   while (i) {
@@ -33,7 +33,7 @@ const hash = function(text) {
   return (hash >>> 0).toString();
 };
 
-const calculateOffset = function(vttCCs, cc, presentationTime) {
+const calculateOffset = function (vttCCs, cc, presentationTime) {
   let currCC = vttCCs[cc];
   let prevCC = vttCCs[currCC.prevCC];
 
@@ -58,7 +58,7 @@ const calculateOffset = function(vttCCs, cc, presentationTime) {
 };
 
 const WebVTTParser = {
-  parse: function(vttByteArray, syncPTS, vttCCs, cc, callBack, errorCallBack) {
+  parse: function (vttByteArray, syncPTS, vttCCs, cc, callBack, errorCallBack) {
     // Convert byteArray into string, replacing any somewhat exotic linefeeds with "\n", then split on that character.
     let re = /\r\n|\n\r|\n|\r/g;
     // Uint8Array.prototype.reduce is not implemented in IE11
@@ -76,7 +76,7 @@ const WebVTTParser = {
     // Create parser object using VTTCue with TextTrackCue fallback on certain browsers.
     let parser = new VTTParser();
 
-    parser.oncue = function(cue) {
+    parser.oncue = function (cue) {
       // Adjust cue timing; clamp cues to start no earlier than - and drop cues that don't end after - 0 on timeline.
       let currCC = vttCCs[cc];
       let cueOffset = vttCCs.ccOffset;
@@ -110,11 +110,11 @@ const WebVTTParser = {
       }
     };
 
-    parser.onparsingerror = function(e) {
+    parser.onparsingerror = function (e) {
       parsingError = e;
     };
 
-    parser.onflush = function() {
+    parser.onflush = function () {
       if (parsingError && errorCallBack) {
         errorCallBack(parsingError);
         return;
@@ -151,7 +151,7 @@ const WebVTTParser = {
             if (localTime === -1) {
               parsingError = new Error(`Malformed X-TIMESTAMP-MAP: ${line}`);
             }
-          } catch(e) {
+          } catch (e) {
             parsingError = new Error(`Malformed X-TIMESTAMP-MAP: ${line}`);
           }
           // Return without parsing X-TIMESTAMP-MAP line.

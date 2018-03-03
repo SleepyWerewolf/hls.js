@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export default (function() {
+export default (function () {
   if (typeof window !== 'undefined' && window.VTTCue) {
     return window.VTTCue;
   }
@@ -33,7 +33,7 @@ export default (function() {
     right: true
   };
 
-  function findDirectionSetting(value) {
+  function findDirectionSetting (value) {
     if (typeof value !== 'string') {
       return false;
     }
@@ -41,7 +41,7 @@ export default (function() {
     return dir ? value.toLowerCase() : false;
   }
 
-  function findAlignSetting(value) {
+  function findAlignSetting (value) {
     if (typeof value !== 'string') {
       return false;
     }
@@ -49,7 +49,7 @@ export default (function() {
     return align ? value.toLowerCase() : false;
   }
 
-  function extend(obj) {
+  function extend (obj) {
     var i = 1;
     for (; i < arguments.length; i++) {
       var cobj = arguments[i];
@@ -61,7 +61,7 @@ export default (function() {
     return obj;
   }
 
-  function VTTCue(startTime, endTime, text) {
+  function VTTCue (startTime, endTime, text) {
     var cue = this;
     var isIE8 = (function () {
       if (typeof navigator === 'undefined') {

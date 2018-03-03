@@ -14,7 +14,7 @@ var BinarySearch = {
      *
      * @return {*} The object if it is found or null otherwise.
      */
-  search: function(list, comparisonFunction) {
+  search: function (list, comparisonFunction) {
     var minIndex = 0;
     var maxIndex = list.length - 1;
     var currentIndex = null;

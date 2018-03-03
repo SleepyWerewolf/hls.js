@@ -15,6 +15,6 @@ module.exports = {
         "expect": false,
         "it": false,
         "sinon": false,
-        "xit": false,
+        "xit": false
     },
 };

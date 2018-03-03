@@ -9,8 +9,7 @@ import {getMediaSource} from '../helper/mediasource-helper';
 const MediaSource = getMediaSource();
 
 class Demuxer {
-
-  constructor(hls, id) {
+  constructor (hls, id) {
     this.hls = hls;
     this.id = id;
     // observer setup
@@ -24,11 +23,11 @@ class Demuxer {
       observer.removeListener(event, ...data);
     };
 
-    var forwardMessage = function(ev,data) {
+    var forwardMessage = function (ev, data) {
       data = data || {};
       data.frag = this.frag;
       data.id = this.id;
-      hls.trigger(ev,data);
+      hls.trigger(ev, data);
     }.bind(this);
 
     // forward events to main thread
@@ -42,7 +41,7 @@ class Demuxer {
     observer.on(Event.INIT_PTS_FOUND, forwardMessage);
 
     const typeSupported = {
-      mp4 : MediaSource.isTypeSupported('video/mp4'),
+      mp4: MediaSource.isTypeSupported('video/mp4'),
       mpeg: MediaSource.isTypeSupported('audio/mpeg'),
       mp3: MediaSource.isTypeSupported('audio/mp4; codecs="mp3"')
     };
@@ -56,25 +55,25 @@ class Demuxer {
         w = this.w = work(require.resolve('../demux/demuxer-worker.js'));
         this.onwmsg = this.onWorkerMessage.bind(this);
         w.addEventListener('message', this.onwmsg);
-        w.onerror = function(event) {
-          hls.trigger(Event.ERROR, {type: ErrorTypes.OTHER_ERROR, details: ErrorDetails.INTERNAL_EXCEPTION, fatal: true, event : 'demuxerWorker', err : {message : event.message + ' (' + event.filename + ':' + event.lineno + ')'}});
+        w.onerror = function (event) {
+          hls.trigger(Event.ERROR, {type: ErrorTypes.OTHER_ERROR, details: ErrorDetails.INTERNAL_EXCEPTION, fatal: true, event: 'demuxerWorker', err: {message: event.message + ' (' + event.filename + ':' + event.lineno + ')'}});
         };
-        w.postMessage({cmd: 'init', typeSupported : typeSupported, vendor : vendor, id : id, config: JSON.stringify(config)});
-      } catch(err) {
+        w.postMessage({cmd: 'init', typeSupported: typeSupported, vendor: vendor, id: id, config: JSON.stringify(config)});
+      } catch (err) {
         logger.error('error while initializing DemuxerWorker, fallback on DemuxerInline');
         if (w) {
           // revoke the Object URL that was used to create demuxer worker, so as not to leak it
           URL.revokeObjectURL(w.objectURL);
         }
-        this.demuxer = new DemuxerInline(observer,typeSupported,config,vendor);
+        this.demuxer = new DemuxerInline(observer, typeSupported, config, vendor);
         this.w = undefined;
       }
     } else {
-      this.demuxer = new DemuxerInline(observer,typeSupported,config, vendor);
+      this.demuxer = new DemuxerInline(observer, typeSupported, config, vendor);
     }
   }
 
-  destroy() {
+  destroy () {
     let w = this.w;
     if (w) {
       w.removeEventListener('message', this.onwmsg);
@@ -94,9 +93,9 @@ class Demuxer {
     }
   }
 
-  push(data, initSegment, audioCodec, videoCodec, frag, duration,accurateTimeOffset,defaultInitPTS) {
+  push (data, initSegment, audioCodec, videoCodec, frag, duration, accurateTimeOffset, defaultInitPTS) {
     const w = this.w;
-    const timeOffset = !isNaN(frag.startDTS) ? frag.startDTS  : frag.start;
+    const timeOffset = !isNaN(frag.startDTS) ? frag.startDTS : frag.start;
     const decryptdata = frag.decryptdata;
     const lastFrag = this.frag;
     const discontinuity = !(lastFrag && (frag.cc === lastFrag.cc));
@@ -112,19 +111,19 @@ class Demuxer {
     this.frag = frag;
     if (w) {
       // post fragment payload as transferable objects for ArrayBuffer (no copy)
-      w.postMessage({cmd: 'demux', data, decryptdata, initSegment, audioCodec, videoCodec, timeOffset, discontinuity, trackSwitch, contiguous, duration, accurateTimeOffset,defaultInitPTS}, data instanceof ArrayBuffer ? [data] : []);
+      w.postMessage({cmd: 'demux', data, decryptdata, initSegment, audioCodec, videoCodec, timeOffset, discontinuity, trackSwitch, contiguous, duration, accurateTimeOffset, defaultInitPTS}, data instanceof ArrayBuffer ? [data] : []);
     } else {
       let demuxer = this.demuxer;
       if (demuxer) {
-        demuxer.push(data, decryptdata, initSegment, audioCodec, videoCodec, timeOffset, discontinuity, trackSwitch, contiguous, duration, accurateTimeOffset,defaultInitPTS);
+        demuxer.push(data, decryptdata, initSegment, audioCodec, videoCodec, timeOffset, discontinuity, trackSwitch, contiguous, duration, accurateTimeOffset, defaultInitPTS);
       }
     }
   }
 
-  onWorkerMessage(ev) {
+  onWorkerMessage (ev) {
     let data = ev.data,
       hls = this.hls;
-    switch(data.event) {
+    switch (data.event) {
     case 'init':
       // revoke the Object URL that was used to create demuxer worker, so as not to leak it
       URL.revokeObjectURL(this.w.objectURL);
@@ -147,4 +146,3 @@ class Demuxer {
 }
 
 export default Demuxer;
-

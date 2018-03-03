@@ -5,8 +5,7 @@
 import {logger} from '../utils/logger';
 
 class ExpGolomb {
-
-  constructor(data) {
+  constructor (data) {
     this.data = data;
     // the number of bytes left to examine in this.data
     this.bytesAvailable = data.byteLength;
@@ -17,7 +16,7 @@ class ExpGolomb {
   }
 
   // ():void
-  loadWord() {
+  loadWord () {
     var
       data = this.data,
       bytesAvailable = this.bytesAvailable,
@@ -35,7 +34,7 @@ class ExpGolomb {
   }
 
   // (count:int):void
-  skipBits(count) {
+  skipBits (count) {
     var skipBytes; // :int
     if (this.bitsAvailable > count) {
       this.word <<= count;
@@ -52,7 +51,7 @@ class ExpGolomb {
   }
 
   // (size:int):uint
-  readBits(size) {
+  readBits (size) {
     var
       bits = Math.min(this.bitsAvailable, size), // :uint
       valu = this.word >>> (32 - bits); // :uint
@@ -74,10 +73,10 @@ class ExpGolomb {
   }
 
   // ():uint
-  skipLZ() {
+  skipLZ () {
     var leadingZeroCount; // :uint
     for (leadingZeroCount = 0; leadingZeroCount < this.bitsAvailable; ++leadingZeroCount) {
-      if (0 !== (this.word & (0x80000000 >>> leadingZeroCount))) {
+      if ((this.word & (0x80000000 >>> leadingZeroCount)) !== 0) {
         // the first bit of working word is 1
         this.word <<= leadingZeroCount;
         this.bitsAvailable -= leadingZeroCount;
@@ -90,23 +89,23 @@ class ExpGolomb {
   }
 
   // ():void
-  skipUEG() {
+  skipUEG () {
     this.skipBits(1 + this.skipLZ());
   }
 
   // ():void
-  skipEG() {
+  skipEG () {
     this.skipBits(1 + this.skipLZ());
   }
 
   // ():uint
-  readUEG() {
+  readUEG () {
     var clz = this.skipLZ(); // :uint
     return this.readBits(clz + 1) - 1;
   }
 
   // ():int
-  readEG() {
+  readEG () {
     var valu = this.readUEG(); // :int
     if (0x01 & valu) {
       // the number is odd if the low order bit is set
@@ -118,21 +117,21 @@ class ExpGolomb {
 
   // Some convenience functions
   // :Boolean
-  readBoolean() {
-    return 1 === this.readBits(1);
+  readBoolean () {
+    return this.readBits(1) === 1;
   }
 
   // ():int
-  readUByte() {
+  readUByte () {
     return this.readBits(8);
   }
 
   // ():int
-  readUShort() {
+  readUShort () {
     return this.readBits(16);
   }
   // ():int
-  readUInt() {
+  readUInt () {
     return this.readBits(32);
   }
 
@@ -143,7 +142,7 @@ class ExpGolomb {
    * @param count {number} the number of entries in this scaling list
    * @see Recommendation ITU-T H.264, Section 7.3.2.1.1.1
    */
-  skipScalingList(count) {
+  skipScalingList (count) {
     var
       lastScale = 8,
       nextScale = 8,
@@ -167,13 +166,13 @@ class ExpGolomb {
    * sequence parameter set, including the dimensions of the
    * associated video frames.
    */
-  readSPS() {
+  readSPS () {
     var
       frameCropLeftOffset = 0,
       frameCropRightOffset = 0,
       frameCropTopOffset = 0,
       frameCropBottomOffset = 0,
-      profileIdc,profileCompat,levelIdc,
+      profileIdc, profileCompat, levelIdc,
       numRefFramesInPicOrderCntCycle, picWidthInMbsMinus1,
       picHeightInMapUnitsMinus1,
       frameMbsOnlyFlag,
@@ -192,16 +191,16 @@ class ExpGolomb {
     profileIdc = readUByte(); // profile_idc
     profileCompat = readBits(5); // constraint_set[0-4]_flag, u(5)
     skipBits(3); // reserved_zero_3bits u(3),
-    levelIdc = readUByte(); //level_idc u(8)
+    levelIdc = readUByte(); // level_idc u(8)
     skipUEG(); // seq_parameter_set_id
     // some profiles have more optional data we don't need
     if (profileIdc === 100 ||
         profileIdc === 110 ||
         profileIdc === 122 ||
         profileIdc === 244 ||
-        profileIdc === 44  ||
-        profileIdc === 83  ||
-        profileIdc === 86  ||
+        profileIdc === 44 ||
+        profileIdc === 83 ||
+        profileIdc === 86 ||
         profileIdc === 118 ||
         profileIdc === 128) {
       var chromaFormatIdc = readUEG();
@@ -227,13 +226,13 @@ class ExpGolomb {
     skipUEG(); // log2_max_frame_num_minus4
     var picOrderCntType = readUEG();
     if (picOrderCntType === 0) {
-      readUEG(); //log2_max_pic_order_cnt_lsb_minus4
+      readUEG(); // log2_max_pic_order_cnt_lsb_minus4
     } else if (picOrderCntType === 1) {
       skipBits(1); // delta_pic_order_always_zero_flag
       skipEG(); // offset_for_non_ref_pic
       skipEG(); // offset_for_top_to_bottom_field
       numRefFramesInPicOrderCntCycle = readUEG();
-      for(i = 0; i < numRefFramesInPicOrderCntCycle; i++) {
+      for (i = 0; i < numRefFramesInPicOrderCntCycle; i++) {
         skipEG(); // offset_for_ref_frame[ i ]
       }
     }
@@ -252,29 +251,29 @@ class ExpGolomb {
       frameCropTopOffset = readUEG();
       frameCropBottomOffset = readUEG();
     }
-    let pixelRatio = [1,1];
+    let pixelRatio = [1, 1];
     if (readBoolean()) {
       // vui_parameters_present_flag
       if (readBoolean()) {
         // aspect_ratio_info_present_flag
         const aspectRatioIdc = readUByte();
         switch (aspectRatioIdc) {
-        case 1: pixelRatio = [1,1]; break;
-        case 2: pixelRatio = [12,11]; break;
-        case 3: pixelRatio = [10,11]; break;
-        case 4: pixelRatio = [16,11]; break;
-        case 5: pixelRatio = [40,33]; break;
-        case 6: pixelRatio = [24,11]; break;
-        case 7: pixelRatio = [20,11]; break;
-        case 8: pixelRatio = [32,11]; break;
-        case 9: pixelRatio = [80,33]; break;
-        case 10: pixelRatio = [18,11]; break;
-        case 11: pixelRatio = [15,11]; break;
-        case 12: pixelRatio = [64,33]; break;
-        case 13: pixelRatio = [160,99]; break;
-        case 14: pixelRatio = [4,3]; break;
-        case 15: pixelRatio = [3,2]; break;
-        case 16: pixelRatio = [2,1]; break;
+        case 1: pixelRatio = [1, 1]; break;
+        case 2: pixelRatio = [12, 11]; break;
+        case 3: pixelRatio = [10, 11]; break;
+        case 4: pixelRatio = [16, 11]; break;
+        case 5: pixelRatio = [40, 33]; break;
+        case 6: pixelRatio = [24, 11]; break;
+        case 7: pixelRatio = [20, 11]; break;
+        case 8: pixelRatio = [32, 11]; break;
+        case 9: pixelRatio = [80, 33]; break;
+        case 10: pixelRatio = [18, 11]; break;
+        case 11: pixelRatio = [15, 11]; break;
+        case 12: pixelRatio = [64, 33]; break;
+        case 13: pixelRatio = [160, 99]; break;
+        case 14: pixelRatio = [4, 3]; break;
+        case 15: pixelRatio = [3, 2]; break;
+        case 16: pixelRatio = [2, 1]; break;
         case 255: {
           pixelRatio = [readUByte() << 8 | readUByte(), readUByte() << 8 | readUByte()];
           break;
@@ -285,11 +284,11 @@ class ExpGolomb {
     return {
       width: Math.ceil((((picWidthInMbsMinus1 + 1) * 16) - frameCropLeftOffset * 2 - frameCropRightOffset * 2)),
       height: ((2 - frameMbsOnlyFlag) * (picHeightInMapUnitsMinus1 + 1) * 16) - ((frameMbsOnlyFlag ? 2 : 4) * (frameCropTopOffset + frameCropBottomOffset)),
-      pixelRatio : pixelRatio
+      pixelRatio: pixelRatio
     };
   }
 
-  readSliceType() {
+  readSliceType () {
     // skip NALu type
     this.readUByte();
     // discard first_mb_in_slice

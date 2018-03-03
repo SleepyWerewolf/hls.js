@@ -6,21 +6,20 @@ import {logger} from '../utils/logger';
 import ID3 from '../demux/id3';
 
 class AACDemuxer {
-
-  constructor(observer, remuxer, config) {
+  constructor (observer, remuxer, config) {
     this.observer = observer;
     this.config = config;
     this.remuxer = remuxer;
   }
 
-  resetInitSegment(initSegment, audioCodec, videoCodec, duration) {
+  resetInitSegment (initSegment, audioCodec, videoCodec, duration) {
     this._audioTrack = {container: 'audio/adts', type: 'audio', id: 0, sequenceNumber: 0, isAAC: true, samples: [], len: 0, manifestCodec: audioCodec, duration: duration, inputTimeScale: 90000};
   }
 
-  resetTimeStamp() {
+  resetTimeStamp () {
   }
 
-  static probe(data) {
+  static probe (data) {
     if (!data) {
       return false;
     }
@@ -41,7 +40,7 @@ class AACDemuxer {
   }
 
   // feed incoming data to the front of the parsing pipeline
-  append(data, timeOffset, contiguous, accurateTimeOffset) {
+  append (data, timeOffset, contiguous, accurateTimeOffset) {
     let track = this._audioTrack;
     let id3Data = ID3.getID3Data(data, 0) || [];
     let timestamp = ID3.getTimeStamp(id3Data);
@@ -70,7 +69,7 @@ class AACDemuxer {
         id3Samples.push({pts: stamp, dts: stamp, data: id3Data});
         offset += id3Data.length;
       } else {
-        //nothing found, keep looking
+        // nothing found, keep looking
         offset++;
       }
     }
@@ -84,9 +83,8 @@ class AACDemuxer {
       accurateTimeOffset);
   }
 
-  destroy() {
+  destroy () {
   }
-
 }
 
 export default AACDemuxer;

@@ -4,19 +4,18 @@ const ATTR_LIST_REGEX = /\s*(.+?)\s*=((?:\".*?\")|.*?)(?:,|$)/g;
 
 // adapted from https://github.com/kanongil/node-m3u8parse/blob/master/attrlist.js
 class AttrList {
-
-  constructor(attrs) {
+  constructor (attrs) {
     if (typeof attrs === 'string') {
       attrs = AttrList.parseAttrList(attrs);
     }
-    for(var attr in attrs){
-      if(attrs.hasOwnProperty(attr)) {
+    for (var attr in attrs) {
+      if (attrs.hasOwnProperty(attr)) {
         this[attr] = attrs[attr];
       }
     }
   }
 
-  decimalInteger(attrName) {
+  decimalInteger (attrName) {
     const intValue = parseInt(this[attrName], 10);
     if (intValue > Number.MAX_SAFE_INTEGER) {
       return Infinity;
@@ -24,8 +23,8 @@ class AttrList {
     return intValue;
   }
 
-  hexadecimalInteger(attrName) {
-    if(this[attrName]) {
+  hexadecimalInteger (attrName) {
+    if (this[attrName]) {
       let stringValue = (this[attrName] || '0x').slice(2);
       stringValue = ((stringValue.length & 1) ? '0' : '') + stringValue;
 
@@ -39,7 +38,7 @@ class AttrList {
     }
   }
 
-  hexadecimalIntegerAsNumber(attrName) {
+  hexadecimalIntegerAsNumber (attrName) {
     const intValue = parseInt(this[attrName], 16);
     if (intValue > Number.MAX_SAFE_INTEGER) {
       return Infinity;
@@ -47,15 +46,15 @@ class AttrList {
     return intValue;
   }
 
-  decimalFloatingPoint(attrName) {
+  decimalFloatingPoint (attrName) {
     return parseFloat(this[attrName]);
   }
 
-  enumeratedString(attrName) {
+  enumeratedString (attrName) {
     return this[attrName];
   }
 
-  decimalResolution(attrName) {
+  decimalResolution (attrName) {
     const res = DECIMAL_RESOLUTION_REGEX.exec(this[attrName]);
     if (res === null) {
       return undefined;
@@ -66,7 +65,7 @@ class AttrList {
     };
   }
 
-  static parseAttrList(input) {
+  static parseAttrList (input) {
     var match, attrs = {};
     ATTR_LIST_REGEX.lastIndex = 0;
     while ((match = ATTR_LIST_REGEX.exec(input)) !== null) {
@@ -80,7 +79,6 @@ class AttrList {
     }
     return attrs;
   }
-
 }
 
 export default AttrList;

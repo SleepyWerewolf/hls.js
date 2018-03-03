@@ -7,8 +7,7 @@ import EventHandler from '../event-handler';
 import ID3 from '../demux/id3';
 
 class ID3TrackController extends EventHandler {
-
-  constructor(hls) {
+  constructor (hls) {
     super(hls,
       Event.MEDIA_ATTACHED,
       Event.MEDIA_DETACHING,
@@ -17,23 +16,23 @@ class ID3TrackController extends EventHandler {
     this.media = undefined;
   }
 
-  destroy() {
+  destroy () {
     EventHandler.prototype.destroy.call(this);
   }
 
   // Add ID3 metatadata text track.
-  onMediaAttached(data) {
+  onMediaAttached (data) {
     this.media = data.media;
     if (!this.media) {
-      return;
+
     }
   }
 
-  onMediaDetaching() {
+  onMediaDetaching () {
     this.media = undefined;
   }
 
-  onFragParsingMetadata(data) {
+  onFragParsingMetadata (data) {
     const fragment = data.frag;
     const samples = data.samples;
 
@@ -59,7 +58,7 @@ class ID3TrackController extends EventHandler {
           endTime += 0.0001;
         }
 
-        for(let j = 0; j < frames.length; j++) {
+        for (let j = 0; j < frames.length; j++) {
           const frame = frames[j];
           // Safari doesn't put the timestamp frame in the TextTrack
           if (!ID3.isTimeStampFrame(frame)) {

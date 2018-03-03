@@ -16,13 +16,13 @@ describe('OutputFilter', () => {
       },
       getCallCount: () => callCount,
       getLastCueAdded: () => lastCueArguments,
-      didCaptionsTrackInvoke: () => captionsTrackCalled,
+      didCaptionsTrackInvoke: () => captionsTrackCalled
     };
   };
 
   let timelineController, outputFilter;
 
-  beforeEach(function() {
+  beforeEach(function () {
     timelineController = createMockTimelineController();
     outputFilter = new OutputFilter(timelineController, 1);
   });

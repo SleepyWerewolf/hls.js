@@ -6,7 +6,7 @@ import {ErrorTypes, ErrorDetails} from '../errors';
 import {logger} from '../utils/logger';
 
 class Decrypter {
-  constructor(observer, config, {removePKCS7Padding = true} = {}) {
+  constructor (observer, config, {removePKCS7Padding = true} = {}) {
     this.logEnabled = true;
     this.observer = observer;
     this.config = config;
@@ -14,7 +14,7 @@ class Decrypter {
     // built in decryptor expects PKCS7 padding
     if (removePKCS7Padding) {
       try {
-        const browserCrypto = crypto ? crypto : self.crypto;
+        const browserCrypto = crypto || self.crypto;
         this.subtle = browserCrypto.subtle || browserCrypto.webkitSubtle;
       } catch (e) {
         console.warn(e.message);
@@ -23,11 +23,11 @@ class Decrypter {
     this.disableWebCrypto = !this.subtle;
   }
 
-  isSync() {
+  isSync () {
     return (this.disableWebCrypto && this.config.enableSoftwareAES);
   }
 
-  decrypt(data, key, iv, callback) {
+  decrypt (data, key, iv, callback) {
     if (this.disableWebCrypto && this.config.enableSoftwareAES) {
       if (this.logEnabled) {
         logger.log('JS AES decrypt');
@@ -47,28 +47,28 @@ class Decrypter {
       const subtle = this.subtle;
       if (this.key !== key) {
         this.key = key;
-        this.fastAesKey = new FastAESKey(subtle,key);
+        this.fastAesKey = new FastAESKey(subtle, key);
       }
 
-      this.fastAesKey.expandKey().
-        then((aesKey) => {
+      this.fastAesKey.expandKey()
+        .then((aesKey) => {
           // decrypt using web crypto
-          let crypto = new AESCrypto(subtle,iv);
-          crypto.decrypt(data, aesKey).
-            catch ((err) => {
+          let crypto = new AESCrypto(subtle, iv);
+          crypto.decrypt(data, aesKey)
+            .catch((err) => {
               this.onWebCryptoError(err, data, key, iv, callback);
-            }).
-            then((result) => {
+            })
+            .then((result) => {
               callback(result);
             });
-        }).
-        catch ((err) => {
+        })
+        .catch((err) => {
           this.onWebCryptoError(err, data, key, iv, callback);
         });
     }
   }
 
-  onWebCryptoError(err, data, key, iv, callback) {
+  onWebCryptoError (err, data, key, iv, callback) {
     if (this.config.enableSoftwareAES) {
       logger.log('WebCrypto Error, disable WebCrypto API');
       this.disableWebCrypto = true;
@@ -76,11 +76,11 @@ class Decrypter {
       this.decrypt(data, key, iv, callback);
     } else {
       logger.error(`decrypting error : ${err.message}`);
-      this.observer.trigger(Event.ERROR, {type : ErrorTypes.MEDIA_ERROR, details : ErrorDetails.FRAG_DECRYPT_ERROR, fatal : true, reason : err.message});
+      this.observer.trigger(Event.ERROR, {type: ErrorTypes.MEDIA_ERROR, details: ErrorDetails.FRAG_DECRYPT_ERROR, fatal: true, reason: err.message});
     }
   }
 
-  destroy() {
+  destroy () {
     let decryptor = this.decryptor;
     if (decryptor) {
       decryptor.destroy();

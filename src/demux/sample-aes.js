@@ -5,19 +5,18 @@
 import Decrypter from '../crypt/decrypter';
 
 class SampleAesDecrypter {
-
-  constructor(observer, config, decryptdata, discardEPB) {
+  constructor (observer, config, decryptdata, discardEPB) {
     this.decryptdata = decryptdata;
     this.discardEPB = discardEPB;
     this.decrypter = new Decrypter(observer, config, {removePKCS7Padding: false});
   }
 
-  decryptBuffer(encryptedData, callback) {
+  decryptBuffer (encryptedData, callback) {
     this.decrypter.decrypt(encryptedData, this.decryptdata.key.buffer, this.decryptdata.iv.buffer, callback);
   }
 
   // AAC - encrypt all full 16 bytes blocks starting from offset 16
-  decryptAacSample(samples, sampleIndex, callback, sync) {
+  decryptAacSample (samples, sampleIndex, callback, sync) {
     let curUnit = samples[sampleIndex].unit;
     let encryptedData = curUnit.subarray(16, curUnit.length - curUnit.length % 16);
     let encryptedBuffer = encryptedData.buffer.slice(
@@ -35,7 +34,7 @@ class SampleAesDecrypter {
     });
   }
 
-  decryptAacSamples(samples, sampleIndex, callback) {
+  decryptAacSamples (samples, sampleIndex, callback) {
     for (;; sampleIndex++) {
       if (sampleIndex >= samples.length) {
         callback();
@@ -57,7 +56,7 @@ class SampleAesDecrypter {
   }
 
   // AVC - encrypt one 16 bytes block out of ten, starting from offset 32
-  getAvcEncryptedData(decodedData) {
+  getAvcEncryptedData (decodedData) {
     let encryptedDataLen = Math.floor((decodedData.length - 48) / 160) * 16 + 16;
     let encryptedData = new Int8Array(encryptedDataLen);
     let outputPos = 0;
@@ -67,7 +66,7 @@ class SampleAesDecrypter {
     return encryptedData;
   }
 
-  getAvcDecryptedUnit(decodedData, decryptedData) {
+  getAvcDecryptedUnit (decodedData, decryptedData) {
     decryptedData = new Uint8Array(decryptedData);
     let inputPos = 0;
     for (let outputPos = 32; outputPos <= decodedData.length - 16; outputPos += 160, inputPos += 16) {
@@ -76,7 +75,7 @@ class SampleAesDecrypter {
     return decodedData;
   }
 
-  decryptAvcSample(samples, sampleIndex, unitIndex, callback, curUnit, sync) {
+  decryptAvcSample (samples, sampleIndex, unitIndex, callback, curUnit, sync) {
     let decodedData = this.discardEPB(curUnit.data);
     let encryptedData = this.getAvcEncryptedData(decodedData);
     let localthis = this;
@@ -90,7 +89,7 @@ class SampleAesDecrypter {
     });
   }
 
-  decryptAvcSamples(samples, sampleIndex, unitIndex, callback) {
+  decryptAvcSamples (samples, sampleIndex, unitIndex, callback) {
     for (;; sampleIndex++, unitIndex = 0) {
       if (sampleIndex >= samples.length) {
         callback();

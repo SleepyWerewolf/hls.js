@@ -4,13 +4,12 @@ const sinon = require('sinon');
 import Event from '../../../src/events.js';
 import Demuxer from '../../../src/demux/demuxer.js';
 
-describe('Demuxer tests', function() {
-
+describe('Demuxer tests', function () {
   it('Demuxer constructor no worker', function () {
-    var config = {enableWorker : false};  //Option debug : true crashes mocha
+    var config = {enableWorker: false}; // Option debug : true crashes mocha
     var hls = {
-      trigger : function(){},
-      config :config
+      trigger: function () {},
+      config: config
     };
     var id = 'main';
     var demux = new Demuxer(hls, id);
@@ -24,10 +23,10 @@ describe('Demuxer tests', function() {
   });
 
   it('Demuxer constructor with worker', function () {
-    var config = {enableWorker : true};  //Option debug : true crashes mocha
+    var config = {enableWorker: true}; // Option debug : true crashes mocha
     var hls = {
-      trigger : function(){},
-      config :config
+      trigger: function () {},
+      config: config
     };
     var id = 'main';
     var demux = new Demuxer(hls, id);
@@ -41,10 +40,10 @@ describe('Demuxer tests', function() {
   });
 
   it('Destroy demuxer worker', function () {
-    var config = {enableWorker : true};  //Option debug : true crashes mocha
+    var config = {enableWorker: true}; // Option debug : true crashes mocha
     var hls = {
-      trigger : function(){},
-      config :config
+      trigger: function () {},
+      config: config
     };
     var id = 'main';
     var demux = new Demuxer(hls, id);
@@ -55,12 +54,11 @@ describe('Demuxer tests', function() {
     assert.equal(demux.w, null, 'Worker destroyed');
   });
 
-
   it('Destroy demuxer no worker', function () {
-    var config = {enableWorker : false};  //Option debug : true crashes mocha
+    var config = {enableWorker: false}; // Option debug : true crashes mocha
     var hls = {
-      trigger : function(){},
-      config :config
+      trigger: function () {},
+      config: config
     };
     var id = 'main';
     var demux = new Demuxer(hls, id);
@@ -72,28 +70,28 @@ describe('Demuxer tests', function() {
   });
 
   it('Push data to demuxer with worker', function () {
-    var config = {enableWorker : true};  //Option debug : true crashes mocha
+    var config = {enableWorker: true}; // Option debug : true crashes mocha
     var hls = {
-      trigger : function(){},
-      config :config
+      trigger: function () {},
+      config: config
     };
     var id = 'main';
     var demux = new Demuxer(hls, id);
     var currentFrag = {
-      cc : 100,
-      sn : 5,
-      level : 1
+      cc: 100,
+      sn: 5,
+      level: 1
     };
-    //Config for push
+    // Config for push
     demux.frag = currentFrag;
 
     var newFrag = {
-      decryptdata : {},
-      cc : 100,
-      sn : 6,
-      level : 1,
-      startDTS : 1000,
-      start : undefined
+      decryptdata: {},
+      cc: 100,
+      sn: 6,
+      level: 1,
+      startDTS: 1000,
+      start: undefined
     };
     var data = new ArrayBuffer(8),
       initSegment = {},
@@ -103,8 +101,7 @@ describe('Demuxer tests', function() {
       accurateTimeOffset = {},
       defaultInitPTS = {};
 
-
-    var stub = sinon.stub(demux.w, 'postMessage').callsFake(function(obj1, obj2){
+    var stub = sinon.stub(demux.w, 'postMessage').callsFake(function (obj1, obj2) {
       assert.equal(obj1.cmd, 'demux', 'cmd');
       assert.equal(obj1.data, data, 'data');
       assert.equal(obj1.decryptdata, newFrag.decryptdata, 'decryptdata');
@@ -120,34 +117,34 @@ describe('Demuxer tests', function() {
       assert.equal(obj2[0], data, 'ArrayBuffer');
     });
 
-    demux.push(data, initSegment, audioCodec, videoCodec, newFrag, duration,accurateTimeOffset,defaultInitPTS);
+    demux.push(data, initSegment, audioCodec, videoCodec, newFrag, duration, accurateTimeOffset, defaultInitPTS);
 
     assert.ok(stub.calledOnce, 'postMessage called once');
   });
 
   it('Push data to demuxer with no worker', function () {
-    var config = {enableWorker : false};  //Option debug : true crashes mocha
+    var config = {enableWorker: false}; // Option debug : true crashes mocha
     var hls = {
-      trigger : function(){},
-      config :config
+      trigger: function () {},
+      config: config
     };
     var id = 'main';
     var demux = new Demuxer(hls, id);
     var currentFrag = {
-      cc : 100,
-      sn : 5,
-      level : 1
+      cc: 100,
+      sn: 5,
+      level: 1
     };
-    //Config for push
+    // Config for push
     demux.frag = currentFrag;
 
     var newFrag = {
-      decryptdata : {},
-      cc : 200,
-      sn : 5,
-      level : 2,
-      startDTS : undefined,
-      start : 1000
+      decryptdata: {},
+      cc: 200,
+      sn: 5,
+      level: 2,
+      startDTS: undefined,
+      start: 1000
     };
     var data = {},
       initSegment = {},
@@ -157,8 +154,7 @@ describe('Demuxer tests', function() {
       accurateTimeOffset = {},
       defaultInitPTS = {};
 
-
-    var stub = sinon.stub(demux.demuxer, 'push').callsFake(function(obj1, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9, obj10, obj11, obj12, obj13){
+    var stub = sinon.stub(demux.demuxer, 'push').callsFake(function (obj1, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9, obj10, obj11, obj12, obj13) {
       assert.equal(obj1, data);
       assert.equal(obj2, newFrag.decryptdata);
       assert.equal(obj3, initSegment);
@@ -173,32 +169,29 @@ describe('Demuxer tests', function() {
       assert.equal(obj12, defaultInitPTS);
     });
 
-    demux.push(data, initSegment, audioCodec, videoCodec, newFrag, duration,accurateTimeOffset,defaultInitPTS);
-
+    demux.push(data, initSegment, audioCodec, videoCodec, newFrag, duration, accurateTimeOffset, defaultInitPTS);
 
     assert.ok(stub.calledWith(data, newFrag.decryptdata, initSegment, audioCodec, videoCodec, newFrag.start, true, true, false, duration, accurateTimeOffset, defaultInitPTS));
-
   });
 
-
   it('Sent worker generic message', function () {
-    var config = {enableWorker : true};  //Option debug : true crashes mocha
+    var config = {enableWorker: true}; // Option debug : true crashes mocha
     var hls = {
-      trigger : function(event, data){},
-      config :config
+      trigger: function (event, data) {},
+      config: config
     };
     var id = 'main';
     var demux = new Demuxer(hls, id);
     demux.frag = {};
 
     var evt = {
-      data : {
-        event : {},
-        data : {}
+      data: {
+        event: {},
+        data: {}
       }
     };
 
-    hls.trigger = function(event, data){
+    hls.trigger = function (event, data) {
       assert.equal(event, evt.data.event);
       assert.equal(data, evt.data.data);
       assert.equal(demux.frag, evt.data.data.frag);
@@ -206,22 +199,21 @@ describe('Demuxer tests', function() {
     };
 
     demux.onWorkerMessage(evt);
-
   });
 
   it('Sent worker message type main', function () {
-    var config = {enableWorker : true};  //Option debug : true crashes mocha
+    var config = {enableWorker: true}; // Option debug : true crashes mocha
     var hls = {
-      trigger : function(event, data){},
-      config :config
+      trigger: function (event, data) {},
+      config: config
     };
     var id = 'main';
     var demux = new Demuxer(hls, id);
 
     var evt = {
-      data : {
-        event : 'init',
-        data : {}
+      data: {
+        event: 'init',
+        data: {}
       }
     };
 
@@ -230,24 +222,23 @@ describe('Demuxer tests', function() {
     demux.onWorkerMessage(evt);
 
     assert.ok(spy.calledOnce);
-
   });
 
   it('Sent worker message FRAG_PARSING_DATA', function () {
-    var config = {enableWorker : true};  //Option debug : true crashes mocha
+    var config = {enableWorker: true}; // Option debug : true crashes mocha
     var hls = {
-      trigger : function(){},
-      config :config
+      trigger: function () {},
+      config: config
     };
     var id = 'main';
     var demux = new Demuxer(hls, id);
 
     var evt = {
-      data : {
-        event : Event.FRAG_PARSING_DATA,
-        data  : {},
-        data1 : {},
-        data2 : {}
+      data: {
+        event: Event.FRAG_PARSING_DATA,
+        data: {},
+        data1: {},
+        data2: {}
       }
     };
 
@@ -256,5 +247,4 @@ describe('Demuxer tests', function() {
     assert.ok(evt.data.data.data1);
     assert.ok(evt.data.data.data2);
   });
-
 });

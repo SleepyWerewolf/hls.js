@@ -1,6 +1,6 @@
 import {fixLineBreaks} from './vttparser';
 
-export function newCue(track, startTime, endTime, captionScreen) {
+export function newCue (track, startTime, endTime, captionScreen) {
   var row;
   var cue;
   var indenting;
@@ -23,7 +23,7 @@ export function newCue(track, startTime, endTime, captionScreen) {
           indenting = false;
         }
       }
-      //To be used for cleaning-up orphaned roll-up captions
+      // To be used for cleaning-up orphaned roll-up captions
       row.cueStartTime = startTime;
 
       // Give a slight bump to the endTime if it's equal to startTime to avoid a SyntaxError in IE
@@ -53,4 +53,3 @@ export function newCue(track, startTime, endTime, captionScreen) {
     }
   }
 }
-

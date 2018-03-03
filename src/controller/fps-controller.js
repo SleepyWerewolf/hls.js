@@ -6,20 +6,19 @@ import Event from '../events';
 import EventHandler from '../event-handler';
 import {logger} from '../utils/logger';
 
-class FPSController extends EventHandler{
-
-  constructor(hls) {
+class FPSController extends EventHandler {
+  constructor (hls) {
     super(hls, Event.MEDIA_ATTACHING);
   }
 
-  destroy() {
+  destroy () {
     if (this.timer) {
       clearInterval(this.timer);
     }
     this.isVideoPlaybackQualityAvailable = false;
   }
 
-  onMediaAttaching(data) {
+  onMediaAttaching (data) {
     const config = this.hls.config;
     if (config.capLevelOnFPSDrop) {
       const video = this.video = data.media instanceof HTMLVideoElement ? data.media : null;
@@ -31,7 +30,7 @@ class FPSController extends EventHandler{
     }
   }
 
-  checkFPS(video, decodedFrames, droppedFrames) {
+  checkFPS (video, decodedFrames, droppedFrames) {
     let currentTime = performance.now();
     if (decodedFrames) {
       if (this.lastTime) {
@@ -42,7 +41,7 @@ class FPSController extends EventHandler{
           hls = this.hls;
         hls.trigger(Event.FPS_DROP, {currentDropped: currentDropped, currentDecoded: currentDecoded, totalDroppedFrames: droppedFrames});
         if (droppedFPS > 0) {
-          //logger.log('checkFPS : droppedFPS/decodedFPS:' + droppedFPS/(1000 * currentDecoded / currentPeriod));
+          // logger.log('checkFPS : droppedFPS/decodedFPS:' + droppedFPS/(1000 * currentDecoded / currentPeriod));
           if (currentDropped > hls.config.fpsDroppedMonitoringThreshold * currentDecoded) {
             let currentLevel = hls.currentLevel;
             logger.warn('drop FPS ratio greater than max allowed value for currentLevel: ' + currentLevel);
@@ -61,7 +60,7 @@ class FPSController extends EventHandler{
     }
   }
 
-  checkFPSInterval() {
+  checkFPSInterval () {
     const video = this.video;
     if (video) {
       if (this.isVideoPlaybackQualityAvailable) {
@@ -75,4 +74,3 @@ class FPSController extends EventHandler{
 }
 
 export default FPSController;
-

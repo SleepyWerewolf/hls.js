@@ -9,7 +9,7 @@ import OutputFilter from '../utils/output-filter';
 import WebVTTParser from '../utils/webvtt-parser';
 import {logger} from '../utils/logger';
 
-function clearCurrentCues(track) {
+function clearCurrentCues (track) {
   if (track && track.cues) {
     while (track.cues.length > 0) {
       track.removeCue(track.cues[0]);
@@ -17,17 +17,16 @@ function clearCurrentCues(track) {
   }
 }
 
-function reuseVttTextTrack(inUseTrack, manifestTrack) {
+function reuseVttTextTrack (inUseTrack, manifestTrack) {
   return inUseTrack && inUseTrack.label === manifestTrack.name && !(inUseTrack.textTrack1 || inUseTrack.textTrack2);
 }
 
-function intersection(x1, x2, y1, y2) {
+function intersection (x1, x2, y1, y2) {
   return Math.min(x2, y2) - Math.max(x1, y1);
 }
 
 class TimelineController extends EventHandler {
-
-  constructor(hls) {
+  constructor (hls) {
     super(hls, Event.MEDIA_ATTACHING,
       Event.MEDIA_DETACHING,
       Event.FRAG_PARSING_USERDATA,
@@ -56,7 +55,7 @@ class TimelineController extends EventHandler {
     }
   }
 
-  addCues(channel, startTime, endTime, screen) {
+  addCues (channel, startTime, endTime, screen) {
     // skip cues which overlap more than 50% with previously parsed time ranges
     const ranges = this.cueRanges;
     let merged = false;
@@ -79,7 +78,7 @@ class TimelineController extends EventHandler {
   }
 
   // Triggered when an initial PTS is found; used for synchronisation of WebVTT.
-  onInitPtsFound(data) {
+  onInitPtsFound (data) {
     if (typeof this.initPTS === 'undefined') {
       this.initPTS = data.initPTS;
     }
@@ -94,7 +93,7 @@ class TimelineController extends EventHandler {
     }
   }
 
-  getExistingTrack(channelNumber) {
+  getExistingTrack (channelNumber) {
     const media = this.media;
     if (media) {
       for (let i = 0; i < media.textTracks.length; i++) {
@@ -108,12 +107,12 @@ class TimelineController extends EventHandler {
     return null;
   }
 
-  sendAddTrackEvent(track, media) {
+  sendAddTrackEvent (track, media) {
     var e = null;
     try {
       e = new window.Event('addtrack');
     } catch (err) {
-      //for IE11
+      // for IE11
       e = document.createEvent('Event');
       e.initEvent('addtrack', false, false);
     }
@@ -121,10 +120,10 @@ class TimelineController extends EventHandler {
     media.dispatchEvent(e);
   }
 
-  createCaptionsTrack(track) {
+  createCaptionsTrack (track) {
     let trackVar = 'textTrack' + track;
     if (!this[trackVar]) {
-      //Enable reuse of existing text track.
+      // Enable reuse of existing text track.
       let existingTrack = this.getExistingTrack(track);
       if (!existingTrack) {
         const textTrack = this.createTextTrack('captions', this.config['captionsTextTrack' + track + 'Label'], this.config['captionsTextTrack' + track + 'LanguageCode']);
@@ -141,36 +140,35 @@ class TimelineController extends EventHandler {
     }
   }
 
-  createTextTrack(kind, label, lang) {
+  createTextTrack (kind, label, lang) {
     const media = this.media;
     if (media) {
       return media.addTextTrack(kind, label, lang);
     }
   }
 
-  destroy() {
+  destroy () {
     EventHandler.prototype.destroy.call(this);
   }
 
-  onMediaAttaching(data) {
+  onMediaAttaching (data) {
     this.media = data.media;
     this._cleanTracks();
   }
 
-  onMediaDetaching() {
+  onMediaDetaching () {
     clearCurrentCues(this.textTrack1);
     clearCurrentCues(this.textTrack2);
   }
 
-  onManifestLoading() {
+  onManifestLoading () {
     this.lastSn = -1; // Detect discontiguity in fragment parsing
     this.prevCC = -1;
     this.vttCCs = {ccOffset: 0, presentationOffset: 0}; // Detect discontinuity in subtitle manifests
     this._cleanTracks();
-
   }
 
-  _cleanTracks() {
+  _cleanTracks () {
     // clear outdated subtitles
     const media = this.media;
     if (media) {
@@ -183,7 +181,7 @@ class TimelineController extends EventHandler {
     }
   }
 
-  onManifestLoaded(data) {
+  onManifestLoaded (data) {
     this.textTracks = [];
     this.unparsedVttFrags = this.unparsedVttFrags || [];
     this.initPTS = undefined;
@@ -215,11 +213,11 @@ class TimelineController extends EventHandler {
     }
   }
 
-  onLevelSwitching() {
+  onLevelSwitching () {
     this.enabled = this.hls.currentLevel.closedCaptions !== 'NONE';
   }
 
-  onFragLoaded(data) {
+  onFragLoaded (data) {
     let frag = data.frag,
       payload = data.payload;
     if (frag.type === 'main') {
@@ -254,7 +252,7 @@ class TimelineController extends EventHandler {
     }
   }
 
-  _parseVTTs(frag, payload) {
+  _parseVTTs (frag, payload) {
     let vttCCs = this.vttCCs;
     if (!vttCCs[frag.cc]) {
       vttCCs[frag.cc] = {start: frag.start, prevCC: this.prevCC, new: true};
@@ -290,7 +288,7 @@ class TimelineController extends EventHandler {
     });
   }
 
-  onFragDecrypted(data) {
+  onFragDecrypted (data) {
     var decryptedData = data.payload,
       frag = data.frag;
 
@@ -304,7 +302,7 @@ class TimelineController extends EventHandler {
     }
   }
 
-  onFragParsingUserdata(data) {
+  onFragParsingUserdata (data) {
     // push all of the CEA-708 messages into the interpreter
     // immediately. It will create the proper timestamps based on our PTS value
     if (this.enabled && this.config.enableCEA708Captions) {
@@ -315,7 +313,7 @@ class TimelineController extends EventHandler {
     }
   }
 
-  extractCea608Data(byteArray) {
+  extractCea608Data (byteArray) {
     var count = byteArray[0] & 31;
     var position = 2;
     var tmpByte, ccbyte1, ccbyte2, ccValid, ccType;

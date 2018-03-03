@@ -8,7 +8,7 @@ class ID3 {
    * @param {number} offset - The offset at which to start searching
    * @return {boolean} - True if an ID3 header is found
    */
-  static isHeader(data, offset) {
+  static isHeader (data, offset) {
     /*
     * http://id3.org/id3v2.3.0
     * [0]     = 'I'
@@ -23,11 +23,11 @@ class ID3 {
     * Where yy is less than $FF, xx is the 'flags' byte and zz is less than $80
     */
     if (offset + 10 <= data.length) {
-      //look for 'ID3' identifier
+      // look for 'ID3' identifier
       if (data[offset] === 0x49 && data[offset + 1] === 0x44 && data[offset + 2] === 0x33) {
-        //check version is within range
+        // check version is within range
         if (data[offset + 3] < 0xFF && data[offset + 4] < 0xFF) {
-          //check size is within range
+          // check size is within range
           if (data[offset + 6] < 0x80 && data[offset + 7] < 0x80 && data[offset + 8] < 0x80 && data[offset + 9] < 0x80) {
             return true;
           }
@@ -44,16 +44,16 @@ class ID3 {
    * @param {number} offset - The offset at which to start searching
    * @return {boolean} - True if an ID3 footer is found
    */
-  static isFooter(data, offset) {
+  static isFooter (data, offset) {
     /*
     * The footer is a copy of the header, but with a different identifier
     */
     if (offset + 10 <= data.length) {
-      //look for '3DI' identifier
+      // look for '3DI' identifier
       if (data[offset] === 0x33 && data[offset + 1] === 0x44 && data[offset + 2] === 0x49) {
-        //check version is within range
+        // check version is within range
         if (data[offset + 3] < 0xFF && data[offset + 4] < 0xFF) {
-          //check size is within range
+          // check size is within range
           if (data[offset + 6] < 0x80 && data[offset + 7] < 0x80 && data[offset + 8] < 0x80 && data[offset + 9] < 0x80) {
             return true;
           }
@@ -70,19 +70,19 @@ class ID3 {
    * @param {number} offset - The offset at which to start searching
    * @return {Uint8Array} - The block of data containing any ID3 tags found
    */
-  static getID3Data(data, offset) {
+  static getID3Data (data, offset) {
     const front = offset;
     let length = 0;
 
     while (ID3.isHeader(data, offset)) {
-      //ID3 header is 10 bytes
+      // ID3 header is 10 bytes
       length += 10;
 
       const size = ID3._readSize(data, offset + 6);
       length += size;
 
       if (ID3.isFooter(data, offset + 10)) {
-        //ID3 footer is 10 bytes
+        // ID3 footer is 10 bytes
         length += 10;
       }
 
@@ -96,12 +96,12 @@ class ID3 {
     return undefined;
   }
 
-  static _readSize(data, offset) {
+  static _readSize (data, offset) {
     let size = 0;
-    size  = ((data[offset]   & 0x7f) << 21);
+    size = ((data[offset] & 0x7f) << 21);
     size |= ((data[offset + 1] & 0x7f) << 14);
     size |= ((data[offset + 2] & 0x7f) << 7);
-    size |=  (data[offset + 3] & 0x7f);
+    size |= (data[offset + 3] & 0x7f);
     return size;
   }
 
@@ -110,9 +110,9 @@ class ID3 {
    * @param {Uint8Array} data - Block of data containing one or more ID3 tags
    * @return {number} - The timestamp
    */
-  static getTimeStamp(data) {
+  static getTimeStamp (data) {
     const frames = ID3.getID3Frames(data);
-    for(let i = 0; i < frames.length; i++) {
+    for (let i = 0; i < frames.length; i++) {
       const frame = frames[i];
       if (ID3.isTimeStampFrame(frame)) {
         return ID3._readTimeStamp(frame);
@@ -126,11 +126,11 @@ class ID3 {
    * Returns true if the ID3 frame is an Elementary Stream timestamp frame
    * @param {ID3 frame} frame
    */
-  static isTimeStampFrame(frame) {
+  static isTimeStampFrame (frame) {
     return (frame && frame.key === 'PRIV' && frame.info === 'com.apple.streaming.transportStreamTimestamp');
   }
 
-  static _getFrameData(data) {
+  static _getFrameData (data) {
     /*
     Frame ID       $xx xx xx xx (four characters)
     Size           $xx xx xx xx
@@ -139,7 +139,7 @@ class ID3 {
     const type = String.fromCharCode(data[0], data[1], data[2], data[3]);
     const size = ID3._readSize(data, 4);
 
-    //skip frame id, size, and flags
+    // skip frame id, size, and flags
     let offset = 10;
 
     return {type, size, data: data.subarray(offset, offset + size)};
@@ -150,23 +150,23 @@ class ID3 {
    * @param {Uint8Array} id3Data - The ID3 data containing one or more ID3 tags
    * @return {ID3 frame[]} - Array of ID3 frame objects
    */
-  static getID3Frames(id3Data) {
+  static getID3Frames (id3Data) {
     let offset = 0;
     const frames = [];
 
     while (ID3.isHeader(id3Data, offset)) {
       const size = ID3._readSize(id3Data, offset + 6);
-      //skip past ID3 header
+      // skip past ID3 header
       offset += 10;
       const end = offset + size;
-      //loop through frames in the ID3 tag
+      // loop through frames in the ID3 tag
       while (offset + 8 < end) {
         const frameData = ID3._getFrameData(id3Data.subarray(offset));
         const frame = ID3._decodeFrame(frameData);
         if (frame) {
           frames.push(frame);
         }
-        //skip frame header and frame data
+        // skip frame header and frame data
         offset += frameData.size + 10;
       }
 
@@ -178,7 +178,7 @@ class ID3 {
     return frames;
   }
 
-  static _decodeFrame(frame) {
+  static _decodeFrame (frame) {
     if (frame.type === 'PRIV') {
       return ID3._decodePrivFrame(frame);
     } else if (frame.type[0] === 'T') {
@@ -190,7 +190,7 @@ class ID3 {
     return undefined;
   }
 
-  static _readTimeStamp(timeStampFrame) {
+  static _readTimeStamp (timeStampFrame) {
     if (timeStampFrame.data.byteLength === 8) {
       const data = new Uint8Array(timeStampFrame.data);
       // timestamp is 33 bit expressed as a big-endian eight-octet number,
@@ -198,7 +198,7 @@ class ID3 {
       const pts33Bit = data[3] & 0x1;
       let timestamp = (data[4] << 23) +
                       (data[5] << 15) +
-                      (data[6] <<  7) +
+                      (data[6] << 7) +
                        data[7];
       timestamp /= 45;
 
@@ -212,7 +212,7 @@ class ID3 {
     return undefined;
   }
 
-  static _decodePrivFrame(frame) {
+  static _decodePrivFrame (frame) {
     /*
     Format: <text string>\0<binary data>
     */
@@ -226,7 +226,7 @@ class ID3 {
     return {key: frame.type, info: owner, data: privateData.buffer};
   }
 
-  static _decodeTextFrame(frame) {
+  static _decodeTextFrame (frame) {
     if (frame.size < 2) {
       return undefined;
     }
@@ -255,7 +255,7 @@ class ID3 {
     }
   }
 
-  static _decodeURLFrame(frame) {
+  static _decodeURLFrame (frame) {
     if (frame.type === 'WXXX') {
       /*
       Format:
@@ -292,8 +292,7 @@ class ID3 {
    * LastModified: Dec 25 1999
    * This library is free.  You can redistribute it and/or modify it.
    */
-  static _utf8ArrayToStr(array, exitOnNull = false) {
-
+  static _utf8ArrayToStr (array, exitOnNull = false) {
     const len = array.length;
     let c;
     let char2;

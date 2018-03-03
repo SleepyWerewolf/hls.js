@@ -63,12 +63,12 @@ const sampleEntryCodesISO = {
   }
 };
 
-function isCodecType(codec, type) {
+function isCodecType (codec, type) {
   const typeCodes = sampleEntryCodesISO[type];
   return !!typeCodes && typeCodes[codec.slice(0, 4)] === true;
 }
 
-function isCodecSupportedInMp4(codec, type) {
+function isCodecSupportedInMp4 (codec, type) {
   return MediaSource.isTypeSupported(`${type || 'video'}/mp4;codecs="${codec}"`);
 }
 

@@ -8,15 +8,14 @@ import {ErrorTypes, ErrorDetails} from '../errors';
 import {logger} from '../utils/logger';
 
 class KeyLoader extends EventHandler {
-
-  constructor(hls) {
+  constructor (hls) {
     super(hls, Event.KEY_LOADING);
     this.loaders = {};
     this.decryptkey = null;
     this.decrypturl = null;
   }
 
-  destroy() {
+  destroy () {
     for (let loaderName in this.loaders) {
       let loader = this.loaders[loaderName];
       if (loader) {
@@ -27,7 +26,7 @@ class KeyLoader extends EventHandler {
     EventHandler.prototype.destroy.call(this);
   }
 
-  onKeyLoading(data) {
+  onKeyLoading (data) {
     let frag = data.frag,
       type = frag.type,
       loader = this.loaders[type],
@@ -46,10 +45,10 @@ class KeyLoader extends EventHandler {
       this.decryptkey = null;
 
       let loaderContext, loaderConfig, loaderCallbacks;
-      loaderContext = {url : uri, frag : frag, responseType : 'arraybuffer'};
-      loaderConfig = {timeout : config.fragLoadingTimeOut, maxRetry : config.fragLoadingMaxRetry , retryDelay : config.fragLoadingRetryDelay, maxRetryDelay : config.fragLoadingMaxRetryTimeout};
-      loaderCallbacks = {onSuccess : this.loadsuccess.bind(this), onError :this.loaderror.bind(this), onTimeout : this.loadtimeout.bind(this)};
-      frag.loader.load(loaderContext,loaderConfig,loaderCallbacks);
+      loaderContext = {url: uri, frag: frag, responseType: 'arraybuffer'};
+      loaderConfig = {timeout: config.fragLoadingTimeOut, maxRetry: config.fragLoadingMaxRetry, retryDelay: config.fragLoadingRetryDelay, maxRetryDelay: config.fragLoadingMaxRetryTimeout};
+      loaderCallbacks = {onSuccess: this.loadsuccess.bind(this), onError: this.loaderror.bind(this), onTimeout: this.loadtimeout.bind(this)};
+      frag.loader.load(loaderContext, loaderConfig, loaderCallbacks);
     } else if (this.decryptkey) {
       // we already loaded this key, return it
       decryptdata.key = this.decryptkey;
@@ -57,7 +56,7 @@ class KeyLoader extends EventHandler {
     }
   }
 
-  loadsuccess(response, stats, context) {
+  loadsuccess (response, stats, context) {
     let frag = context.frag;
     this.decryptkey = frag.decryptdata.key = new Uint8Array(response.data);
     // detach fragment loader on load success
@@ -66,7 +65,7 @@ class KeyLoader extends EventHandler {
     this.hls.trigger(Event.KEY_LOADED, {frag: frag});
   }
 
-  loaderror(response, context) {
+  loaderror (response, context) {
     let frag = context.frag,
       loader = frag.loader;
     if (loader) {
@@ -76,7 +75,7 @@ class KeyLoader extends EventHandler {
     this.hls.trigger(Event.ERROR, {type: ErrorTypes.NETWORK_ERROR, details: ErrorDetails.KEY_LOAD_ERROR, fatal: false, frag: frag, response: response});
   }
 
-  loadtimeout(stats, context) {
+  loadtimeout (stats, context) {
     let frag = context.frag,
       loader = frag.loader;
     if (loader) {

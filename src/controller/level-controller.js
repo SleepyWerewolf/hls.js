@@ -9,8 +9,7 @@ import {ErrorTypes, ErrorDetails} from '../errors';
 import {isCodecSupportedInMp4} from '../utils/codecs';
 
 export default class LevelController extends EventHandler {
-
-  constructor(hls) {
+  constructor (hls) {
     super(hls,
       Event.MANIFEST_LOADED,
       Event.LEVEL_LOADED,
@@ -22,19 +21,19 @@ export default class LevelController extends EventHandler {
     this.timer = null;
   }
 
-  onHandlerDestroying() {
+  onHandlerDestroying () {
     this.cleanTimer();
     this.manualLevelIndex = -1;
   }
 
-  cleanTimer() {
+  cleanTimer () {
     if (this.timer !== null) {
       clearTimeout(this.timer);
       this.timer = null;
     }
   }
 
-  startLoad() {
+  startLoad () {
     let levels = this._levels;
 
     this.canload = true;
@@ -56,11 +55,11 @@ export default class LevelController extends EventHandler {
     }
   }
 
-  stopLoad() {
+  stopLoad () {
     this.canload = false;
   }
 
-  onManifestLoaded(data) {
+  onManifestLoaded (data) {
     let levels = [];
     let bitrateStart;
     let levelSet = {};
@@ -130,31 +129,31 @@ export default class LevelController extends EventHandler {
         levels,
         audioTracks,
         firstLevel: this._firstLevel,
-        stats     : data.stats,
-        audio     : audioCodecFound,
-        video     : videoCodecFound,
-        altAudio  : audioTracks.length > 0
+        stats: data.stats,
+        audio: audioCodecFound,
+        video: videoCodecFound,
+        altAudio: audioTracks.length > 0
       });
     } else {
       this.hls.trigger(Event.ERROR, {
-        type   : ErrorTypes.MEDIA_ERROR,
+        type: ErrorTypes.MEDIA_ERROR,
         details: ErrorDetails.MANIFEST_INCOMPATIBLE_CODECS_ERROR,
-        fatal  : true,
-        url    : this.hls.url,
-        reason : 'no level with compatible codecs found in manifest'
+        fatal: true,
+        url: this.hls.url,
+        reason: 'no level with compatible codecs found in manifest'
       });
     }
   }
 
-  get levels() {
+  get levels () {
     return this._levels;
   }
 
-  get level() {
+  get level () {
     return this.currentLevelIndex;
   }
 
-  set level(newLevel) {
+  set level (newLevel) {
     let levels = this._levels;
     if (levels) {
       newLevel = Math.min(newLevel, levels.length - 1);
@@ -164,7 +163,7 @@ export default class LevelController extends EventHandler {
     }
   }
 
-  setLevelInternal(newLevel) {
+  setLevelInternal (newLevel) {
     const levels = this._levels;
     const hls = this.hls;
     // check if level idx is valid
@@ -190,20 +189,20 @@ export default class LevelController extends EventHandler {
     } else {
       // invalid level id given, trigger error
       hls.trigger(Event.ERROR, {
-        type   : ErrorTypes.OTHER_ERROR,
+        type: ErrorTypes.OTHER_ERROR,
         details: ErrorDetails.LEVEL_SWITCH_ERROR,
-        level  : newLevel,
-        fatal  : false,
-        reason : 'invalid level idx'
+        level: newLevel,
+        fatal: false,
+        reason: 'invalid level idx'
       });
     }
   }
 
-  get manualLevel() {
+  get manualLevel () {
     return this.manualLevelIndex;
   }
 
-  set manualLevel(newLevel) {
+  set manualLevel (newLevel) {
     this.manualLevelIndex = newLevel;
     if (this._startLevel === undefined) {
       this._startLevel = newLevel;
@@ -213,15 +212,15 @@ export default class LevelController extends EventHandler {
     }
   }
 
-  get firstLevel() {
+  get firstLevel () {
     return this._firstLevel;
   }
 
-  set firstLevel(newLevel) {
+  set firstLevel (newLevel) {
     this._firstLevel = newLevel;
   }
 
-  get startLevel() {
+  get startLevel () {
     // hls.startLevel takes precedence over config.startLevel
     // if none of these values are defined, fallback on this._firstLevel (first quality level appearing in variant manifest)
     if (this._startLevel === undefined) {
@@ -236,11 +235,11 @@ export default class LevelController extends EventHandler {
     }
   }
 
-  set startLevel(newLevel) {
+  set startLevel (newLevel) {
     this._startLevel = newLevel;
   }
 
-  onError(data) {
+  onError (data) {
     if (data.fatal === true) {
       if (data.type === ErrorTypes.NETWORK_ERROR) {
         this.cleanTimer();
@@ -286,7 +285,7 @@ export default class LevelController extends EventHandler {
    * @param {Boolean} fragmentError
    */
   // FIXME Find a better abstraction where fragment/level retry management is well decoupled
-  recoverLevel(errorEvent, levelIndex, levelError, fragmentError) {
+  recoverLevel (errorEvent, levelIndex, levelError, fragmentError) {
     let {config} = this.hls;
     let {details: errorDetails} = errorEvent;
     let level = this._levels[levelIndex];
@@ -343,7 +342,7 @@ export default class LevelController extends EventHandler {
   }
 
   // reset errors on the successful load of a fragment
-  onFragLoaded({frag}) {
+  onFragLoaded ({frag}) {
     if (frag !== undefined && frag.type === 'main') {
       const level = this._levels[frag.level];
       if (level !== undefined) {
@@ -354,7 +353,7 @@ export default class LevelController extends EventHandler {
     }
   }
 
-  onLevelLoaded(data) {
+  onLevelLoaded (data) {
     const levelId = data.level;
     // only process level loaded events matching with expected level
     if (levelId === this.currentLevelIndex) {
@@ -368,7 +367,7 @@ export default class LevelController extends EventHandler {
       // if current playlist is a live playlist, arm a timer to reload it
       if (newDetails.live) {
         let reloadInterval = 1000 * (newDetails.averagetargetduration ? newDetails.averagetargetduration : newDetails.targetduration),
-          curDetails     = curLevel.details;
+          curDetails = curLevel.details;
         if (curDetails && newDetails.endSN === curDetails.endSN) {
           // follow HLS Spec, If the client reloads a Playlist file and finds that it has not
           // changed then it MUST wait for a period of one-half the target
@@ -388,7 +387,7 @@ export default class LevelController extends EventHandler {
     }
   }
 
-  loadLevel() {
+  loadLevel () {
     let level, urlIndex;
 
     if (this.currentLevelIndex !== null && this.canload === true) {
@@ -400,7 +399,7 @@ export default class LevelController extends EventHandler {
     }
   }
 
-  get nextLoadLevel() {
+  get nextLoadLevel () {
     if (this.manualLevelIndex !== -1) {
       return this.manualLevelIndex;
     } else {
@@ -408,7 +407,7 @@ export default class LevelController extends EventHandler {
     }
   }
 
-  set nextLoadLevel(nextLevel) {
+  set nextLoadLevel (nextLevel) {
     this.level = nextLevel;
     if (this.manualLevelIndex === -1) {
       this.hls.nextAutoLevel = nextLevel;

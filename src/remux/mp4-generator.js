@@ -2,12 +2,12 @@
  * Generate MP4 Box
 */
 
-//import Hex from '../utils/hex';
+// import Hex from '../utils/hex';
 
 const UINT32_MAX = Math.pow(2, 32) - 1;
 
 class MP4 {
-  static init() {
+  static init () {
     MP4.types = {
       avc1: [], // codingname
       avcC: [],
@@ -112,7 +112,7 @@ class MP4 {
       0x00, // version
       0x00, 0x00, 0x00, // flags
       0x00, 0x00, 0x00, 0x00, // sample_size
-      0x00, 0x00, 0x00, 0x00, // sample_count
+      0x00, 0x00, 0x00, 0x00 // sample_count
     ]);
     MP4.VMHD = new Uint8Array([
       0x00, // version
@@ -134,15 +134,15 @@ class MP4 {
       0x00, 0x00, 0x00, // flags
       0x00, 0x00, 0x00, 0x01]);// entry_count
 
-    var majorBrand = new Uint8Array([105,115,111,109]); // isom
-    var avc1Brand = new Uint8Array([97,118,99,49]); // avc1
+    var majorBrand = new Uint8Array([105, 115, 111, 109]); // isom
+    var avc1Brand = new Uint8Array([97, 118, 99, 49]); // avc1
     var minorVersion = new Uint8Array([0, 0, 0, 1]);
 
     MP4.FTYP = MP4.box(MP4.types.ftyp, majorBrand, minorVersion, majorBrand, avc1Brand);
     MP4.DINF = MP4.box(MP4.types.dinf, MP4.box(MP4.types.dref, dref));
   }
 
-  static box(type) {
+  static box (type) {
     var
       payload = Array.prototype.slice.call(arguments, 1),
       size = 8,
@@ -157,7 +157,7 @@ class MP4 {
     result[0] = (size >> 24) & 0xff;
     result[1] = (size >> 16) & 0xff;
     result[2] = (size >> 8) & 0xff;
-    result[3] = size  & 0xff;
+    result[3] = size & 0xff;
     result.set(type, 4);
     // copy the payload into the result
     for (i = 0, size = 8; i < len; i++) {
@@ -168,15 +168,15 @@ class MP4 {
     return result;
   }
 
-  static hdlr(type) {
+  static hdlr (type) {
     return MP4.box(MP4.types.hdlr, MP4.HDLR_TYPES[type]);
   }
 
-  static mdat(data) {
+  static mdat (data) {
     return MP4.box(MP4.types.mdat, data);
   }
 
-  static mdhd(timescale, duration) {
+  static mdhd (timescale, duration) {
     duration *= timescale;
     const upperWordDuration = Math.floor(duration / (UINT32_MAX + 1));
     const lowerWordDuration = Math.floor(duration % (UINT32_MAX + 1));
@@ -187,37 +187,37 @@ class MP4 {
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, // modification_time
       (timescale >> 24) & 0xFF,
       (timescale >> 16) & 0xFF,
-      (timescale >>  8) & 0xFF,
+      (timescale >> 8) & 0xFF,
       timescale & 0xFF, // timescale
       (upperWordDuration >> 24),
       (upperWordDuration >> 16) & 0xFF,
-      (upperWordDuration >>  8) & 0xFF,
+      (upperWordDuration >> 8) & 0xFF,
       upperWordDuration & 0xFF,
       (lowerWordDuration >> 24),
       (lowerWordDuration >> 16) & 0xFF,
-      (lowerWordDuration >>  8) & 0xFF,
+      (lowerWordDuration >> 8) & 0xFF,
       lowerWordDuration & 0xFF,
       0x55, 0xc4, // 'und' language (undetermined)
       0x00, 0x00
     ]));
   }
 
-  static mdia(track) {
+  static mdia (track) {
     return MP4.box(MP4.types.mdia, MP4.mdhd(track.timescale, track.duration), MP4.hdlr(track.type), MP4.minf(track));
   }
 
-  static mfhd(sequenceNumber) {
+  static mfhd (sequenceNumber) {
     return MP4.box(MP4.types.mfhd, new Uint8Array([
       0x00,
       0x00, 0x00, 0x00, // flags
       (sequenceNumber >> 24),
       (sequenceNumber >> 16) & 0xFF,
-      (sequenceNumber >>  8) & 0xFF,
-      sequenceNumber & 0xFF, // sequence_number
+      (sequenceNumber >> 8) & 0xFF,
+      sequenceNumber & 0xFF // sequence_number
     ]));
   }
 
-  static minf(track) {
+  static minf (track) {
     if (track.type === 'audio') {
       return MP4.box(MP4.types.minf, MP4.box(MP4.types.smhd, MP4.SMHD), MP4.DINF, MP4.stbl(track));
     } else {
@@ -225,13 +225,13 @@ class MP4 {
     }
   }
 
-  static moof(sn, baseMediaDecodeTime, track) {
-    return MP4.box(MP4.types.moof, MP4.mfhd(sn), MP4.traf(track,baseMediaDecodeTime));
+  static moof (sn, baseMediaDecodeTime, track) {
+    return MP4.box(MP4.types.moof, MP4.mfhd(sn), MP4.traf(track, baseMediaDecodeTime));
   }
   /**
  * @param tracks... (optional) {array} the tracks associated with this movie
  */
-  static moov(tracks) {
+  static moov (tracks) {
     var
       i = tracks.length,
       boxes = [];
@@ -243,7 +243,7 @@ class MP4 {
     return MP4.box.apply(null, [MP4.types.moov, MP4.mvhd(tracks[0].timescale, tracks[0].duration)].concat(boxes).concat(MP4.mvex(tracks)));
   }
 
-  static mvex(tracks) {
+  static mvex (tracks) {
     var
       i = tracks.length,
       boxes = [];
@@ -254,7 +254,7 @@ class MP4 {
     return MP4.box.apply(null, [MP4.types.mvex].concat(boxes));
   }
 
-  static mvhd(timescale,duration) {
+  static mvhd (timescale, duration) {
     duration *= timescale;
     const upperWordDuration = Math.floor(duration / (UINT32_MAX + 1));
     const lowerWordDuration = Math.floor(duration % (UINT32_MAX + 1));
@@ -266,15 +266,15 @@ class MP4 {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, // modification_time
         (timescale >> 24) & 0xFF,
         (timescale >> 16) & 0xFF,
-        (timescale >>  8) & 0xFF,
+        (timescale >> 8) & 0xFF,
         timescale & 0xFF, // timescale
         (upperWordDuration >> 24),
         (upperWordDuration >> 16) & 0xFF,
-        (upperWordDuration >>  8) & 0xFF,
+        (upperWordDuration >> 8) & 0xFF,
         upperWordDuration & 0xFF,
         (lowerWordDuration >> 24),
         (lowerWordDuration >> 16) & 0xFF,
-        (lowerWordDuration >>  8) & 0xFF,
+        (lowerWordDuration >> 8) & 0xFF,
         lowerWordDuration & 0xFF,
         0x00, 0x01, 0x00, 0x00, // 1.0 rate
         0x01, 0x00, // 1.0 volume
@@ -301,7 +301,7 @@ class MP4 {
     return MP4.box(MP4.types.mvhd, bytes);
   }
 
-  static sdtp(track) {
+  static sdtp (track) {
     var
       samples = track.samples || [],
       bytes = new Uint8Array(4 + samples.length),
@@ -319,11 +319,11 @@ class MP4 {
     return MP4.box(MP4.types.sdtp, bytes);
   }
 
-  static stbl(track) {
+  static stbl (track) {
     return MP4.box(MP4.types.stbl, MP4.stsd(track), MP4.box(MP4.types.stts, MP4.STTS), MP4.box(MP4.types.stsc, MP4.STSC), MP4.box(MP4.types.stsz, MP4.STSZ), MP4.box(MP4.types.stco, MP4.STCO));
   }
 
-  static avc1(track) {
+  static avc1 (track) {
     var sps = [], pps = [], i, data, len;
     // assemble the SPSs
 
@@ -345,7 +345,7 @@ class MP4 {
     }
 
     var avcc = MP4.box(MP4.types.avcC, new Uint8Array([
-        0x01,   // version
+        0x01, // version
         sps[3], // profile
         sps[4], // profile compat
         sps[5], // level
@@ -377,7 +377,7 @@ class MP4 {
       0x00, 0x00, 0x00, 0x00, // reserved
       0x00, 0x01, // frame_count
       0x12,
-      0x64, 0x61, 0x69, 0x6C, //dailymotion/hls.js
+      0x64, 0x61, 0x69, 0x6C, // dailymotion/hls.js
       0x79, 0x6D, 0x6F, 0x74,
       0x69, 0x6F, 0x6E, 0x2F,
       0x68, 0x6C, 0x73, 0x2E,
@@ -385,7 +385,7 @@ class MP4 {
       0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, // compressorname
-      0x00, 0x18,   // depth = 24
+      0x00, 0x18, // depth = 24
       0x11, 0x11]), // pre_defined = -1
     avcc,
     MP4.box(MP4.types.btrt, new Uint8Array([
@@ -393,18 +393,18 @@ class MP4 {
       0x00, 0x2d, 0xc6, 0xc0, // maxBitrate
       0x00, 0x2d, 0xc6, 0xc0])), // avgBitrate
     MP4.box(MP4.types.pasp, new Uint8Array([
-      (hSpacing >> 24),         // hSpacing
+      (hSpacing >> 24), // hSpacing
       (hSpacing >> 16) & 0xFF,
-      (hSpacing >>  8) & 0xFF,
+      (hSpacing >> 8) & 0xFF,
       hSpacing & 0xFF,
-      (vSpacing >> 24),         // vSpacing
+      (vSpacing >> 24), // vSpacing
       (vSpacing >> 16) & 0xFF,
-      (vSpacing >>  8) & 0xFF,
+      (vSpacing >> 8) & 0xFF,
       vSpacing & 0xFF]))
     );
   }
 
-  static esds(track) {
+  static esds (track) {
     var configlen = track.config.length;
     return new Uint8Array([
       0x00, // version 0
@@ -412,12 +412,12 @@ class MP4 {
 
       0x03, // descriptor_type
       0x17 + configlen, // length
-      0x00, 0x01, //es_id
+      0x00, 0x01, // es_id
       0x00, // stream_priority
 
       0x04, // descriptor_type
       0x0f + configlen, // length
-      0x40, //codec : mpeg4_audio
+      0x40, // codec : mpeg4_audio
       0x15, // stream_type
       0x00, 0x00, 0x00, // buffer_size
       0x00, 0x00, 0x00, 0x00, // maxBitrate
@@ -427,7 +427,7 @@ class MP4 {
     ].concat([configlen]).concat(track.config).concat([0x06, 0x01, 0x02])); // GASpecificConfig)); // length + audio config descriptor
   }
 
-  static mp4a(track) {
+  static mp4a (track) {
     var samplerate = track.samplerate;
     return MP4.box(MP4.types.mp4a, new Uint8Array([
       0x00, 0x00, 0x00, // reserved
@@ -444,7 +444,7 @@ class MP4 {
     MP4.box(MP4.types.esds, MP4.esds(track)));
   }
 
-  static mp3(track) {
+  static mp3 (track) {
     var samplerate = track.samplerate;
     return MP4.box(MP4.types['.mp3'], new Uint8Array([
       0x00, 0x00, 0x00, // reserved
@@ -460,7 +460,7 @@ class MP4 {
       0x00, 0x00]));
   }
 
-  static stsd(track) {
+  static stsd (track) {
     if (track.type === 'audio') {
       if (!track.isAAC && track.codec === 'mp3') {
         return MP4.box(MP4.types.stsd, MP4.STSD, MP4.mp3(track));
@@ -471,7 +471,7 @@ class MP4 {
     }
   }
 
-  static tkhd(track) {
+  static tkhd (track) {
     var id = track.id,
       duration = track.duration * track.timescale,
       width = track.width,
@@ -490,11 +490,11 @@ class MP4 {
       0x00, 0x00, 0x00, 0x00, // reserved
       (upperWordDuration >> 24),
       (upperWordDuration >> 16) & 0xFF,
-      (upperWordDuration >>  8) & 0xFF,
+      (upperWordDuration >> 8) & 0xFF,
       upperWordDuration & 0xFF,
       (lowerWordDuration >> 24),
       (lowerWordDuration >> 16) & 0xFF,
-      (lowerWordDuration >>  8) & 0xFF,
+      (lowerWordDuration >> 8) & 0xFF,
       lowerWordDuration & 0xFF,
       0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, // reserved
@@ -520,7 +520,7 @@ class MP4 {
     ]));
   }
 
-  static traf(track,baseMediaDecodeTime) {
+  static traf (track, baseMediaDecodeTime) {
     var sampleDependencyTable = MP4.sdtp(track),
       id = track.id,
       upperWordBaseMediaDecodeTime = Math.floor(baseMediaDecodeTime / (UINT32_MAX + 1)),
@@ -550,10 +550,10 @@ class MP4 {
         sampleDependencyTable.length +
                     16 + // tfhd
                     20 + // tfdt
-                    8 +  // traf header
+                    8 + // traf header
                     16 + // mfhd
-                    8 +  // moof header
-                    8),  // mdat header
+                    8 + // moof header
+                    8), // mdat header
       sampleDependencyTable);
   }
 
@@ -562,12 +562,12 @@ class MP4 {
    * @param track {object} a track definition
    * @return {Uint8Array} the track box
    */
-  static trak(track) {
+  static trak (track) {
     track.duration = track.duration || 0xffffffff;
     return MP4.box(MP4.types.trak, MP4.tkhd(track), MP4.mdia(track));
   }
 
-  static trex(track) {
+  static trex (track) {
     var id = track.id;
     return MP4.box(MP4.types.trex, new Uint8Array([
       0x00, // version 0
@@ -583,12 +583,12 @@ class MP4 {
     ]));
   }
 
-  static trun(track, offset) {
+  static trun (track, offset) {
     var samples = track.samples || [],
       len = samples.length,
       arraylen = 12 + (16 * len),
       array = new Uint8Array(arraylen),
-      i,sample,duration,size,flags,cts;
+      i, sample, duration, size, flags, cts;
     offset += 8 + arraylen;
     array.set([
       0x00, // version 0
@@ -601,7 +601,7 @@ class MP4 {
       (offset >>> 16) & 0xFF,
       (offset >>> 8) & 0xFF,
       offset & 0xFF // data_offset
-    ],0);
+    ], 0);
     for (i = 0; i < len; i++) {
       sample = samples[i];
       duration = sample.duration;
@@ -628,12 +628,12 @@ class MP4 {
         (cts >>> 16) & 0xFF,
         (cts >>> 8) & 0xFF,
         cts & 0xFF // sample_composition_time_offset
-      ],12 + 16 * i);
+      ], 12 + 16 * i);
     }
     return MP4.box(MP4.types.trun, array);
   }
 
-  static initSegment(tracks) {
+  static initSegment (tracks) {
     if (!MP4.types) {
       MP4.init();
     }

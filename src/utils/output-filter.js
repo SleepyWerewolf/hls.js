@@ -1,6 +1,5 @@
 export default class OutputFilter {
-
-  constructor(timelineController, track) {
+  constructor (timelineController, track) {
     this.timelineController = timelineController;
     this.track = track;
     this.startTime = null;
@@ -8,7 +7,7 @@ export default class OutputFilter {
     this.screen = null;
   }
 
-  dispatchCue() {
+  dispatchCue () {
     if (this.startTime === null) {
       return;
     }
@@ -16,7 +15,7 @@ export default class OutputFilter {
     this.startTime = null;
   }
 
-  newCue(startTime, endTime, screen) {
+  newCue (startTime, endTime, screen) {
     if (this.startTime === null || this.startTime > startTime) {
       this.startTime = startTime;
     }

@@ -6,8 +6,6 @@ import HlsMock from '../../mocks/hls.mock';
 import Event from '../../../src/events';
 import {ErrorTypes, ErrorDetails} from '../../../src/errors';
 
-
-
 describe('LevelController', () => {
   let hls, levelController;
 
@@ -23,7 +21,6 @@ describe('LevelController', () => {
   });
 
   it('should trigger an error when no levels are found in the manifest', () => {
-
     levelController.onManifestLoaded({
       audioTracks: [],
       levels: [],
@@ -33,11 +30,9 @@ describe('LevelController', () => {
     });
 
     assert.equal(levelController.hls.trigger.args[0][1].details, ErrorDetails.MANIFEST_INCOMPATIBLE_CODECS_ERROR);
-
   });
 
   it('should trigger hlsManifestParsed when levels are found in the manifest', () => {
-
     let data = {
       audioTracks: [],
       levels: [
@@ -56,15 +51,11 @@ describe('LevelController', () => {
 
     levelController.onManifestLoaded(data);
 
-
     assert.equal(levelController.hls.trigger.args[0][0], Event.MANIFEST_PARSED);
     assert.equal(levelController.hls.trigger.args[0][1].levels.length, data.levels.length);
-
-
   });
 
   it('should trigger level switch when level is manually set', () => {
-
     let data = {
       audioTracks: [],
       levels: [
@@ -85,9 +76,7 @@ describe('LevelController', () => {
     levelController.onManifestLoaded(data);
     levelController.level = nextLevel;
 
-    assert.equal(levelController.hls.trigger.args[1][0],Event.LEVEL_SWITCH);
+    assert.equal(levelController.hls.trigger.args[1][0], Event.LEVEL_SWITCH);
     assert.equal(levelController.hls.trigger.args[1][1].level, nextLevel);
-
   });
-
 });

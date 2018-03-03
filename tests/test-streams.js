@@ -7,7 +7,7 @@
  * @param {string[]} [blacklist_ua]
  * @returns {{url: string, description: string, live: boolean, abr: boolean, blacklist_ua: string[]}}
  */
-function createTestStream(url, description, live = false, abr = true, blacklist_ua = []) {
+function createTestStream (url, description, live = false, abr = true, blacklist_ua = []) {
   return {
     url,
     description,
@@ -22,7 +22,7 @@ function createTestStream(url, description, live = false, abr = true, blacklist_
  * @param {Object} [config]
  * @returns {{url: string, description: string, live: boolean, abr: boolean, blacklist_ua: string[]}}
  */
-function createTestStreamWithConfig(target, config) {
+function createTestStreamWithConfig (target, config) {
   if (typeof target !== 'object') {
     throw new Error('target should be object');
   }
@@ -36,7 +36,7 @@ function createTestStreamWithConfig(target, config) {
 module.exports = {
   bbb: createTestStreamWithConfig({
     url: 'https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8',
-    description: 'Big Buck Bunny - adaptive qualities',
+    description: 'Big Buck Bunny - adaptive qualities'
   },
   {
     // try to workaround test failing because of slow seek on Chrome/Win10
@@ -136,11 +136,11 @@ module.exports = {
   angelOneShakaWidevine: createTestStreamWithConfig({
     url: 'https://storage.googleapis.com/shaka-demo-assets/angel-one-widevine-hls/hls.m3u8',
     description: 'Shaka-packager Widevine DRM (EME) HLS-fMP4 - Angel One Demo',
-    blacklist_ua: ['firefox','safari', 'internet explorer']
+    blacklist_ua: ['firefox', 'safari', 'internet explorer']
   },
   {
     widevineLicenseUrl: 'https://cwip-shaka-proxy.appspot.com/no_auth',
-    emeEnabled: true,
+    emeEnabled: true
   }
   )
 };
