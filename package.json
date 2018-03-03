@@ -37,6 +37,7 @@
     "docs:update": "git add docs/html && git commit docs/html -m 'Update docs'",
     "docs:release": "npm run docs:clean && npm run docs:generate && npm run docs:update",
     "lint": "npm run lint:src && npm run lint:tests",
+    "lint:fix": "eslint src/ tests/ --fix",
     "lint:src": "eslint src/",
     "lint:tests": "eslint tests/",
     "precommit": "./scripts/precommit",
