@@ -170,7 +170,7 @@ function startStream (streamUrl, config, callback) {
 
 describe('testing hls.js playback in the browser on "' + browserDescription + '"', function () {
   before(function () {
-    setupConsoleLogRedirection();
+
   });
 
   beforeEach(function () {
@@ -203,25 +203,34 @@ describe('testing hls.js playback in the browser on "' + browserDescription + '"
         console.log('Loading test page...');
         return this.browser.get('http://127.0.0.1:8000/tests/functional/auto/hlsjs.html').then(function () {
           // ensure that the page has loaded and we haven't got an error page
-          return this.browser.findElement(webdriver.By.css('body#hlsjs-functional-tests')).catch(function (e) {
-            console.log('CSS not found');
-            this.browser.getPageSource().then(function (source) {
-              console.log(source);
-              return Promise.reject(e);
-            });
-          }.bind(this));
+          return this.browser.findElement(webdriver.By.css('body#hlsjs-functional-tests'))
+          // handle failure
+            .catch(function (e) {
+              console.log('DOM not found');
+              this.browser.getPageSource().then(function (source) {
+                console.log(source);
+                return Promise.reject(e);
+              });
+            }.bind(this))
+          // handle success, setup loggging
+            .then(function () {
+              console.log('DOM loaded, setting up log redirection');
+              return this.browser.executeAsyncScript(function (url, config) {
+                setupConsoleLogRedirection();
+              });
+            }.bind(this));
         }.bind(this));
       }.bind(this)).then(function () {
-        console.log('Test page loaded.');
+        console.log('Test page loaded and setup done.');
       });
     }.bind(this), function (err) {
-      console.log('error while Retrieving browser session:' + err);
+      console.log('Error while retrieving browser session:' + err);
     });
   });
 
   afterEach(function () {
     var browser = this.browser;
-    return browser.executeScript('return logString').then(function (returnValue) {
+    return browser.executeScript('return window.logString').then(function (returnValue) {
       console.log('travis_fold:start:debug_logs');
       console.log('logs');
       console.log(returnValue);
