@@ -5,7 +5,6 @@ const chromedriver = require('chromedriver');
 const HttpServer = require('http-server');
 const streams = require('../../test-streams');
 
-const Hls = window.Hls;
 const onTravis = !!process.env.TRAVIS;
 const browserConfig = {version : 'latest'};
 
@@ -41,41 +40,43 @@ if (browserConfig.platform) {
   browserDescription += ', '+browserConfig.platform;
 }
 
+// Browser environment state
+let Hls;
 let stream;
 let video;
 let logString;
 let hls;
 
-/**
- * @module
- * declares `logString` on global window
- */
-(function() {
-  var methods = ['log', 'debug', 'info', 'warn', 'error'];
-  methods.forEach(function(methodName) {
-    var original = console[methodName];
-    if (!original) {
-      return;
-    }
-    console[methodName] = function() {
-      append(methodName, Array.prototype.slice.call(arguments).map(JSON.stringify).join(' '));
-      return original.apply(this, arguments);
-    };
-  });
-
+function setupConsoleLogRedirection() {
   var log = document.getElementById('log');
   var inner = log.getElementsByClassName('inner')[0];
 
+  // append log message
   function append(methodName, msg) {
     var a = (new Date()).toISOString().replace('T', ' ').replace('Z', '')+': '+msg;
     var text = document.createTextNode(a);
     var line = document.createElement('pre');
     line.className = 'line line-'+methodName;
     line.appendChild(text);
-    window.logString = logString += a + '\n';
     inner.appendChild(line);
+
+    window.logString = logString += a + '\n';
   }
-})();
+
+  // overload global window console methods
+  var methods = ['log', 'debug', 'info', 'warn', 'error'];
+  methods.forEach(function(methodName) {
+    var original = window.console[methodName];
+    if (!original) {
+      return;
+    }
+    window.console[methodName] = function() {
+      append(methodName, Array.prototype.slice.call(arguments).map(JSON.stringify).join(' '));
+      return original.apply(this, arguments);
+    };
+  });
+
+}
 
 function retry(cb, numAttempts, interval) {
   numAttempts = numAttempts || 20;
@@ -168,6 +169,13 @@ function startStream(streamUrl, config, callback) {
 }
 
 describe('testing hls.js playback in the browser on "'+browserDescription+'"', function() {
+
+  before(function() {
+    hls = window.Hls;
+
+    setupConsoleLogRedirection();
+  });
+
   beforeEach(function() {
     video = window.video;
     logString = window.logString;
