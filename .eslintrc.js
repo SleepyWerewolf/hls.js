@@ -32,6 +32,7 @@ module.exports = {
     "sourceType": "module"
   },
   "rules": {
+
     // our basic style rules
     "semi": ["error", "always"],
     "indent": [
@@ -46,6 +47,11 @@ module.exports = {
       "error",
       "unix"
     ],
+    "space-infix-ops": 2,
+    "space-unary-ops": [2, {"words": true, "nonwords": false}],
+    "space-in-parens": ["error", "never"],
+
+    "no-undef": 0,
 
     // part of Node Style-guide but ignored
     // (commented until we enable node-style-guide)
@@ -61,7 +67,8 @@ module.exports = {
     "no-fallthrough": 1,
     "no-case-declarations": 1,
     "no-irregular-whitespace": 1,
-    "no-self-assign": 1
-
+    "no-self-assign": 1,
+    "new-cap": 1,
+    "no-undefined": 1
   }
 };
